@@ -18,13 +18,13 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RolePermission extends AbstractEntity {
+public class AuthorProduct extends AbstractEntity {
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
-    Role role;
+    @JoinColumn(name = "author_id")
+    Author author;
 
     @ManyToOne
-    @JoinColumn(name = "permission_id")
-    Permission permission;
+    @JoinColumn(name = "product_id")
+    Product product;
 }

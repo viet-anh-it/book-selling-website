@@ -18,13 +18,19 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RolePermission extends AbstractEntity {
+public class CartItem extends AbstractEntity {
+
+    String image;
+    String name;
+    int price;
+    int quantity;
+    int totalPrice;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
-    Role role;
+    @JoinColumn(name = "cart_id")
+    Cart cart;
 
     @ManyToOne
-    @JoinColumn(name = "permission_id")
-    Permission permission;
+    @JoinColumn(name = "product_id")
+    Product product;
 }

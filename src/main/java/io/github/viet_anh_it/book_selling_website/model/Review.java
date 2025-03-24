@@ -1,5 +1,8 @@
 package io.github.viet_anh_it.book_selling_website.model;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,13 +21,22 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RolePermission extends AbstractEntity {
+public class Review extends AbstractEntity {
+
+    String reviewImage;
+    String reviewerName;
+    LocalDateTime reviewedAt;
+    int productRating;
+
+    @Column(columnDefinition = "MEDIUMTEXT")
+    String reviewerComment;
+    boolean approved;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
-    Role role;
+    @JoinColumn(name = "product_id")
+    Product product;
 
     @ManyToOne
-    @JoinColumn(name = "permission_id")
-    Permission permission;
+    @JoinColumn(name = "user_id")
+    User user;
 }
