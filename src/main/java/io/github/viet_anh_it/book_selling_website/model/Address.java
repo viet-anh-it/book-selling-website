@@ -18,13 +18,16 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RolePermission extends AbstractEntity {
+public class Address extends AbstractEntity {
+
+    String province;
+    String district;
+    String avatar;
+    String ward;
+    String street;
+    boolean isDefault;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
-    Role role;
-
-    @ManyToOne
-    @JoinColumn(name = "permission_id")
-    Permission permission;
+    @JoinColumn(name = "user_id")
+    User user;
 }

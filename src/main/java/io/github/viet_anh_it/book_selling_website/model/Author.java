@@ -1,8 +1,10 @@
 package io.github.viet_anh_it.book_selling_website.model;
 
+import java.util.Set;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,13 +20,14 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RolePermission extends AbstractEntity {
+public class Author extends AbstractEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    Role role;
+    String avatar;
+    String name;
 
-    @ManyToOne
-    @JoinColumn(name = "permission_id")
-    Permission permission;
+    @Column(columnDefinition = "MEDIUMTEXT")
+    String biography;
+
+    @OneToMany(mappedBy = AuthorProduct_.AUTHOR)
+    Set<AuthorProduct> authorProducts;
 }
