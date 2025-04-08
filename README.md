@@ -21,3 +21,11 @@ Mid-day update on 2025-03-24:
 - Add database connection configuration parameters to application.properties
 - Create JPA Entity Classes and configure JPA Relationships using JPA Annotations.
 - Create essential enums
+
+Mid-day update on 2025-08-04: Complete the following features:
+
+- Authentication and authorization using JWT.
+- Sign up.
+- Login: create a new access token and refresh token pair.
+- Refresh token: create a new access token and refresh token pair, rotate refresh token.
+- Logout: put access token into blacklist, delete refresh token in the database.

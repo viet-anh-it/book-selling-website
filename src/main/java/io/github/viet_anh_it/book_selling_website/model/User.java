@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +26,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User extends AbstractEntity {
 
@@ -55,4 +57,10 @@ public class User extends AbstractEntity {
 
     @OneToMany(mappedBy = Order_.USER)
     Set<Order> orders;
+
+    @OneToMany(mappedBy = RefreshToken_.USER)
+    Set<RefreshToken> refreshTokens;
+
+    @OneToMany(mappedBy = BlackListedAccessToken_.USER)
+    Set<BlackListedAccessToken> blackListedAccessTokens;
 }
