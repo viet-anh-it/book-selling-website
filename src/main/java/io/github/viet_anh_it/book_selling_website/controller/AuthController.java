@@ -66,15 +66,6 @@ public class AuthController {
         @GetMapping("/log-in")
         public String getLogInPage(
                         @CookieValue(name = "access_token", required = false) Optional<String> optionalAccessToken) {
-                // if (optionalAccessToken.isPresent()) {
-                // String accessToken = optionalAccessToken.get();
-                // try {
-                // this.accessTokenJwtDecoder.decode(accessToken);
-                // } catch (JwtException exception) {
-                // return "log-in";
-                // }
-                // return "redirect:/home";
-                // }
                 return "log-in";
         }
 
@@ -102,8 +93,8 @@ public class AuthController {
         public ResponseEntity<SuccessResponse<Void>> logIn(
                         @Valid @RequestBody LogInRequestDTO logInRequestDTO,
                         @CookieValue(name = "refresh_token", required = false) Optional<String> optionalRefreshToken) {
-                LogInResponseDTO logInResponseDTO = this.authService.logIn(logInRequestDTO,
-                                optionalRefreshToken);
+                LogInResponseDTO logInResponseDTO = this.authService
+                                .logIn(logInRequestDTO, optionalRefreshToken);
 
                 ResponseCookie accessTokenCookie = ResponseCookie
                                 .from("access_token", logInResponseDTO.getAccessToken())
@@ -119,7 +110,8 @@ public class AuthController {
                                 .maxAge(this.refreshTokenValidityDuration)
                                 .build();
 
-                SuccessResponse<Void> successResponse = SuccessResponse.<Void>builder()
+                SuccessResponse<Void> successResponse = SuccessResponse
+                                .<Void>builder()
                                 .status(HttpStatus.OK.value())
                                 .message("Đăng nhập thành công!")
                                 .build();
@@ -136,6 +128,8 @@ public class AuthController {
         @DeleteMapping("log-out")
         public ResponseEntity<SuccessResponse<Void>> logOut(
                         @CookieValue(name = "refresh_token", required = false) Optional<String> optionalRefreshToken) {
+                this.authService.logOut(optionalRefreshToken);
+
                 ResponseCookie accessTokenCookie = ResponseCookie
                                 .from("access_token", null)
                                 .httpOnly(true)
@@ -209,7 +203,8 @@ public class AuthController {
                                 .maxAge(0)
                                 .build();
 
-                SuccessResponse<Void> successResponse = SuccessResponse.<Void>builder()
+                SuccessResponse<Void> successResponse = SuccessResponse
+                                .<Void>builder()
                                 .status(HttpStatus.OK.value())
                                 .message("Thu hồi refresh token thành công!")
                                 .build();

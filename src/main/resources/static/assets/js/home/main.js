@@ -36,7 +36,7 @@ logOutBtn.addEventListener(`click`, async (event) => {
     await fetch(`http://localhost:8080/revoke-refresh-token`, {
       method: `DELETE`,
     });
-    // window.location.assign(`http://localhost:8080/log-in`);
+    window.location.assign(`http://localhost:8080/log-in`);
   }
 });
 

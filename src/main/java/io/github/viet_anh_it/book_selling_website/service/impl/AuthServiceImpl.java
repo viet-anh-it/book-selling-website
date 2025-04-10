@@ -112,7 +112,8 @@ public class AuthServiceImpl implements AuthService {
                 Jwt newRefreshTokenJwtObject = this.jwtService.createJwt(authentication.getName(),
                                 this.refreshTokenValidityDuration, TokenTypeEnum.REFRESH.getName());
 
-                User user = this.userService.findByEmail(authentication.getName()).get();
+                String userEmail = authentication.getName();
+                User user = this.userService.findByEmail(userEmail).get();
                 if (optionalOldRefreshTokenString.isPresent()) {
                         String oldRefreshTokenString = optionalOldRefreshTokenString.get();
                         this.refreshTokenService.findByTokenValueAndUserId(oldRefreshTokenString, user.getId())
@@ -144,7 +145,8 @@ public class AuthServiceImpl implements AuthService {
                         this.refreshTokenService.save(refreshTokenEntity);
                 }
 
-                LogInResponseDTO logInResponseDTO = LogInResponseDTO.builder()
+                LogInResponseDTO logInResponseDTO = LogInResponseDTO
+                                .builder()
                                 .accessToken(newAccessTokenJwtObject.getTokenValue())
                                 .refreshToken(newRefreshTokenJwtObject.getTokenValue())
                                 .build();
@@ -158,7 +160,8 @@ public class AuthServiceImpl implements AuthService {
                 String userEmail = accessTokenJwtObject.getSubject();
                 User user = this.userService.findByEmail(userEmail).get();
 
-                BlackListedAccessToken blackListedAccessToken = BlackListedAccessToken.builder()
+                BlackListedAccessToken blackListedAccessToken = BlackListedAccessToken
+                                .builder()
                                 .jti(accessTokenJwtObject.getId())
                                 .expiresAt(accessTokenJwtObject.getExpiresAt())
                                 .user(user)
@@ -202,14 +205,15 @@ public class AuthServiceImpl implements AuthService {
                         refreshTokenEntity.setUser(user);
                         this.refreshTokenService.save(refreshTokenEntity);
 
-                        RefreshTokenResponseDTO refreshTokenResponseDTO = RefreshTokenResponseDTO.builder()
+                        RefreshTokenResponseDTO refreshTokenResponseDTO = RefreshTokenResponseDTO
+                                        .builder()
                                         .accessToken(newAccessTokenJwtObject)
                                         .refreshToken(newRefreshTokenJwtObject)
                                         .build();
 
                         return refreshTokenResponseDTO;
                 } catch (JwtException exception) {
-                        throw new RefreshTokenException(exception.getMessage());
+                        throw new RefreshTokenException("Refresh token không hợp lệ!");
                 }
         }
 

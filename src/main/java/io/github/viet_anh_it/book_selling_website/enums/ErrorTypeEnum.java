@@ -5,5 +5,6 @@ public enum ErrorTypeEnum {
     TOKEN_EXPIRED,
     VALIDATION,
     AUTHENTICATION,
-    AUTHORIZATION
+    AUTHORIZATION,
+    SERVER
 }

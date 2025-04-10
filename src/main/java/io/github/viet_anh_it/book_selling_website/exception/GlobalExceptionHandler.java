@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import io.github.viet_anh_it.book_selling_website.dto.response.FailureResponse;
+import io.github.viet_anh_it.book_selling_website.enums.ErrorTypeEnum;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -26,6 +27,7 @@ public class GlobalExceptionHandler {
                 FailureResponse<Map<String, String>> failureResponse = FailureResponse.<Map<String, String>>builder()
                                 .status(HttpStatus.BAD_REQUEST.value())
                                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                                .type(ErrorTypeEnum.VALIDATION)
                                 .detail(errorDetails)
                                 .build();
 
@@ -47,6 +49,7 @@ public class GlobalExceptionHandler {
                 FailureResponse<Map<String, String>> failureResponse = FailureResponse.<Map<String, String>>builder()
                                 .status(HttpStatus.BAD_REQUEST.value())
                                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                                .type(ErrorTypeEnum.VALIDATION)
                                 .detail(errorDetails)
                                 .build();
 
@@ -65,6 +68,8 @@ public class GlobalExceptionHandler {
                                 .build();
 
                 if (exception instanceof RefreshTokenException) {
+                        failureResponse.setType(ErrorTypeEnum.VALIDATION);
+
                         ResponseCookie accessTokenCookie = ResponseCookie
                                         .from("access_token", null)
                                         .httpOnly(true)
@@ -96,6 +101,7 @@ public class GlobalExceptionHandler {
                 FailureResponse<String> failureResponse = FailureResponse.<String>builder()
                                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                                .type(ErrorTypeEnum.SERVER)
                                 .detail(exception.getMessage())
                                 .build();
 
