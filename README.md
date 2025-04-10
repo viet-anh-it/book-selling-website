@@ -29,3 +29,7 @@ Mid-day update on 2025-08-04: Complete the following features:
 - Login: create a new access token and refresh token pair.
 - Refresh token: create a new access token and refresh token pair, rotate refresh token.
 - Logout: put access token into blacklist, delete refresh token in the database.
+
+Mid-day update on 2025-10-04: Refactor code:
+
+- In JwtService interface, createJwt method, change return type from String to Jwt.

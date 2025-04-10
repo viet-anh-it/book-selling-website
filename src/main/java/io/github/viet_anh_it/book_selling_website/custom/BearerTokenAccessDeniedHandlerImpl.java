@@ -13,6 +13,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.viet_anh_it.book_selling_website.dto.response.FailureResponse;
+import io.github.viet_anh_it.book_selling_website.enums.ErrorTypeEnum;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,7 +32,7 @@ public class BearerTokenAccessDeniedHandlerImpl implements AccessDeniedHandler {
         FailureResponse<String> failureResponse = FailureResponse.<String>builder()
                 .status(HttpStatus.FORBIDDEN.value())
                 .error(HttpStatus.FORBIDDEN.getReasonPhrase())
-                // .detail(accessDeniedException.getMessage())
+                .type(ErrorTypeEnum.AUTHORIZATION)
                 .detail("Bạn không có quyền truy cập tài nguyên này!")
                 .build();
 

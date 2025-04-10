@@ -49,9 +49,18 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         this.refreshTokenRepository.delete(refreshTokenEntity);
     }
 
-    // @Override
-    // public void deleteAllByUserEmail(String userEmail) {
-    // this.deleteAllByUserEmail(userEmail);
-    // }
+    @Override
+    public Optional<RefreshToken> findByTokenValue(String tokenValue) {
+        return this.refreshTokenRepository.findByTokenValue(tokenValue);
+    }
 
+    @Override
+    public boolean existsByJti(String jti) {
+        return this.refreshTokenRepository.existsByJti(jti);
+    }
+
+    @Override
+    public Optional<RefreshToken> findByTokenValueAndUserIdAndJti(String tokenValue, long userId, String jti) {
+        return this.refreshTokenRepository.findByTokenValueAndUserIdAndJti(tokenValue, userId, jti);
+    }
 }

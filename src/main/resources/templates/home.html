@@ -15,6 +15,9 @@
   </head>
   <body>
     <h1>Trang chủ</h1>
+    <p>
+      Chào mừng người dùng <span th:text="${username}">chưa đăng nhập</span>
+    </p>
     <a th:href="@{/cart}" id="cart-link">Giỏ hàng</a>
     <button id="log-out-btn">Đăng xuất</button>
 

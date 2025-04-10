@@ -10,7 +10,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -53,6 +52,9 @@ public class AuthController {
 
         AuthService authService;
 
+        @Qualifier("accessTokenJwtDecoder")
+        JwtDecoder accessTokenJwtDecoder;
+
         @Qualifier("refreshTokenJwtDecoder")
         JwtDecoder refreshTokenJwtDecoder;
 
@@ -62,7 +64,17 @@ public class AuthController {
         }
 
         @GetMapping("/log-in")
-        public String getLogInPage() {
+        public String getLogInPage(
+                        @CookieValue(name = "access_token", required = false) Optional<String> optionalAccessToken) {
+                // if (optionalAccessToken.isPresent()) {
+                // String accessToken = optionalAccessToken.get();
+                // try {
+                // this.accessTokenJwtDecoder.decode(accessToken);
+                // } catch (JwtException exception) {
+                // return "log-in";
+                // }
+                // return "redirect:/home";
+                // }
                 return "log-in";
         }
 
@@ -70,9 +82,19 @@ public class AuthController {
         @PostMapping("/sign-up")
         public ResponseEntity<SuccessResponse<SignUpResponseDTO>> signUp(
                         @Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
+
+                SignUpResponseDTO signUpResponseDTO = this.authService.signUp(signUpRequestDTO);
+
+                SuccessResponse<SignUpResponseDTO> successResponse = SuccessResponse
+                                .<SignUpResponseDTO>builder()
+                                .status(HttpStatus.CREATED.value())
+                                .message("Đăng ký thành công!")
+                                .data(signUpResponseDTO)
+                                .build();
+
                 return ResponseEntity
                                 .status(HttpStatus.CREATED)
-                                .body(this.authService.signUp(signUpRequestDTO));
+                                .body(successResponse);
         }
 
         @ResponseBody
@@ -128,38 +150,72 @@ public class AuthController {
                                 .maxAge(0)
                                 .build();
 
+                SuccessResponse<Void> successResponse = SuccessResponse.<Void>builder()
+                                .status(HttpStatus.OK.value())
+                                .message("Đăng xuất thành công!")
+                                .build();
+
                 return ResponseEntity
                                 .status(HttpStatus.OK.value())
                                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                                .body(this.authService.logOut(optionalRefreshToken));
+                                .body(successResponse);
         }
 
         @ResponseBody
         @PutMapping("/refresh-token")
-        public ResponseEntity<SuccessResponse<RefreshTokenResponseDTO>> refreshToken(
+        public ResponseEntity<SuccessResponse<Void>> refreshToken(
                         @CookieValue(name = "refresh_token", required = false) Optional<String> optionalRefreshToken) {
-                SuccessResponse<RefreshTokenResponseDTO> successResponse = this.authService
-                                .refreshToken(optionalRefreshToken);
+                RefreshTokenResponseDTO refreshTokenResponseDTO = this.authService.refreshToken(optionalRefreshToken);
 
                 ResponseCookie accessTokenCookie = ResponseCookie
-                                .from("access_token", successResponse.getData().getAccessToken())
+                                .from("access_token", refreshTokenResponseDTO.getAccessToken().getTokenValue())
                                 .httpOnly(true)
                                 .path("/")
                                 .maxAge(this.accessTokenValidityDuration)
                                 .build();
 
-                Jwt jwt = this.refreshTokenJwtDecoder.decode(successResponse.getData().getRefreshToken());
                 ResponseCookie refreshTokenCookie = ResponseCookie
-                                .from("refresh_token", jwt.getTokenValue())
+                                .from("refresh_token", refreshTokenResponseDTO.getRefreshToken().getTokenValue())
                                 .httpOnly(true)
                                 .path("/")
-                                .maxAge(Duration.between(Instant.now(), jwt.getExpiresAt()).getSeconds())
+                                .maxAge(Duration.between(Instant.now(),
+                                                refreshTokenResponseDTO.getRefreshToken().getExpiresAt()).getSeconds())
+                                .build();
+
+                SuccessResponse<Void> successResponse = SuccessResponse
+                                .<Void>builder()
+                                .status(HttpStatus.OK.value())
+                                .message("Refresh token thành công!")
                                 .build();
 
                 return ResponseEntity
                                 .status(HttpStatus.OK)
                                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                                .body(successResponse);
+        }
+
+        @ResponseBody
+        @SuppressWarnings("null")
+        @DeleteMapping("/revoke-refresh-token")
+        public ResponseEntity<SuccessResponse<Void>> revokeRefreshToken(
+                        @CookieValue(name = "refresh_token", required = false) Optional<String> optionalRefreshToken) {
+                this.authService.revokeRefreshToken(optionalRefreshToken);
+
+                ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", null)
+                                .httpOnly(true)
+                                .path("/")
+                                .maxAge(0)
+                                .build();
+
+                SuccessResponse<Void> successResponse = SuccessResponse.<Void>builder()
+                                .status(HttpStatus.OK.value())
+                                .message("Thu hồi refresh token thành công!")
+                                .build();
+
+                return ResponseEntity
+                                .status(HttpStatus.OK.value())
                                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                                 .body(successResponse);
         }

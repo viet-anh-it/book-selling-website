@@ -24,12 +24,14 @@ public class JwtServiceImpl implements JwtService {
         JwtEncoder jwtEncoder;
 
         @Override
-        public String createJwt(String username, long validityDuration, String usage) {
-                JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256)
+        public Jwt createJwt(String username, long validityDuration, String usage) {
+                JwsHeader jwsHeader = JwsHeader
+                                .with(MacAlgorithm.HS256)
                                 .type("jwt")
                                 .build();
 
-                JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                JwtClaimsSet jwtClaimsSet = JwtClaimsSet
+                                .builder()
                                 .id(UUID.randomUUID().toString())
                                 .issuedAt(Instant.now())
                                 .expiresAt(Instant.now().plusSeconds(validityDuration))
@@ -37,11 +39,10 @@ public class JwtServiceImpl implements JwtService {
                                 .claim("usage", usage)
                                 .build();
 
-                JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(jwsHeader,
-                                jwtClaimsSet);
+                JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters
+                                .from(jwsHeader, jwtClaimsSet);
                 Jwt jwt = this.jwtEncoder.encode(jwtEncoderParameters);
-                String accessToken = jwt.getTokenValue();
 
-                return accessToken;
+                return jwt;
         }
 }

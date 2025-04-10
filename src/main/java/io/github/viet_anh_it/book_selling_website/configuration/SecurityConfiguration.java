@@ -48,6 +48,7 @@ import io.github.viet_anh_it.book_selling_website.custom.UserDetailsServiceImpl;
 import io.github.viet_anh_it.book_selling_website.enums.TokenTypeEnum;
 import io.github.viet_anh_it.book_selling_website.service.BlackListedAccessTokenService;
 import io.github.viet_anh_it.book_selling_website.service.PermissionService;
+import io.github.viet_anh_it.book_selling_website.service.RefreshTokenService;
 import io.github.viet_anh_it.book_selling_website.service.UserService;
 import jakarta.servlet.DispatcherType;
 import lombok.AccessLevel;
@@ -59,21 +60,24 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SecurityConfiguration {
 
-        String[] whitelist = { "/sign-up", "/log-in", "/refresh-token", "/home", "/assets/**", "/hello" };
+        String[] whitelist = { "/sign-up", "/log-in", "/refresh-token", "/revoke-refresh-token", "/home", "/assets/**",
+                        "/hello" };
 
         @Value("${jwt.secret-key}")
         String jwtSecretKey;
 
         private final UserService userService;
-        private final BlackListedAccessTokenService blackListedAccessTokenService;
         private final PermissionService permissionService;
+        private final RefreshTokenService refreshTokenService;
+        private final BlackListedAccessTokenService blackListedAccessTokenService;
 
         public SecurityConfiguration(UserService userService,
                         BlackListedAccessTokenService blackListedAccessTokenService,
-                        PermissionService permissionService) {
+                        PermissionService permissionService, RefreshTokenService refreshTokenService) {
                 this.userService = userService;
                 this.blackListedAccessTokenService = blackListedAccessTokenService;
                 this.permissionService = permissionService;
+                this.refreshTokenService = refreshTokenService;
         }
 
         @Bean
@@ -111,15 +115,15 @@ public class SecurityConfiguration {
                 NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder.withSecretKey(secretKey)
                                 .macAlgorithm(MacAlgorithm.HS256)
                                 .build();
-                JwtClaimValidator<String> jtiClaimValidator = new JwtClaimValidator<>("jti",
-                                jtiClaimValue -> !this.blackListedAccessTokenService.existsByJti(jtiClaimValue));
                 JwtClaimValidator<String> usageClaimValidator = new JwtClaimValidator<>("usage",
                                 usageClaimValue -> usageClaimValue.equals(TokenTypeEnum.ACCESS.getName()));
+                JwtClaimValidator<String> jtiClaimValidator = new JwtClaimValidator<>("jti",
+                                jtiClaimValue -> !this.blackListedAccessTokenService.existsByJti(jtiClaimValue));
                 JwtClaimValidator<String> subClaimValidator = new JwtClaimValidator<>("sub",
                                 subClaimValue -> this.userService.existsByEmail(subClaimValue));
                 OAuth2TokenValidator<Jwt> oAuth2TokenValidator = JwtValidators
                                 .createDefaultWithValidators(List.of(usageClaimValidator,
-                                                subClaimValidator, jtiClaimValidator));
+                                                jtiClaimValidator, subClaimValidator));
                 nimbusJwtDecoder.setJwtValidator(oAuth2TokenValidator);
                 return nimbusJwtDecoder;
         }
@@ -132,11 +136,13 @@ public class SecurityConfiguration {
                                 .build();
                 JwtClaimValidator<String> usageClaimValidator = new JwtClaimValidator<>("usage",
                                 usageClaimValue -> usageClaimValue.equals(TokenTypeEnum.REFRESH.getName()));
+                JwtClaimValidator<String> jtiClaimValidator = new JwtClaimValidator<>("jti",
+                                jtiClaimValue -> this.refreshTokenService.existsByJti(jtiClaimValue));
                 JwtClaimValidator<String> subClaimValidator = new JwtClaimValidator<>("sub",
                                 subClaimValue -> this.userService.existsByEmail(subClaimValue));
                 OAuth2TokenValidator<Jwt> oAuth2TokenValidator = JwtValidators
-                                .createDefaultWithValidators(List.of(usageClaimValidator,
-                                                subClaimValidator));
+                                .createDefaultWithValidators(
+                                                List.of(usageClaimValidator, jtiClaimValidator, subClaimValidator));
                 nimbusJwtDecoder.setJwtValidator(oAuth2TokenValidator);
                 return nimbusJwtDecoder;
         }

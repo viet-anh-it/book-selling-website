@@ -9,7 +9,10 @@ logOutBtn.addEventListener(`click`, async (event) => {
 
   if (logOutResponse.status === 200) {
     window.location.assign(`http://localhost:8080/log-in`);
-  } else if (logOutResponse.status === 401) {
+  } else if (
+    logOutResponse.status === 401 &&
+    logOutResponse.headers.get(`X-Error-Type`) === `TOKEN_EXPIRED`
+  ) {
     let refreshTokenResponse = await fetch(
       `http://localhost:8080/refresh-token`,
       {
@@ -25,6 +28,15 @@ logOutBtn.addEventListener(`click`, async (event) => {
     } else if (refreshTokenResponse.status === 400) {
       window.location.assign(`http://localhost:8080/log-in`);
     }
+  } else if (
+    logOutResponse.status === 401 &&
+    (logOutResponse.headers.get(`X-Error-Type`) === `INVALID_TOKEN` ||
+      logOutResponse.headers.get(`X-Error-Type`) === `AUTHENTICATION`)
+  ) {
+    await fetch(`http://localhost:8080/revoke-refresh-token`, {
+      method: `DELETE`,
+    });
+    // window.location.assign(`http://localhost:8080/log-in`);
   }
 });
 
@@ -40,7 +52,10 @@ cartLink.addEventListener(`click`, async (event) => {
 
   if (response.status === 200) {
     window.location.assign(cartLinkHrefAttributeValue);
-  } else if (response.status === 401) {
+  } else if (
+    response.status === 401 &&
+    response.headers.get(`X-Error-Type`) === `TOKEN_EXPIRED`
+  ) {
     let refreshTokenResponse = await fetch(
       `http://localhost:8080/refresh-token`,
       {
@@ -53,5 +68,14 @@ cartLink.addEventListener(`click`, async (event) => {
     } else if (refreshTokenResponse.status === 400) {
       window.location.assign(`http://localhost:8080/log-in`);
     }
+  } else if (
+    response.status === 401 &&
+    (response.headers.get(`X-Error-Type`) === `INVALID_TOKEN` ||
+      response.headers.get(`X-Error-Type`) === `AUTHENTICATION`)
+  ) {
+    await fetch(`http://localhost:8080/revoke-refresh-token`, {
+      method: `DELETE`,
+    });
+    window.location.assign(`http://localhost:8080/log-in`);
   }
 });

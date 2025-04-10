@@ -9,9 +9,15 @@ public interface RefreshTokenService {
 
     RefreshToken save(RefreshToken refreshTokenEntity);
 
+    Optional<RefreshToken> findByTokenValue(String tokenValue);
+
     Optional<RefreshToken> findByTokenValueAndUserId(String tokenValue, long userId);
 
+    boolean existsByJti(String jti);
+
     Optional<RefreshToken> findByJti(String jti);
+
+    Optional<RefreshToken> findByTokenValueAndUserIdAndJti(String tokenValue, long userId, String jti);
 
     void deleteAllExpiredRefreshTokens(Instant now);
 
