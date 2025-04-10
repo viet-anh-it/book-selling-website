@@ -6,19 +6,21 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 
 import io.github.viet_anh_it.book_selling_website.dto.request.LogInRequestDTO;
 import io.github.viet_anh_it.book_selling_website.dto.request.SignUpRequestDTO;
@@ -26,17 +28,18 @@ import io.github.viet_anh_it.book_selling_website.dto.response.LogInResponseDTO;
 import io.github.viet_anh_it.book_selling_website.dto.response.RefreshTokenResponseDTO;
 import io.github.viet_anh_it.book_selling_website.dto.response.SignUpResponseDTO;
 import io.github.viet_anh_it.book_selling_website.dto.response.SuccessResponse;
-import io.github.viet_anh_it.book_selling_website.service.AuthService;
+import io.github.viet_anh_it.book_selling_website.event.SignUpEvent;
+import io.github.viet_anh_it.book_selling_website.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AuthController {
+public class AuthenticationController {
 
         @NonFinal
         @Value("${jwt.secret-key}")
@@ -50,7 +53,8 @@ public class AuthController {
         @Value("${jwt.refresh-token.validity-duration}")
         long refreshTokenValidityDuration;
 
-        AuthService authService;
+        AuthenticationService authenticationService;
+        ApplicationEventPublisher applicationEventPublisher;
 
         @Qualifier("accessTokenJwtDecoder")
         JwtDecoder accessTokenJwtDecoder;
@@ -58,28 +62,18 @@ public class AuthController {
         @Qualifier("refreshTokenJwtDecoder")
         JwtDecoder refreshTokenJwtDecoder;
 
-        @GetMapping("/sign-up")
-        public String getSignUpPage() {
-                return "sign-up";
-        }
-
-        @GetMapping("/log-in")
-        public String getLogInPage(
-                        @CookieValue(name = "access_token", required = false) Optional<String> optionalAccessToken) {
-                return "log-in";
-        }
-
-        @ResponseBody
         @PostMapping("/sign-up")
         public ResponseEntity<SuccessResponse<SignUpResponseDTO>> signUp(
-                        @Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
+                        @Valid @RequestBody SignUpRequestDTO signUpRequestDTO, WebRequest webRequest) {
 
-                SignUpResponseDTO signUpResponseDTO = this.authService.signUp(signUpRequestDTO);
+                SignUpResponseDTO signUpResponseDTO = this.authenticationService.signUp(signUpRequestDTO);
+                this.applicationEventPublisher.publishEvent(
+                                new SignUpEvent(signUpResponseDTO.getEmail(), webRequest.getContextPath()));
 
                 SuccessResponse<SignUpResponseDTO> successResponse = SuccessResponse
                                 .<SignUpResponseDTO>builder()
                                 .status(HttpStatus.CREATED.value())
-                                .message("Đăng ký thành công!")
+                                .message("Đăng ký thành công! Kiểm tra email để kích hoạt tài khoản của bạn!")
                                 .data(signUpResponseDTO)
                                 .build();
 
@@ -88,12 +82,11 @@ public class AuthController {
                                 .body(successResponse);
         }
 
-        @ResponseBody
         @PostMapping("/log-in")
         public ResponseEntity<SuccessResponse<Void>> logIn(
                         @Valid @RequestBody LogInRequestDTO logInRequestDTO,
                         @CookieValue(name = "refresh_token", required = false) Optional<String> optionalRefreshToken) {
-                LogInResponseDTO logInResponseDTO = this.authService
+                LogInResponseDTO logInResponseDTO = this.authenticationService
                                 .logIn(logInRequestDTO, optionalRefreshToken);
 
                 ResponseCookie accessTokenCookie = ResponseCookie
@@ -123,12 +116,11 @@ public class AuthController {
                                 .body(successResponse);
         }
 
-        @ResponseBody
         @SuppressWarnings("null")
         @DeleteMapping("log-out")
         public ResponseEntity<SuccessResponse<Void>> logOut(
                         @CookieValue(name = "refresh_token", required = false) Optional<String> optionalRefreshToken) {
-                this.authService.logOut(optionalRefreshToken);
+                this.authenticationService.logOut(optionalRefreshToken);
 
                 ResponseCookie accessTokenCookie = ResponseCookie
                                 .from("access_token", null)
@@ -156,11 +148,11 @@ public class AuthController {
                                 .body(successResponse);
         }
 
-        @ResponseBody
         @PutMapping("/refresh-token")
         public ResponseEntity<SuccessResponse<Void>> refreshToken(
                         @CookieValue(name = "refresh_token", required = false) Optional<String> optionalRefreshToken) {
-                RefreshTokenResponseDTO refreshTokenResponseDTO = this.authService.refreshToken(optionalRefreshToken);
+                RefreshTokenResponseDTO refreshTokenResponseDTO = this.authenticationService
+                                .refreshToken(optionalRefreshToken);
 
                 ResponseCookie accessTokenCookie = ResponseCookie
                                 .from("access_token", refreshTokenResponseDTO.getAccessToken().getTokenValue())
@@ -190,12 +182,11 @@ public class AuthController {
                                 .body(successResponse);
         }
 
-        @ResponseBody
         @SuppressWarnings("null")
         @DeleteMapping("/revoke-refresh-token")
         public ResponseEntity<SuccessResponse<Void>> revokeRefreshToken(
                         @CookieValue(name = "refresh_token", required = false) Optional<String> optionalRefreshToken) {
-                this.authService.revokeRefreshToken(optionalRefreshToken);
+                this.authenticationService.revokeRefreshToken(optionalRefreshToken);
 
                 ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", null)
                                 .httpOnly(true)
@@ -212,6 +203,23 @@ public class AuthController {
                 return ResponseEntity
                                 .status(HttpStatus.OK.value())
                                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                                .body(successResponse);
+        }
+
+        @GetMapping("/confirm-registration")
+        public ResponseEntity<SuccessResponse<Void>> confirmAccountRegistration(
+                        @RequestParam(name = "accountRegistrationVerificationTokenString") Optional<String> optionalAccountRegistrationVerificationTokenString) {
+                this.authenticationService
+                                .confirmAccountRegistration(optionalAccountRegistrationVerificationTokenString);
+
+                SuccessResponse<Void> successResponse = SuccessResponse
+                                .<Void>builder()
+                                .status(HttpStatus.OK.value())
+                                .message("Xác nhận đăng ký thành công!")
+                                .build();
+
+                return ResponseEntity
+                                .status(HttpStatus.OK.value())
                                 .body(successResponse);
         }
 }

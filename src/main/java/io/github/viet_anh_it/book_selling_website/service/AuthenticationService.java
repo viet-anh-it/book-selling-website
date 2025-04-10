@@ -8,7 +8,7 @@ import io.github.viet_anh_it.book_selling_website.dto.response.LogInResponseDTO;
 import io.github.viet_anh_it.book_selling_website.dto.response.RefreshTokenResponseDTO;
 import io.github.viet_anh_it.book_selling_website.dto.response.SignUpResponseDTO;
 
-public interface AuthService {
+public interface AuthenticationService {
 
     SignUpResponseDTO signUp(SignUpRequestDTO signUpRequestDTO);
 
@@ -19,4 +19,6 @@ public interface AuthService {
     void logOut(Optional<String> optionalRefreshToken);
 
     void revokeRefreshToken(Optional<String> optionalRefreshToken);
+
+    void confirmAccountRegistration(Optional<String> accountRegistrationVerificationTokenString);
 }

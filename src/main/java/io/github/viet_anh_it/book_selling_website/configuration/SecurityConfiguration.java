@@ -9,12 +9,12 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -55,13 +55,13 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
 @Configuration
-@EnableJpaAuditing
-@EnableMethodSecurity
+@EnableWebSecurity(debug = false)
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
-        String[] whitelist = { "/sign-up", "/log-in", "/refresh-token", "/revoke-refresh-token", "/home", "/assets/**",
-                        "/hello" };
+        String[] whitelist = { "/sign-up", "/confirm-registration", "/log-in", "/refresh-token",
+                        "/revoke-refresh-token", "/home", "/assets/**" };
 
         @Value("${jwt.secret-key}")
         String jwtSecretKey;

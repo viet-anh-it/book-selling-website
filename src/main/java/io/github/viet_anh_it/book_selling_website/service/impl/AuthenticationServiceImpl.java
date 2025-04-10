@@ -26,16 +26,19 @@ import io.github.viet_anh_it.book_selling_website.enums.TokenTypeEnum;
 import io.github.viet_anh_it.book_selling_website.exception.EmailAlreadyExistedException;
 import io.github.viet_anh_it.book_selling_website.exception.RefreshTokenException;
 import io.github.viet_anh_it.book_selling_website.exception.RoleNotFoundException;
+import io.github.viet_anh_it.book_selling_website.exception.VerificationTokenException;
 import io.github.viet_anh_it.book_selling_website.model.BlackListedAccessToken;
 import io.github.viet_anh_it.book_selling_website.model.RefreshToken;
 import io.github.viet_anh_it.book_selling_website.model.Role;
 import io.github.viet_anh_it.book_selling_website.model.User;
-import io.github.viet_anh_it.book_selling_website.service.AuthService;
+import io.github.viet_anh_it.book_selling_website.model.VerificationToken;
+import io.github.viet_anh_it.book_selling_website.service.AuthenticationService;
 import io.github.viet_anh_it.book_selling_website.service.BlackListedAccessTokenService;
 import io.github.viet_anh_it.book_selling_website.service.JwtService;
 import io.github.viet_anh_it.book_selling_website.service.RefreshTokenService;
 import io.github.viet_anh_it.book_selling_website.service.RoleService;
 import io.github.viet_anh_it.book_selling_website.service.UserService;
+import io.github.viet_anh_it.book_selling_website.service.VerificationTokenService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -44,11 +47,17 @@ import lombok.experimental.NonFinal;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AuthServiceImpl implements AuthService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
         @NonFinal
         @Value("${jwt.secret-key}")
         String jwtSecretKey;
+
+        @Qualifier("accessTokenJwtDecoder")
+        JwtDecoder accessTokenJwtDecoder;
+
+        @Qualifier("refreshTokenJwtDecoder")
+        JwtDecoder refreshTokenJwtDecoder;
 
         @NonFinal
         @Value("${jwt.access-token.validity-duration}")
@@ -58,19 +67,14 @@ public class AuthServiceImpl implements AuthService {
         @Value("${jwt.refresh-token.validity-duration}")
         long refreshTokenValidityDuration;
 
-        UserService userService;
-        PasswordEncoder passwordEncoder;
-        AuthenticationManager authenticationManager;
         JwtService jwtService;
-        BlackListedAccessTokenService blackListedAccessTokenService;
-        RefreshTokenService refreshTokenService;
+        UserService userService;
         RoleService roleService;
-
-        @Qualifier("accessTokenJwtDecoder")
-        JwtDecoder accessTokenJwtDecoder;
-
-        @Qualifier("refreshTokenJwtDecoder")
-        JwtDecoder refreshTokenJwtDecoder;
+        PasswordEncoder passwordEncoder;
+        RefreshTokenService refreshTokenService;
+        AuthenticationManager authenticationManager;
+        VerificationTokenService verificationTokenService;
+        BlackListedAccessTokenService blackListedAccessTokenService;
 
         @Override
         public SignUpResponseDTO signUp(SignUpRequestDTO signUpRequestDTO) {
@@ -86,6 +90,7 @@ public class AuthServiceImpl implements AuthService {
                                 .email(signUpRequestDTO.getEmail())
                                 .password(hashedPassword)
                                 .role(roleEntity)
+                                .active(false)
                                 .build();
                 user = this.userService.save(user);
 
@@ -227,6 +232,33 @@ public class AuthServiceImpl implements AuthService {
                                 RefreshToken refreshTokenEntity = optionalRefreshTokenEntity.get();
                                 this.refreshTokenService.delete(refreshTokenEntity);
                         }
+                }
+        }
+
+        @Override
+        public void confirmAccountRegistration(Optional<String> optionalAccountRegistrationVerificationTokenString) {
+                if (optionalAccountRegistrationVerificationTokenString.isPresent()) {
+                        String accountRegistrationVerificationTokenString = optionalAccountRegistrationVerificationTokenString
+                                        .get();
+                        VerificationToken verificationTokenEntity = this.verificationTokenService
+                                        .findByTokenValue(accountRegistrationVerificationTokenString)
+                                        .orElseThrow(() -> new VerificationTokenException("Mã xác minh không hợp lệ!"));
+                        if (Instant.now().isAfter(verificationTokenEntity.getExpiresAt())) {
+                                throw new VerificationTokenException("Mã xác minh không hợp lệ!");
+                                // } else if (verificationTokenEntity.isUsed()) {
+                                // throw new VerificationTokenException("Mã xác minh không hợp lệ!");
+                        } else if (!TokenTypeEnum.REGISTRATION_CONFIRMATION.name()
+                                        .equals(verificationTokenEntity.getType().name())) {
+                                throw new VerificationTokenException("Mã xác minh không hợp lệ!");
+                        }
+
+                        User user = verificationTokenEntity.getUser();
+                        user.setActive(true);
+                        this.userService.save(user);
+
+                        // verificationTokenEntity.setUsedAt(Instant.now());
+                        // verificationTokenEntity.setUsed(true);
+                        this.verificationTokenService.delete(verificationTokenEntity);
                 }
         }
 

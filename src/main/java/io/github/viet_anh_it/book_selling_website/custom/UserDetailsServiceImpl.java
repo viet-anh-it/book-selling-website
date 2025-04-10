@@ -55,7 +55,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             authorities.addAll(permissionSimpleGrantedAuthoritySet);
         }
 
-        return new User(user.getEmail(), user.getPassword(), authorities);
+        boolean enabled = user.isActive();
+        boolean accountNonExpired = true; // Spring default value
+        boolean credentialsNonExpired = true; // Spring default value
+        boolean accountNonLocked = true; // Spring default value
+
+        return new User(user.getEmail(), user.getPassword(), enabled, accountNonExpired, credentialsNonExpired,
+                accountNonLocked, authorities);
     }
 
 }

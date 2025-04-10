@@ -109,4 +109,19 @@ public class GlobalExceptionHandler {
                                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                                 .body(failureResponse);
         }
+
+        @ExceptionHandler(VerificationTokenException.class)
+        public ResponseEntity<FailureResponse<String>> handleVerificationTokenException(
+                        VerificationTokenException exception) {
+                FailureResponse<String> failureResponse = FailureResponse.<String>builder()
+                                .status(HttpStatus.BAD_REQUEST.value())
+                                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                                .type(ErrorTypeEnum.INVALID_TOKEN)
+                                .detail(exception.getMessage())
+                                .build();
+
+                return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST.value())
+                                .body(failureResponse);
+        }
 }

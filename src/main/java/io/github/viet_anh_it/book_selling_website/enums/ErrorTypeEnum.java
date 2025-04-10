@@ -6,5 +6,7 @@ public enum ErrorTypeEnum {
     VALIDATION,
     AUTHENTICATION,
     AUTHORIZATION,
-    SERVER
+    SERVER,
+    ACCOUNT_DISABLED,
+    ACCOUNT_LOCKED
 }

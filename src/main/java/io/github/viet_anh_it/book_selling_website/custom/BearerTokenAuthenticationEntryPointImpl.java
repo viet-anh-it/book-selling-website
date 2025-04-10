@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.BadJwtException;
@@ -90,7 +92,14 @@ public class BearerTokenAuthenticationEntryPointImpl implements AuthenticationEn
             response.addHeader("X-Error-Type", ErrorTypeEnum.AUTHENTICATION.name());
             failureResponse.setType(ErrorTypeEnum.AUTHENTICATION);
             failureResponse.setDetail("Người dùng không xác thực!");
-
+        } else if (authException instanceof DisabledException) {
+            response.addHeader("X-Error-Type", ErrorTypeEnum.AUTHENTICATION.name());
+            failureResponse.setType(ErrorTypeEnum.ACCOUNT_DISABLED);
+            failureResponse.setDetail("Tài khoản chưa được kích hoạt!");
+        } else if (authException instanceof LockedException) {
+            response.addHeader("X-Error-Type", ErrorTypeEnum.ACCOUNT_LOCKED.name());
+            failureResponse.setType(ErrorTypeEnum.AUTHENTICATION);
+            failureResponse.setDetail("Tài khoản bị khóa!");
         }
 
         ObjectMapper objectMapper = new ObjectMapper();

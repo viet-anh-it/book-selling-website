@@ -63,4 +63,7 @@ public class User extends AbstractEntity {
 
     @OneToMany(mappedBy = BlackListedAccessToken_.USER)
     Set<BlackListedAccessToken> blackListedAccessTokens;
+
+    // @OneToOne(mappedBy = VerificationToken_.USER)
+    // VerificationToken verificationToken;
 }

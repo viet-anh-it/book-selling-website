@@ -33,3 +33,7 @@ Mid-day update on 2025-08-04: Complete the following features:
 Mid-day update on 2025-10-04: Refactor code:
 
 - In JwtService interface, createJwt method, change return type from String to Jwt.
+
+Update at the end of the day 2025-10-04:
+
+- Basically complete sending verification email to activate user account when signing up.

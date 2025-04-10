@@ -10,7 +10,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum TokenTypeEnum {
     ACCESS("access"),
-    REFRESH("refresh");
+    REFRESH("refresh"),
+    REGISTRATION_CONFIRMATION("registration_confirmation"),
+    RESET_PASSWORD("reset_password");
 
     String name;
 }

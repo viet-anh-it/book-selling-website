@@ -10,7 +10,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import io.github.viet_anh_it.book_selling_website.enums.PermissionEnum;
@@ -27,10 +26,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-@EnableScheduling
-@SpringBootApplication
-// @EnableWebSecurity(debug = true)
 // @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+@SpringBootApplication
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookSellingWebsiteApplication {
@@ -94,6 +91,7 @@ public class BookSellingWebsiteApplication {
 						.email("admin@email.admin")
 						.password(this.passwordEncoder.encode("admin123"))
 						.role(roleMap.get(RoleEnum.ADMIN))
+						.active(true)
 						.build();
 				this.userService.save(admin);
 			}
