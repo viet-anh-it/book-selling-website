@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import org.hibernate.validator.constraints.Length;
 
-import jakarta.validation.constraints.Email;
+import io.github.viet_anh_it.book_selling_website.validator.annotation.ValidEmailFormat;
+import io.github.viet_anh_it.book_selling_website.validator.annotation.group.order.First;
+import io.github.viet_anh_it.book_selling_website.validator.annotation.group.order.Second;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,11 +18,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SignUpRequestDTO implements Serializable {
 
-    @NotBlank(message = "Email không được trống!")
-    @Email(message = "Email không đúng định dạng!")
+    @ValidEmailFormat
     String email;
 
-    @NotBlank(message = "Mật khẩu không được trống!")
-    @Length(min = 8, message = "Mật khẩu phải có tối thiểu 8 ký tự!")
+    @NotBlank(message = "Mật khẩu không được trống!", groups = { First.class })
+    @Length(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự!", groups = { Second.class })
     String password;
 }

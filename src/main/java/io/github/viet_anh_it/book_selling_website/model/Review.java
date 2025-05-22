@@ -25,20 +25,19 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Review extends AbstractEntity {
 
-    String reviewImage;
-    String reviewerName;
-    LocalDateTime reviewedAt;
-    int productRating;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
-    String reviewerComment;
+    String name;
+    LocalDateTime postedAt;
+    int rate;
     boolean approved;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    Product product;
+    @Column(columnDefinition = "MEDIUMTEXT")
+    String comment;
 
+    @JoinColumn(name = "book_id")
     @ManyToOne
+    Book book;
+
     @JoinColumn(name = "user_id")
+    @ManyToOne
     User user;
 }

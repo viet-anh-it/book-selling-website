@@ -28,11 +28,11 @@ public class CartItem extends AbstractEntity {
     int quantity;
     int totalPrice;
 
-    @ManyToOne
     @JoinColumn(name = "cart_id")
+    @ManyToOne
     Cart cart;
 
-    @ManyToOne
     @JoinColumn(name = "product_id")
-    Product product;
+    @ManyToOne
+    Book product;
 }

@@ -28,7 +28,7 @@ public class RefreshToken extends AbstractEntity {
     String jti;
     Instant expiresAt;
 
-    @ManyToOne
     @JoinColumn(name = "user_id")
+    @ManyToOne
     User user;
 }

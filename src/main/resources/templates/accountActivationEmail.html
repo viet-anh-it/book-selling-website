@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kích hoạt tài khoản của bạn</title>
+  </head>
+  <body>
+    <p>Click đường link dưới đây để kích hoạt tài khoản của bạn:</p>
+    <a th:href="${accountActivationLink}" target="_self">Kích hoạt tài khoản</a>
+    <p>Đường link có hiệu lực trong vòng 10 phút.</p>
+    <p>
+      Click Gửi lại email trên trang Đăng ký để lấy đường link mới nếu đường
+      link hết hạn hoặc bị lỗi.
+    </p>
+    <p>Tài khoản sẽ bị xóa sau 48 giờ nếu không kích hoạt.</p>
+  </body>
+</html>

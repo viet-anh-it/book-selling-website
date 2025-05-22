@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký</title>
+    <!-- reset css -->
+    <link rel="stylesheet" th:href="@{/assets/css/reset.css}" />
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="#!" type="image/x-icon" />
+
+    <!-- common css -->
+    <link rel="stylesheet" th:href="@{/assets/css/common.css}" />
+
+    <!-- font awesome -->
+    <link th:href="@{/assets/css/fontawesome.css}" rel="stylesheet" />
+    <link th:href="@{/assets/css/brands.css}" rel="stylesheet" />
+    <link th:href="@{/assets/css/solid.css}" rel="stylesheet" />
+
+    <!-- style css -->
+    <link rel="stylesheet" th:href="@{/assets/css/signUpPageStyle.css}" />
+  </head>
+  <body>
+    <div class="container">
+      <div>
+        <h1 class="heading">Đăng ký</h1>
+        <div class="login-cta">
+          <p class="login-cta__question">Bạn đã có tài khoản?</p>
+          <a th:href="@{/logIn}" class="login-cta__link">Đăng nhập</a>
+        </div>
+      </div>
+      <!-- <div class="social-sign-up-cta-group">
+        <a href="#!" class="social-sign-up-cta"
+          ><img th:src="@{/assets/img/fb-oauth2-icon.svg}" />Đăng ký bằng
+          Facebook</a
+        >
+        <a href="#!" class="social-sign-up-cta"
+          ><img th:src="@{/assets/img/gg-oauth2-icon.svg}" />Đăng ký bằng
+          Google</a
+        >
+      </div> -->
+      <p class="usual-sign-up-cta">Nhập email và mật khẩu để đăng ký</p>
+      <p
+        class="success-message common-message error-message common-error"
+        th:text="${message}"
+      ></p>
+      <form class="sign-up-form">
+        <div class="form-control-group">
+          <label for="username" class="input-label">Email</label>
+          <input type="email" id="username" class="input-field" autofocus />
+          <div class="message-group email-message">
+            <p class="error-message email-error"></p>
+            <a href="#!" id="resend-email-link">Gửi lại email</a>
+          </div>
+        </div>
+        <div class="form-control-group">
+          <div class="label-group password-label">
+            <label for="password" class="input-label">Mật khẩu</label>
+            <a href="#!" class="toggle-password"
+              ><i class="fa-solid fa-eye-slash"></i>Ẩn</a
+            >
+          </div>
+          <input type="password" id="password" class="input-field" />
+          <p class="error-message password-error"></p>
+        </div>
+      </form>
+      <button class="sign-up-btn">Đăng ký</button>
+    </div>
+
+    <!-- script -->
+    <script th:src="@{/assets/js/signUpPageScript.js}"></script>
+  </body>
+</html>

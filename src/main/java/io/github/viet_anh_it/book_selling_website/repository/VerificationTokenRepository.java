@@ -15,6 +15,8 @@ import io.github.viet_anh_it.book_selling_website.model.VerificationToken;
 @Repository
 public interface VerificationTokenRepository extends JpaRepository<VerificationToken, Long> {
 
+    boolean existsByTokenValue(String tokenValue);
+
     Optional<VerificationToken> findByTokenValue(String verificationTokenValue);
 
     @Modifying

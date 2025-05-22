@@ -29,7 +29,7 @@ public class Address extends AbstractEntity {
     String street;
     boolean isDefault;
 
-    @ManyToOne
     @JoinColumn(name = "user_id")
+    @ManyToOne
     User user;
 }

@@ -24,12 +24,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Category extends AbstractEntity {
 
-    String avatar;
     String name;
 
     @Column(columnDefinition = "MEDIUMTEXT")
     String description;
 
-    @OneToMany(mappedBy = Product_.CATEGORY)
-    Set<Product> products;
+    @OneToMany(mappedBy = Book_.CATEGORY)
+    Set<Book> products;
 }

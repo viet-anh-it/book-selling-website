@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="utf-8" />
+    <title>Fruitables - Vegetable Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="" name="keywords" />
+    <meta content="" name="description" />
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" th:href="@{/assets/css/all.css}" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link
+      th:href="@{/assets/fruitables/css/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+
+    <!-- Template Stylesheet -->
+    <link th:href="@{/assets/fruitables/css/style.css}" rel="stylesheet" />
+
+    <!-- Remove favicon error -->
+    <link rel="shortcut icon" href="#!" type="image/x-icon" />
+  </head>
+
+  <body>
+    <!-- Navbar start -->
+    <div class="container-fluid">
+      <div class="container px-0">
+        <nav
+          class="navbar navbar-light bg-white navbar-expand-xl justify-content-between"
+        >
+          <a th:href="@{/books}" class="navbar-brand"
+            ><h1 class="text-primary display-6">BookStore</h1></a
+          >
+          <div class="bg-white" id="navbarCollapse">
+            <div class="d-flex m-3 me-0">
+              <a
+                id="logInIcon"
+                sec:authorize="isAnonymous()"
+                th:href="@{/logIn}"
+                class="position-relative me-4 my-auto"
+              >
+                <i class="fa-solid fa-right-to-bracket fa-2x"></i>
+              </a>
+              <a
+                id="cartIcon"
+                sec:authorize="hasRole('ROLE_CUSTOMER')"
+                th:href="@{/cart}"
+                class="position-relative me-4 my-auto"
+              >
+                <i class="fa fa-shopping-bag fa-2x"></i>
+                <span
+                  class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
+                  style="top: -5px; left: 15px; height: 20px; min-width: 20px"
+                  >3</span
+                >
+              </a>
+              <a
+                id="userProfileIcon"
+                sec:authorize="hasRole('ROLE_CUSTOMER')"
+                href="#!"
+                class="my-auto me-4"
+              >
+                <i class="fas fa-user fa-2x"></i>
+              </a>
+              <a
+                id="logOutIcon"
+                sec:authorize="isAuthenticated()"
+                href="#"
+                class="position-relative my-auto"
+              >
+                <i class="fa-solid fa-right-from-bracket fa-2x"></i>
+              </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- Single Product Start -->
+    <div class="container-fluid py-5">
+      <div class="container py-5">
+        <div class="row g-4 mb-5">
+          <div class="col-lg-8 col-xl-9">
+            <div class="row g-4">
+              <div class="col-lg-6">
+                <div class="border rounded">
+                  <img
+                    id="bookCoverImage"
+                    th:src="@{${singleBook.image}}"
+                    class="img-fluid w-100 h-100 object-fit-cover rounded"
+                    alt="${singleBook.name}"
+                  />
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <p id="bookId" class="d-none" th:text="${singleBook.id}">
+                  Hiển thị id trong database của cuốn sách ở đây.
+                </p>
+                <h4 class="fw-bold mb-3" th:text="${singleBook.name}">
+                  Hiển thị tên cuốn sách ở đây.
+                </h4>
+                <p class="mb-3">
+                  Danh mục: Hiển thị tên danh mục mà cuốn sách thuộc về ở đây.
+                </p>
+                <h5
+                  class="fw-bold mb-3"
+                  th:text="${#numbers.formatDecimal(singleBook.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"
+                >
+                  Hiển thị giá của cuốn sách ở đây.
+                </h5>
+                <div class="d-flex mb-4">
+                  <i
+                    class="fa fa-star"
+                    th:each="i : ${#numbers.sequence(1, 5)}"
+                    th:classappend="${i <= singleBook.averageRatingPoint} ? ' text-secondary' : ''"
+                    aria-hidden="true"
+                  >
+                  </i>
+                </div>
+
+                <p>
+                  (<span th:text="${singleBook.totalReviews}"></span> người đã
+                  đánh giá)
+                </p>
+
+                <div class="input-group quantity" style="width: 100px">
+                  <div class="input-group-btn">
+                    <button
+                      id="addToCartQuantityMinusBtn"
+                      class="btn btn-sm btn-minus rounded-circle bg-light border"
+                    >
+                      <i class="fa fa-minus"></i>
+                    </button>
+                  </div>
+                  <input
+                    id="addToCartQuantityInput"
+                    type="text"
+                    class="form-control form-control-sm text-center border-0"
+                    value="1"
+                  />
+                  <div class="input-group-btn">
+                    <button
+                      id="addToCartQuantityPlusBtn"
+                      class="btn btn-sm btn-plus rounded-circle bg-light border"
+                    >
+                      <i class="fa fa-plus"></i>
+                    </button>
+                  </div>
+                </div>
+                <!-- errorToast -->
+                <div
+                  id="errorToast"
+                  class="toast align-items-center bg-danger text-white border-0 mt-3 rounded-0 d-none position-fixed top-0 end-0 me-3"
+                  role="alert"
+                  aria-live="assertive"
+                  aria-atomic="true"
+                >
+                  <div class="toast-header bg-danger text-white rounded-0">
+                    <i class="fa-solid fa-circle-exclamation me-1"></i>
+                    <span>Có lỗi xảy ra!</span>
+                    <button
+                      type="button"
+                      class="btn-close btn-close-white me-2 m-auto"
+                      data-bs-dismiss="toast"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="toast-body">
+                    <span id="errorToastMessage"
+                      >Hiển thị thông báo lỗi ở đây!</span
+                    >
+                  </div>
+                  <div
+                    class="progress"
+                    role="progressbar"
+                    aria-label="Example 1px high"
+                    aria-valuenow="100"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    style="height: 3px"
+                  >
+                    <div class="progress-bar" style="width: 100%"></div>
+                  </div>
+                </div>
+                <!-- successToast -->
+                <div
+                  id="addToCartSuccessToast"
+                  class="toast align-items-center bg-success text-white border-0 mt-3 rounded-0 d-none position-fixed top-0 end-0 me-3"
+                  role="alert"
+                  aria-live="assertive"
+                  aria-atomic="true"
+                >
+                  <div class="toast-header bg-success text-white rounded-0">
+                    <i class="fa-solid fa-circle-check me-1"></i>
+                    <span>Thao tác thành công!</span>
+                    <button
+                      type="button"
+                      class="btn-close btn-close-white me-2 m-auto"
+                      data-bs-dismiss="toast"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="toast-body">
+                    <span id="addToCartSuccessMessage"
+                      >Hiển thị thông báo thành công ở đây!</span
+                    >
+                  </div>
+                  <div
+                    class="progress"
+                    role="progressbar"
+                    aria-label="Example 1px high"
+                    aria-valuenow="100"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    style="height: 3px"
+                  >
+                    <div class="progress-bar" style="width: 100%"></div>
+                  </div>
+                </div>
+                <!-- addToCartButton -->
+                <a
+                  id="addToCartButton"
+                  href="#"
+                  class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary mt-3"
+                  ><i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào
+                  giỏ</a
+                >
+              </div>
+              <div class="col-lg-12">
+                <nav>
+                  <div class="nav nav-tabs mb-3">
+                    <button
+                      class="nav-link active border-white border-bottom-0"
+                      type="button"
+                      role="tab"
+                      id="nav-about-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#nav-about"
+                      aria-controls="nav-about"
+                      aria-selected="true"
+                    >
+                      Mô tả sản phẩm
+                    </button>
+                    <button
+                      class="nav-link border-white border-bottom-0"
+                      type="button"
+                      role="tab"
+                      id="nav-mission-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#nav-mission"
+                      aria-controls="nav-mission"
+                      aria-selected="false"
+                    >
+                      Đánh giá của khách hàng
+                    </button>
+                  </div>
+                </nav>
+                <div class="tab-content mb-5">
+                  <!-- Tab mô tả sản phẩm -->
+                  <div
+                    class="tab-pane active"
+                    id="nav-about"
+                    role="tabpanel"
+                    aria-labelledby="nav-about-tab"
+                  >
+                    <!-- Bảng thông tin sản phẩm -->
+                    <div class="px-2 mt-5">
+                      <div class="row g-4">
+                        <div class="col-6">
+                          <div
+                            class="row bg-light align-items-center text-center justify-content-center py-2"
+                          >
+                            <div class="col-6">
+                              <p class="mb-0">Tác giả</p>
+                            </div>
+                            <div class="col-6">
+                              <p class="mb-0" th:text="${singleBook.author}">
+                                Hiển thị tên tác giả của cuốn sách ở đây
+                              </p>
+                            </div>
+                          </div>
+                          <div
+                            class="row text-center align-items-center justify-content-center py-2"
+                          >
+                            <div class="col-6">
+                              <p class="mb-0">Nhà xuất bản</p>
+                            </div>
+                            <div class="col-6">
+                              <p class="mb-0" th:text="${singleBook.publisher}">
+                                Hiển thị tên nhà xuất bản của cuốn sách ở đây
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Đoạn mô tả sản phẩm -->
+                    <p
+                      class="mt-5"
+                      style="white-space: pre-line; text-align: justify"
+                      th:text="${singleBook.description}"
+                    >
+                      Hiển thị mô tả sản phẩm ở đây
+                    </p>
+                  </div>
+
+                  <!-- Tab đánh giá của khách hàng -->
+                  <div
+                    class="tab-pane"
+                    id="nav-mission"
+                    role="tabpanel"
+                    aria-labelledby="nav-mission-tab"
+                  >
+                    <div
+                      th:if="${singleBook.reviewList == null or #lists.isEmpty(singleBook.reviewList)}"
+                      class="alert alert-info d-flex align-items-center justify-content-center"
+                      role="alert"
+                    >
+                      <div>
+                        Chưa có đánh giá nào!
+                        <span sec:authorize="isAnonymous()">
+                          <a th:href="@{/logIn}">Đăng nhập</a>
+                          và để lại đánh giá.
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      class="d-flex"
+                      th:each="review : ${singleBook.reviewList}"
+                    >
+                      <img
+                        th:src="@{/assets/img/avatar.jpg}"
+                        class="img-fluid rounded-circle p-3"
+                        style="width: 100px; height: 100px"
+                        alt=""
+                      />
+                      <div class="w-100">
+                        <p
+                          class="mb-2"
+                          style="font-size: 14px"
+                          th:text="${#temporals.format(review.postedAt, 'dd/MM/yyyy HH:mm', #locale)}"
+                        >
+                          Hiển thị thời gian gửi đánh giá ở đây.
+                        </p>
+                        <div class="d-flex justify-content-between">
+                          <h5 th:text="${review.name}">
+                            Hiển thị tên khách hàng ở đây.
+                          </h5>
+                          <div class="d-flex mb-3">
+                            <i
+                              class="fa fa-star"
+                              th:each="i : ${#numbers.sequence(1, 5)}"
+                              th:classappend="${i <= review.rate} ? ' text-secondary' : ''"
+                              aria-hidden="true"
+                            >
+                            </i>
+                          </div>
+                        </div>
+                        <p
+                          th:text="${review.comment}"
+                          style="white-space: pre-line; text-align: justify"
+                        >
+                          Hiển thị bình luận của khách hàng ở đây.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <form action="#">
+                <h4 class="mb-5 fw-bold">Để lại đánh giá</h4>
+                <div class="row g-4">
+                  <div class="col-lg-6">
+                    <div class="border-bottom rounded">
+                      <input
+                        id="reviewerDisplayName"
+                        type="text"
+                        class="form-control border-0 me-4"
+                        placeholder="Tên hiển thị"
+                      />
+                      <div class="invalid-feedback">
+                        Hiển thị thông báo lỗi ở đây.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="border-bottom rounded">
+                      <input
+                        id="reviewerEmail"
+                        type="email"
+                        class="form-control border-0"
+                        placeholder="Địa chỉ email"
+                      />
+                      <div class="invalid-feedback">
+                        Hiển thị thông báo lỗi ở đây.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <div class="border-bottom rounded my-4">
+                      <textarea
+                        name=""
+                        id="reviewerComment"
+                        class="form-control border-0"
+                        cols="30"
+                        rows="8"
+                        placeholder="Đánh giá của bạn"
+                        spellcheck="false"
+                      ></textarea>
+                      <div class="invalid-feedback">
+                        Hiển thị thông báo lỗi ở đây.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <div class="d-flex justify-content-between py-3 mb-5">
+                      <div class="d-flex align-items-center">
+                        <p class="mb-0 me-3">Đánh giá:</p>
+                        <div
+                          class="d-flex align-items-center"
+                          style="font-size: 24px"
+                        >
+                          <i class="ratingStar fa fa-star" data-rating="1"
+                            ><span class="ratingPoint d-none">1</span></i
+                          >
+                          <i class="ratingStar fa fa-star" data-rating="2"
+                            ><span class="ratingPoint d-none">2</span></i
+                          >
+                          <i class="ratingStar fa fa-star" data-rating="3"
+                            ><span class="ratingPoint d-none">3</span></i
+                          >
+                          <i class="ratingStar fa fa-star" data-rating="4"
+                            ><span class="ratingPoint d-none">4</span></i
+                          >
+                          <i class="ratingStar fa fa-star" data-rating="5"
+                            ><span class="ratingPoint d-none">5</span></i
+                          >
+                        </div>
+                        <div class="d-flex align-items-center">
+                          <input
+                            id="givenRatingPoint"
+                            type="text"
+                            class="d-none"
+                          />
+                          <div class="invalid-feedback">
+                            Hiển thị thông báo lỗi ở đây.
+                          </div>
+                        </div>
+                      </div>
+                      <a
+                        id="postReviewBtn"
+                        href="#"
+                        class="btn border border-secondary text-primary rounded-pill px-4 py-3"
+                      >
+                        Gửi đánh giá</a
+                      >
+                    </div>
+                    <div class="col-lg-12"></div>
+                  </div>
+                  <!-- Modal -->
+                  <div
+                    class="modal fade"
+                    id="postReviewSuccessModal"
+                    tabindex="-1"
+                    aria-labelledby="exampleModalLabel"
+                    aria-hidden="true"
+                  >
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel">
+                            <i class="fa-solid fa-circle-check me-1"></i>
+                            <span>Gửi đánh giá thành công!</span>
+                          </h1>
+                          <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                          ></button>
+                        </div>
+                        <div class="modal-body">
+                          Đánh giá của bạn sẽ được hiển thị công khai sau khi
+                          được kiểm duyệt.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- <div class="col-lg-4 col-xl-3">
+            <div class="row g-4 fruite">
+              <div class="col-lg-12">
+                <div class="mb-4">
+                  <h4>Danh mục</h4>
+                  <ul class="list-unstyled fruite-categorie">
+                    <li>
+                      <div class="d-flex justify-content-between fruite-name">
+                        <a href="#"
+                          ><i class="fas fa-apple-alt me-2"></i>Apples</a
+                        >
+                        <span>(3)</span>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="d-flex justify-content-between fruite-name">
+                        <a href="#"
+                          ><i class="fas fa-apple-alt me-2"></i>Oranges</a
+                        >
+                        <span>(5)</span>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="d-flex justify-content-between fruite-name">
+                        <a href="#"
+                          ><i class="fas fa-apple-alt me-2"></i>Strawbery</a
+                        >
+                        <span>(2)</span>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="d-flex justify-content-between fruite-name">
+                        <a href="#"
+                          ><i class="fas fa-apple-alt me-2"></i>Banana</a
+                        >
+                        <span>(8)</span>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="d-flex justify-content-between fruite-name">
+                        <a href="#"
+                          ><i class="fas fa-apple-alt me-2"></i>Pumpkin</a
+                        >
+                        <span>(5)</span>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </div>
+    <!-- Single Product End -->
+
+    <!-- Back to Top -->
+    <a
+      href="#"
+      class="btn btn-primary border-3 border-primary rounded-circle back-to-top"
+      ><i class="fa fa-arrow-up"></i
+    ></a>
+
+    <!-- JavaScript Libraries -->
+    <script th:src="@{/assets/js/jquery.min.js}"></script>
+    <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/js/easing.min.js}"></script>
+
+    <!-- Template Javascript -->
+    <script th:src="@{/assets/js/singleBookDetailPageScript.js}"></script>
+  </body>
+</html>

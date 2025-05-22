@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>BookStore</title>
+    <!-- favicon -->
+    <link rel="shortcut icon" href="#!" type="image/x-icon" />
+    <link th:href="@{/assets/css/sbAdminStyle.css}" rel="stylesheet" />
+    <!-- <script
+      src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
+      crossorigin="anonymous"
+    ></script> -->
+  </head>
+  <body>
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+      <!-- Navbar Brand-->
+      <a class="navbar-brand ps-3" href="#!">Start Bootstrap</a>
+    </nav>
+
+    <!-- SideBar -->
+    <div id="layoutSidenav">
+      <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+          <div class="sb-sidenav-menu">
+            <div class="nav">
+              <div class="sb-sidenav-menu-heading">Core</div>
+              <a class="nav-link" href="#!">
+                <div class="sb-nav-link-icon">
+                  <i class="fas fa-tachometer-alt"></i>
+                </div>
+                Sản phẩm
+              </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div id="layoutSidenav_content">
+        <main>
+          <div class="container-fluid px-4">
+            <h1 class="mt-4">Thêm sách mới</h1>
+            <ol class="breadcrumb mb-4">
+              <li class="breadcrumb-item">
+                <a href="#!">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Thêm sách mới</li>
+            </ol>
+          </div>
+
+          <div class="container py-4">
+            <form>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="isbn" class="form-label"
+                    >Mã số quốc tế(ISBN)</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="isbn"
+                    placeholder="ISBN"
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-md-6">
+                  <label for="name" class="form-label">Tên sách</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    placeholder="Tên sách..."
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-md-6">
+                  <label for="author" class="form-label">Tác giả</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="author"
+                    placeholder="Tác giả..."
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-md-6">
+                  <label for="publisher" class="form-label">Nhà xuất bản</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="publisher"
+                    placeholder="Nhà xuất bản..."
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-md-6">
+                  <label for="price" class="form-label">Giá bán</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="price"
+                    placeholder="Giá bán..."
+                    value="1000"
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-md-6">
+                  <label for="stockQuantity" class="form-label"
+                    >Số lượng tồn kho</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="stockQuantity"
+                    placeholder="Số lượng tồn kho..."
+                    value="1"
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-md-6">
+                  <label for="category" class="form-label">Danh mục</label>
+                  <select
+                    id="category"
+                    class="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option selected>- Chọn một thể loại -</option>
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="bookCoverImage" class="form-label">Ảnh</label>
+                  <input
+                    class="form-control"
+                    type="file"
+                    id="bookCoverImage"
+                    accept="image/png, image/jpg, image/jpeg"
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-md-12">
+                  <label for="description" class="form-label">Mô tả</label>
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    rows="3"
+                  ></textarea>
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-12">
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="createBookButton"
+                  >
+                    Thêm
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </main>
+      </div>
+    </div>
+    <script
+      th:src="@{/assets/js/bootstrap.bundle.min.js}"
+      crossorigin="anonymous"
+    ></script>
+    <script th:src="@{/assets/js/addNewBookPageScript.js}"></script>
+  </body>
+</html>

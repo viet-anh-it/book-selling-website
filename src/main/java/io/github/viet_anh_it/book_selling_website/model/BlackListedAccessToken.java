@@ -27,7 +27,7 @@ public class BlackListedAccessToken extends AbstractEntity {
     String jti;
     Instant expiresAt;
 
-    @ManyToOne
     @JoinColumn(name = "user_id")
+    @ManyToOne
     User user;
 }

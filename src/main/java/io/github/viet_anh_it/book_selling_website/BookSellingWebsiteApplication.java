@@ -75,9 +75,15 @@ public class BookSellingWebsiteApplication {
 							permissionMap.get(PermissionEnum.ASSIGN_ROLE_TO_ACCOUNT)),
 					new RolePermission(roleMap.get(RoleEnum.MANAGER), permissionMap.get(PermissionEnum.UNLOCK_ACCOUNT)),
 					new RolePermission(roleMap.get(RoleEnum.MANAGER), permissionMap.get(PermissionEnum.LOCK_ACCOUNT)),
+					new RolePermission(roleMap.get(RoleEnum.MANAGER), permissionMap.get(PermissionEnum.CREATE_BOOK)),
+					new RolePermission(roleMap.get(RoleEnum.MANAGER), permissionMap.get(PermissionEnum.APPROVE_REVIEW)),
+					new RolePermission(roleMap.get(RoleEnum.MANAGER), permissionMap.get(PermissionEnum.DELETE_REVIEW)),
 					new RolePermission(roleMap.get(RoleEnum.STAFF),
 							permissionMap.get(PermissionEnum.UPDATE_ORDER_STATUS)),
+					new RolePermission(roleMap.get(RoleEnum.CUSTOMER), permissionMap.get(PermissionEnum.POST_REVIEW)),
+					new RolePermission(roleMap.get(RoleEnum.CUSTOMER), permissionMap.get(PermissionEnum.ADD_TO_CART)),
 					new RolePermission(roleMap.get(RoleEnum.CUSTOMER), permissionMap.get(PermissionEnum.CREATE_ORDER)),
+					new RolePermission(roleMap.get(RoleEnum.CUSTOMER), permissionMap.get(PermissionEnum.DELETE_REVIEW)),
 					new RolePermission(roleMap.get(RoleEnum.CUSTOMER),
 							permissionMap.get(PermissionEnum.CANCEL_ORDER))));
 

@@ -1,6 +1,9 @@
 package io.github.viet_anh_it.book_selling_website.custom;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
@@ -91,7 +94,10 @@ public class BearerTokenAuthenticationEntryPointImpl implements AuthenticationEn
         } else if (authException instanceof InsufficientAuthenticationException) {
             response.addHeader("X-Error-Type", ErrorTypeEnum.AUTHENTICATION.name());
             failureResponse.setType(ErrorTypeEnum.AUTHENTICATION);
-            failureResponse.setDetail("Người dùng không xác thực!");
+            failureResponse.setDetail(authException.getMessage());
+            File file = new File("D:\\book-selling-website\\src\\exceptionStackTrace.txt");
+            authException.printStackTrace(new PrintStream(new FileOutputStream(file)));
+            // response.sendRedirect("/error/401Unauthorized");
         } else if (authException instanceof DisabledException) {
             response.addHeader("X-Error-Type", ErrorTypeEnum.AUTHENTICATION.name());
             failureResponse.setType(ErrorTypeEnum.ACCOUNT_DISABLED);
@@ -110,5 +116,4 @@ public class BearerTokenAuthenticationEntryPointImpl implements AuthenticationEn
 
         response.flushBuffer();
     }
-
 }

@@ -1,20 +1,206 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cart</title>
-    <!-- reset css -->
-    <link rel="stylesheet" th:href="@{assets/css/reset.css}" />
+    <meta charset="utf-8" />
+    <title>Book Store</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="" name="keywords" />
+    <meta content="" name="description" />
 
-    <!-- favicon -->
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" th:href="@{/assets/css/all.css}" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link
+      th:href="@{/assets/fruitables/css/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+
+    <!-- Template Stylesheet -->
+    <link th:href="@{/assets/fruitables/css/style.css}" rel="stylesheet" />
+
+    <!-- Remove favicon error -->
     <link rel="shortcut icon" href="#!" type="image/x-icon" />
-
-    <!-- common css -->
-    <link rel="stylesheet" th:href="@{/assets/css/common.css}" />
   </head>
+
   <body>
-    <h1>Giỏ hàng của bạn</h1>
-    <p>Chưa có sản phẩm nào trong giỏ hàng!</p>
+    <!-- Navbar start -->
+    <div class="container-fluid">
+      <div class="container px-0">
+        <nav
+          class="navbar navbar-light bg-white navbar-expand-xl justify-content-between"
+        >
+          <a th:href="@{/books}" class="navbar-brand"
+            ><h1 class="text-primary display-6">BookStore</h1></a
+          >
+          <div class="bg-white" id="navbarCollapse">
+            <div class="d-flex m-3 me-0">
+              <a
+                id="logInIcon"
+                sec:authorize="isAnonymous()"
+                th:href="@{/logIn}"
+                class="position-relative me-4 my-auto"
+              >
+                <i class="fa-solid fa-right-to-bracket fa-2x"></i>
+              </a>
+              <a
+                id="cartIcon"
+                sec:authorize="hasRole('ROLE_CUSTOMER')"
+                th:href="@{/cart}"
+                class="position-relative me-4 my-auto"
+              >
+                <i class="fa fa-shopping-bag fa-2x"></i>
+                <span
+                  class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
+                  style="top: -5px; left: 15px; height: 20px; min-width: 20px"
+                  >3</span
+                >
+              </a>
+              <a
+                id="userProfileIcon"
+                sec:authorize="hasRole('ROLE_CUSTOMER')"
+                href="#!"
+                class="my-auto me-4"
+              >
+                <i class="fas fa-user fa-2x"></i>
+              </a>
+              <a
+                id="logOutIcon"
+                sec:authorize="isAuthenticated()"
+                href="#"
+                class="position-relative my-auto"
+              >
+                <i class="fa-solid fa-right-from-bracket fa-2x"></i>
+              </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- Cart Page Start -->
+    <div class="container-fluid py-5">
+      <div class="container py-5">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Sản phẩm</th>
+                <th scope="col">Tên</th>
+                <th scope="col">Giá</th>
+                <th scope="col">Số lượng</th>
+                <th scope="col">Thành tiền</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">
+                  <div class="d-flex align-items-center">
+                    <img
+                      src="#"
+                      class="img-fluid me-5 rounded-circle"
+                      style="width: 80px; height: 80px"
+                      alt="Ảnh bìa"
+                    />
+                  </div>
+                </th>
+                <td>
+                  <p class="mb-0 mt-4">Tên sách</p>
+                </td>
+                <td>
+                  <p class="mb-0 mt-4">Giá bán</p>
+                </td>
+                <td>
+                  <div class="input-group quantity mt-4" style="width: 100px">
+                    <div class="input-group-btn">
+                      <button
+                        class="btn btn-sm btn-minus rounded-circle bg-light border"
+                      >
+                        <i class="fa fa-minus"></i>
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      class="form-control form-control-sm text-center border-0"
+                      value="1"
+                    />
+                    <div class="input-group-btn">
+                      <button
+                        class="btn btn-sm btn-plus rounded-circle bg-light border"
+                      >
+                        <i class="fa fa-plus"></i>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <p class="mb-0 mt-4">Thành tiền</p>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-md rounded-circle bg-light border mt-4"
+                  >
+                    <i class="fa fa-times text-danger"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-5"></div>
+        <div class="row g-4 justify-content-end">
+          <div class="col-8"></div>
+          <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
+            <div class="bg-light rounded">
+              <div class="p-4">
+                <h1 class="display-6 mb-4">
+                  Tạm <span class="fw-normal">tính</span>
+                </h1>
+                <div class="d-flex justify-content-between mb-4">
+                  <h5 class="mb-0 me-4">Thành tiền:</h5>
+                  <p class="mb-0">Tổng giá trị giỏ hàng</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <h5 class="mb-0 me-4">Phí vận chuyển:</h5>
+                  <div class="">
+                    <p class="mb-0">0 VND</p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="py-4 mb-4 border-top border-bottom d-flex justify-content-between"
+              >
+                <h5 class="mb-0 ps-4 me-4">Tổng trả:</h5>
+                <p class="mb-0 pe-4">Tổng tiền cần thanh toán</p>
+              </div>
+              <button
+                class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4"
+                type="button"
+              >
+                Tiến hành thanh toán
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Cart Page End -->
+
+    <!-- Back to Top -->
+    <a
+      href="#"
+      class="btn btn-primary border-3 border-primary rounded-circle back-to-top"
+      ><i class="fa fa-arrow-up"></i
+    ></a>
+
+    <!-- JavaScript Libraries -->
+    <script th:src="@{/assets/js/jquery.min.js}"></script>
+    <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/js/easing.min.js}"></script>
+
+    <!-- Template Javascript -->
+    <script th:src="@{/assets/js/cartPageScript.js}"></script>
   </body>
 </html>

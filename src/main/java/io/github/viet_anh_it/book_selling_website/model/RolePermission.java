@@ -22,11 +22,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RolePermission extends AbstractEntity {
 
-    @ManyToOne
     @JoinColumn(name = "role_id")
+    @ManyToOne
     Role role;
 
-    @ManyToOne
     @JoinColumn(name = "permission_id")
+    @ManyToOne
     Permission permission;
 }

@@ -24,7 +24,8 @@ public class BearerTokenAccessDeniedHandlerImpl implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException, ServletException {
         BearerTokenAccessDeniedHandler bearerTokenAccessDeniedHandler = new BearerTokenAccessDeniedHandler();
-        bearerTokenAccessDeniedHandler.handle(request, response, accessDeniedException);
+        bearerTokenAccessDeniedHandler.handle(request, response,
+                accessDeniedException);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());

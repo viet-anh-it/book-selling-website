@@ -28,14 +28,16 @@ import lombok.experimental.FieldDefaults;
 public class VerificationToken extends AbstractEntity {
 
     String tokenValue;
-    Instant expiresAt;
-    // Instant usedAt;
-    // boolean used;
 
     @Enumerated(EnumType.STRING)
     TokenTypeEnum type;
 
-    @OneToOne
+    Instant expiresAt;
+    // boolean expired;
+    // Instant usedAt;
+    // boolean used;
+
     @JoinColumn(name = "user_id")
+    @OneToOne
     User user;
 }

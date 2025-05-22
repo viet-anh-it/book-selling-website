@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <title>BookStore</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="" name="keywords" />
+    <meta content="" name="description" />
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" th:href="@{/assets/css/all.css}" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link
+      th:href="@{/assets/fruitables/css/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+
+    <!-- Template Stylesheet -->
+    <link th:href="@{/assets/fruitables/css/style.css}" rel="stylesheet" />
+
+    <!-- Remove favicon error -->
+    <link rel="shortcut icon" href="#!" type="image/x-icon" />
+  </head>
+
+  <body>
+    <!-- Navbar start -->
+    <div class="container-fluid">
+      <div class="container px-0">
+        <nav
+          class="navbar navbar-light bg-white navbar-expand-xl justify-content-between"
+        >
+          <a th:href="@{/books}" class="navbar-brand"
+            ><h1 class="text-primary display-6">BookStore</h1></a
+          >
+          <div class="bg-white" id="navbarCollapse">
+            <div class="d-flex m-3 me-0">
+              <a
+                id="logInIcon"
+                sec:authorize="isAnonymous()"
+                th:href="@{/logIn}"
+                class="position-relative me-4 my-auto"
+              >
+                <i class="fa-solid fa-right-to-bracket fa-2x"></i>
+              </a>
+              <a
+                id="cartIcon"
+                sec:authorize="hasRole('ROLE_CUSTOMER')"
+                th:href="@{/cart}"
+                class="position-relative me-4 my-auto"
+              >
+                <i class="fa fa-shopping-bag fa-2x"></i>
+                <span
+                  class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
+                  style="top: -5px; left: 15px; height: 20px; min-width: 20px"
+                  >3</span
+                >
+              </a>
+              <a
+                id="userProfileIcon"
+                sec:authorize="hasRole('ROLE_CUSTOMER')"
+                href="#!"
+                class="my-auto me-4"
+              >
+                <i class="fas fa-user fa-2x"></i>
+              </a>
+              <a
+                id="logOutIcon"
+                sec:authorize="isAuthenticated()"
+                href="#"
+                class="position-relative my-auto"
+              >
+                <i class="fa-solid fa-right-from-bracket fa-2x"></i>
+              </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- Fruits Shop Start-->
+    <div class="container-fluid fruite py-5">
+      <div class="container py-5">
+        <div class="row g-4">
+          <div class="col-lg-12">
+            <div class="row g-4">
+              <div class="col-lg-3">
+                <div class="row g-4">
+                  <div class="col-lg-12">
+                    <div class="mb-3">
+                      <h4>Danh mục</h4>
+                      <ul class="list-unstyled fruite-categorie">
+                        <li>
+                          <div
+                            class="d-flex justify-content-between fruite-name"
+                          >
+                            <a href="#"
+                              ><i class="fa-solid fa-list me-2"></i>Văn học kinh
+                              điển</a
+                            >
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            class="d-flex justify-content-between fruite-name"
+                          >
+                            <a href="#"
+                              ><i class="fa-solid fa-list me-2"></i>Thơ ca, tục
+                              ngữ, ca dao, thành ngữ</a
+                            >
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            class="d-flex justify-content-between fruite-name"
+                          >
+                            <a href="#"
+                              ><i class="fa-solid fa-list me-2"></i>Phóng sự -
+                              Ký sự - Phê bình văn học</a
+                            >
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            class="d-flex justify-content-between fruite-name"
+                          >
+                            <a href="#"
+                              ><i class="fa-solid fa-list me-2"></i>Sách giáo
+                              khoa</a
+                            >
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            class="d-flex justify-content-between fruite-name"
+                          >
+                            <a href="#"
+                              ><i class="fa-solid fa-list me-2"></i>Sách tham
+                              khảo</a
+                            >
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <div class="mb-3">
+                      <h4 class="mb-2">Giá</h4>
+                      <input
+                        type="range"
+                        class="form-range w-100"
+                        id="rangeInput"
+                        name="rangeInput"
+                        min="15000"
+                        max="500000"
+                        value="15000"
+                        step="1000"
+                        oninput="amount.value=rangeInput.value"
+                      />
+                      <output
+                        id="amount"
+                        name="amount"
+                        min-velue="15000"
+                        max-value="500000"
+                        for="rangeInput"
+                        >15000</output
+                      >
+                    </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <div class="mb-3">
+                      <h4 class="mb-2">Xếp hạng</h4>
+                      <div class="d-flex flex-column">
+                        <div>
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value="5"
+                            id="checkDefault"
+                          />
+                          <label class="form-check-label" for="checkDefault">
+                            5 <i class="fa fa-star text-secondary"></i>
+                          </label>
+                        </div>
+                        <div>
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value="4"
+                            id="checkDefault"
+                          />
+                          <label class="form-check-label" for="checkDefault">
+                            4 <i class="fa fa-star text-secondary"></i>
+                          </label>
+                        </div>
+                        <div>
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value="3"
+                            id="checkDefault"
+                          />
+                          <label class="form-check-label" for="checkDefault">
+                            3 <i class="fa fa-star text-secondary"></i>
+                          </label>
+                        </div>
+                        <div>
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value="2"
+                            id="checkDefault"
+                          />
+                          <label class="form-check-label" for="checkDefault">
+                            2 <i class="fa fa-star text-secondary"></i>
+                          </label>
+                        </div>
+                        <div>
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value="1"
+                            id="checkDefault"
+                          />
+                          <label class="form-check-label" for="checkDefault">
+                            1 <i class="fa fa-star text-secondary"></i>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-9">
+                <!-- Book sorting utility -->
+                <div class="row g-4 justify-content-center">
+                  <div class="col-8"></div>
+                  <!-- Sort by field -->
+                  <div class="col-xl-4">
+                    <div
+                      class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4 align-items-center"
+                    >
+                      <label for="sortByField">Xếp theo:</label>
+                      <select
+                        id="sortByField"
+                        name="field"
+                        class="border-0 form-select-sm bg-light me-3"
+                        form="sortByFieldForm"
+                        style="outline: none"
+                      >
+                        <option value="name,asc">Tên (A - Z)</option>
+                        <option value="name,desc">Tên (Z - A)</option>
+                        <option value="price,asc">Giá (Thấp - Cao)</option>
+                        <option value="price,desc">Giá (Cao - Thấp)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <!-- Sort direction -->
+                  <!-- <div class="col-xl-3">
+                    <div
+                      class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4"
+                    >
+                      <label for="sortDirection">Thứ tự:</label>
+                      <select
+                        id="sortDirection"
+                        name="direction"
+                        class="border-0 form-select-sm bg-light me-3"
+                        form="sortDirectionForm"
+                      >
+                        <option value="asc">A - Z</option>
+                        <option value="desc">Z - A</option>
+                        <option value="asc">Thấp đến cao</option>
+                        <option value="desc">Cao đến thấp</option>
+                      </select>
+                    </div>
+                  </div> -->
+                </div>
+                <!-- Book filtering result message -->
+                <div
+                  id="bookFilteringResultMessage"
+                  class="row g-4 justify-content-center d-none"
+                >
+                  <div class="col-12">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      style="display: none"
+                    >
+                      <symbol
+                        id="info-fill"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
+                        />
+                      </symbol>
+                      <div
+                        class="alert alert-primary d-flex align-items-center justify-content-center"
+                        role="alert"
+                      >
+                        <svg
+                          class="bi flex-shrink-0 me-2"
+                          width="24"
+                          height="24"
+                          role="img"
+                          aria-label="Info:"
+                        >
+                          <use xlink:href="#info-fill" />
+                        </svg>
+                        <div>Không tìm thấy cuốn sách phù hợp!</div>
+                      </div>
+                    </svg>
+                  </div>
+                </div>
+                <!-- Book grid -->
+                <div
+                  id="resultsContainer"
+                  class="row g-4 justify-content-start"
+                >
+                  <div
+                    class="col-md-6 col-lg-6 col-xl-4 bookItem"
+                    th:each="book : ${books}"
+                  >
+                    <div class="rounded position-relative fruite-item">
+                      <div class="fruite-img">
+                        <img
+                          th:src="@{${book.image}}"
+                          class="img-fluid w-100 h-100 object-fit-cover rounded-top image"
+                          alt="${book.name}"
+                        />
+                      </div>
+                      <div
+                        class="p-4 border border-secondary border-top-0 rounded-bottom"
+                      >
+                        <p th:text="${book.id}" class="bookId d-none">
+                          Id của cuốn sách ở đây
+                        </p>
+                        <h4
+                          class="text-truncate name"
+                          style="max-width: 100%"
+                          data-bs-toggle="tooltip"
+                          th:title="${book.name}"
+                          th:text="${book.name}"
+                        >
+                          Hiển thị tên sách ở đây
+                        </h4>
+                        <p class="author" th:text="${book.author}">
+                          Hiển thị tên tác giả ở đây
+                        </p>
+                        <div
+                          class="d-flex justify-content-between flex-lg-wrap"
+                        >
+                          <p
+                            class="text-dark fs-5 fw-bold mb-0 price"
+                            th:text="${#numbers.formatDecimal(book.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"
+                          >
+                            Hiển thị giá ở đây
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Pagination Bar -->
+                <div class="row g-4 justify-content-center">
+                  <div class="col-12">
+                    <div
+                      id="paginationContainer"
+                      class="pagination d-flex justify-content-center mt-5"
+                    >
+                      <!-- Prev -->
+                      <a
+                        id="pagBarPrevBtn"
+                        href="#!"
+                        class="rounded"
+                        th:classappend="${!paginationMetadata.hasPreviousPage} ? ' disabled'"
+                        aria-label="Previous"
+                        th:attr="aria-disabled=${!paginationMetadata.hasPreviousPage}"
+                      >
+                        &laquo;
+                      </a>
+
+                      <!-- Page numbers -->
+                      <a
+                        href="#!"
+                        th:each="pageIndex : ${#numbers.sequence(0, paginationMetadata.totalNumberOfPages - 1)}"
+                        th:text="${pageIndex + 1}"
+                        class="rounded mx-1 pagNumBtn"
+                        th:classappend="${pageIndex == paginationMetadata.currentPosition} ? ' active'"
+                      >
+                        <!-- <span th:text="${pageIndex + 1}">1</span> -->
+                      </a>
+
+                      <!-- Next -->
+                      <a
+                        id="pagBarNextBtn"
+                        href="#!"
+                        class="rounded"
+                        th:classappend="${!paginationMetadata.hasNextPage} ? ' disabled'"
+                        aria-label="Next"
+                        th:attr="aria-disabled=${!paginationMetadata.hasNextPage}"
+                      >
+                        &raquo;
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Fruits Shop End-->
+
+    <!-- Back to Top -->
+    <a
+      href="#"
+      class="btn btn-primary border-3 border-primary rounded-circle back-to-top"
+      ><i class="fa fa-arrow-up"></i
+    ></a>
+
+    <!-- JavaScript Libraries -->
+    <script th:src="@{/assets/js/jquery.min.js}"></script>
+    <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/js/easing.min.js}"></script>
+
+    <!-- Template Javascript -->
+    <script th:src="@{/assets/js/booksPageScript.js}"></script>
+  </body>
+</html>

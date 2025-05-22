@@ -42,8 +42,8 @@ public class User extends AbstractEntity {
     String phone;
     boolean active;
 
-    @ManyToOne
     @JoinColumn(name = "role_id")
+    @ManyToOne
     Role role;
 
     @OneToMany(mappedBy = Address_.USER)
@@ -64,6 +64,6 @@ public class User extends AbstractEntity {
     @OneToMany(mappedBy = BlackListedAccessToken_.USER)
     Set<BlackListedAccessToken> blackListedAccessTokens;
 
-    // @OneToOne(mappedBy = VerificationToken_.USER)
-    // VerificationToken verificationToken;
+    @OneToOne(mappedBy = VerificationToken_.USER)
+    VerificationToken verificationToken;
 }

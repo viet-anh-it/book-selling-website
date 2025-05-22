@@ -39,8 +39,8 @@ public class Order extends AbstractEntity {
     int totalPrice;
     String note;
 
-    @ManyToOne
     @JoinColumn(name = "user_id")
+    @ManyToOne
     User user;
 
     @OneToMany(mappedBy = OrderItem_.ORDER)

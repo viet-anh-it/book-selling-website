@@ -19,6 +19,41 @@
       "name": "scheduler.expired-refresh-token-cleanup.cron",
       "type": "java.lang.String",
       "description": "A description for 'scheduler.expired-refresh-token-cleanup.cron'"
+    },
+    {
+      "name": "app.upload.dir",
+      "type": "java.lang.String",
+      "description": "A description for 'app.upload.dir'"
+    },
+    {
+      "name": "app.allowed.image.types",
+      "type": "java.lang.String",
+      "description": "A description for 'app.allowed.image.types'"
+    },
+    {
+      "name": "app.allowed.content-types",
+      "type": "java.lang.String",
+      "description": "A description for 'app.allowed.content-types'"
+    },
+    {
+      "name": "app.allowed.file-extensions",
+      "type": "java.lang.String",
+      "description": "A description for 'app.allowed.file-extensions'"
+    },
+    {
+      "name": "app.upload-dir.image.book-cover",
+      "type": "java.lang.String",
+      "description": "A description for 'app.upload-dir.image.book-cover'"
+    },
+    {
+      "name": "app.allowed.content-type.image",
+      "type": "java.lang.String",
+      "description": "A description for 'app.allowed.content-type.image'"
+    },
+    {
+      "name": "app.allowed.file-extension.image",
+      "type": "java.lang.String",
+      "description": "A description for 'app.allowed.file-extension.image'"
     }
   ]
 }

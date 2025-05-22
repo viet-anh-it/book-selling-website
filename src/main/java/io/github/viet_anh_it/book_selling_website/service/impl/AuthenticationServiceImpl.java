@@ -17,16 +17,19 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 
 import io.github.viet_anh_it.book_selling_website.dto.request.LogInRequestDTO;
+import io.github.viet_anh_it.book_selling_website.dto.request.ResetPasswordRequestDTO;
+import io.github.viet_anh_it.book_selling_website.dto.request.SendEmailRequestDTO;
 import io.github.viet_anh_it.book_selling_website.dto.request.SignUpRequestDTO;
 import io.github.viet_anh_it.book_selling_website.dto.response.LogInResponseDTO;
 import io.github.viet_anh_it.book_selling_website.dto.response.RefreshTokenResponseDTO;
-import io.github.viet_anh_it.book_selling_website.dto.response.SignUpResponseDTO;
 import io.github.viet_anh_it.book_selling_website.enums.RoleEnum;
 import io.github.viet_anh_it.book_selling_website.enums.TokenTypeEnum;
+import io.github.viet_anh_it.book_selling_website.exception.AccountStatusException;
+import io.github.viet_anh_it.book_selling_website.exception.ActivateAccountTokenException;
 import io.github.viet_anh_it.book_selling_website.exception.EmailAlreadyExistedException;
+import io.github.viet_anh_it.book_selling_website.exception.ForgotPasswordTokenException;
 import io.github.viet_anh_it.book_selling_website.exception.RefreshTokenException;
 import io.github.viet_anh_it.book_selling_website.exception.RoleNotFoundException;
-import io.github.viet_anh_it.book_selling_website.exception.VerificationTokenException;
 import io.github.viet_anh_it.book_selling_website.model.BlackListedAccessToken;
 import io.github.viet_anh_it.book_selling_website.model.RefreshToken;
 import io.github.viet_anh_it.book_selling_website.model.Role;
@@ -34,6 +37,7 @@ import io.github.viet_anh_it.book_selling_website.model.User;
 import io.github.viet_anh_it.book_selling_website.model.VerificationToken;
 import io.github.viet_anh_it.book_selling_website.service.AuthenticationService;
 import io.github.viet_anh_it.book_selling_website.service.BlackListedAccessTokenService;
+import io.github.viet_anh_it.book_selling_website.service.EmailService;
 import io.github.viet_anh_it.book_selling_website.service.JwtService;
 import io.github.viet_anh_it.book_selling_website.service.RefreshTokenService;
 import io.github.viet_anh_it.book_selling_website.service.RoleService;
@@ -48,6 +52,9 @@ import lombok.experimental.NonFinal;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationServiceImpl implements AuthenticationService {
+
+        static String ROLE_PREFIX = "ROLE_";
+        static String ROLE_UNKNOWN = ROLE_PREFIX + "UNKNOWN";
 
         @NonFinal
         @Value("${jwt.secret-key}")
@@ -70,6 +77,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         JwtService jwtService;
         UserService userService;
         RoleService roleService;
+        EmailService emailService;
         PasswordEncoder passwordEncoder;
         RefreshTokenService refreshTokenService;
         AuthenticationManager authenticationManager;
@@ -77,7 +85,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         BlackListedAccessTokenService blackListedAccessTokenService;
 
         @Override
-        public SignUpResponseDTO signUp(SignUpRequestDTO signUpRequestDTO) {
+        public void signUp(SignUpRequestDTO signUpRequestDTO) {
                 if (this.userService.existsByEmail(signUpRequestDTO.getEmail())) {
                         throw new EmailAlreadyExistedException("Email đã tồn tại!");
                 }
@@ -94,13 +102,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                 .build();
                 user = this.userService.save(user);
 
-                SignUpResponseDTO signUpResponseDTO = SignUpResponseDTO
-                                .builder()
-                                .id(user.getId())
-                                .email(user.getEmail())
-                                .build();
-
-                return signUpResponseDTO;
+                this.emailService.sendAccountActivationEmailTemplate(user);
         }
 
         @Override
@@ -113,9 +115,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 Jwt newAccessTokenJwtObject = this.jwtService.createJwt(authentication.getName(),
-                                this.accessTokenValidityDuration, TokenTypeEnum.ACCESS.getName());
+                                this.accessTokenValidityDuration, TokenTypeEnum.ACCESS.name().toLowerCase());
                 Jwt newRefreshTokenJwtObject = this.jwtService.createJwt(authentication.getName(),
-                                this.refreshTokenValidityDuration, TokenTypeEnum.REFRESH.getName());
+                                this.refreshTokenValidityDuration, TokenTypeEnum.REFRESH.name().toLowerCase());
 
                 String userEmail = authentication.getName();
                 User user = this.userService.findByEmail(userEmail).get();
@@ -150,10 +152,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         this.refreshTokenService.save(refreshTokenEntity);
                 }
 
+                String role = authentication.getAuthorities().stream()
+                                .filter(auth -> auth.getAuthority().startsWith(ROLE_PREFIX))
+                                .map(auth -> auth.getAuthority())
+                                .findFirst()
+                                .orElse(ROLE_UNKNOWN);
+
                 LogInResponseDTO logInResponseDTO = LogInResponseDTO
                                 .builder()
                                 .accessToken(newAccessTokenJwtObject.getTokenValue())
                                 .refreshToken(newRefreshTokenJwtObject.getTokenValue())
+                                .role(role)
                                 .build();
 
                 return logInResponseDTO;
@@ -195,11 +204,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
                         String username = oldRefreshTokenJwtObject.getSubject();
                         Jwt newAccessTokenJwtObject = this.jwtService.createJwt(username,
-                                        this.accessTokenValidityDuration, TokenTypeEnum.ACCESS.getName());
+                                        this.accessTokenValidityDuration, TokenTypeEnum.ACCESS.name().toLowerCase());
                         long remainingValidSeconds = Duration
                                         .between(Instant.now(), oldRefreshTokenJwtObject.getExpiresAt()).getSeconds();
                         Jwt newRefreshTokenJwtObject = this.jwtService.createJwt(username, remainingValidSeconds,
-                                        TokenTypeEnum.REFRESH.getName());
+                                        TokenTypeEnum.REFRESH.name().toLowerCase());
 
                         User user = this.userService.findByEmail(username).get();
                         RefreshToken refreshTokenEntity = this.refreshTokenService.findByTokenValueAndUserIdAndJti(
@@ -236,30 +245,102 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         @Override
-        public void confirmAccountRegistration(Optional<String> optionalAccountRegistrationVerificationTokenString) {
-                if (optionalAccountRegistrationVerificationTokenString.isPresent()) {
-                        String accountRegistrationVerificationTokenString = optionalAccountRegistrationVerificationTokenString
-                                        .get();
+        public void activateAccount(Optional<String> optionalAccountActivationTokenString) {
+                if (optionalAccountActivationTokenString.isPresent()) {
+                        String accountActivationTokenString = optionalAccountActivationTokenString.get();
                         VerificationToken verificationTokenEntity = this.verificationTokenService
-                                        .findByTokenValue(accountRegistrationVerificationTokenString)
-                                        .orElseThrow(() -> new VerificationTokenException("Mã xác minh không hợp lệ!"));
-                        if (Instant.now().isAfter(verificationTokenEntity.getExpiresAt())) {
-                                throw new VerificationTokenException("Mã xác minh không hợp lệ!");
-                                // } else if (verificationTokenEntity.isUsed()) {
-                                // throw new VerificationTokenException("Mã xác minh không hợp lệ!");
-                        } else if (!TokenTypeEnum.REGISTRATION_CONFIRMATION.name()
+                                        .findByTokenValue(accountActivationTokenString)
+                                        .orElseThrow(() -> new ActivateAccountTokenException(
+                                                        "Có lỗi xảy ra! Nhấn Gửi lại email để thử lại!"));
+                        if (verificationTokenEntity.getUser() == null) {
+                                throw new ActivateAccountTokenException(
+                                                "Có lỗi xảy ra! Nhấn Gửi lại email để thử lại!");
+                        } else if (!TokenTypeEnum.ACTIVATE_ACCOUNT.name()
                                         .equals(verificationTokenEntity.getType().name())) {
-                                throw new VerificationTokenException("Mã xác minh không hợp lệ!");
+                                throw new ActivateAccountTokenException(
+                                                "Có lỗi xảy ra! Nhấn Gửi lại email để thử lại!");
+                        } else if (Instant.now().isAfter(verificationTokenEntity.getExpiresAt())) {
+                                throw new ActivateAccountTokenException(
+                                                "Có lỗi xảy ra! Nhấn Gửi lại email để thử lại!");
                         }
 
                         User user = verificationTokenEntity.getUser();
                         user.setActive(true);
+                        user.setVerificationToken(null);
                         this.userService.save(user);
-
-                        // verificationTokenEntity.setUsedAt(Instant.now());
-                        // verificationTokenEntity.setUsed(true);
                         this.verificationTokenService.delete(verificationTokenEntity);
+                } else {
+                        throw new ActivateAccountTokenException(
+                                        "Có lỗi xảy ra! Nhấn Gửi lại email để thử lại!");
                 }
+        }
+
+        @Override
+        public void sendActivateAccountEmail(SendEmailRequestDTO sendEmailRequestDTO) {
+                User user = this.userService.findByEmail(sendEmailRequestDTO.getEmail()).get();
+                if (user.isActive()) {
+                        throw new AccountStatusException("Tài khoản đã kích hoạt!");
+                }
+
+                Optional.ofNullable(user.getVerificationToken())
+                                .ifPresent(verificationTokenEntity -> {
+                                        user.setVerificationToken(null);
+                                        this.verificationTokenService.delete(verificationTokenEntity);
+                                });
+
+                this.emailService.sendAccountActivationEmailTemplate(user);
+        }
+
+        @Override
+        public void sendForgotPasswordEmail(SendEmailRequestDTO sendEmailRequestDTO) {
+                User user = this.userService.findByEmail(sendEmailRequestDTO.getEmail()).get();
+                if (!user.isActive()) {
+                        throw new AccountStatusException("Tài khoản chưa kích hoạt!");
+                }
+                Optional.ofNullable(user.getVerificationToken())
+                                .ifPresent(token -> {
+                                        user.setVerificationToken(null);
+                                        this.userService.save(user);
+                                        this.verificationTokenService.delete(token);
+                                });
+                this.emailService.sendForgotPasswordEmailTemplate(user);
+        }
+
+        @Override
+        public String validateForgotPasswordToken(Optional<String> optionalToken) {
+                if (optionalToken.isPresent()) {
+                        String token = optionalToken.get();
+                        VerificationToken tokenEntity = this.verificationTokenService
+                                        .findByTokenValue(token)
+                                        .orElseThrow(() -> new ForgotPasswordTokenException(
+                                                        "Có lỗi xảy ra! Nhấn Quên mật khẩu để thử lại!"));
+                        if (tokenEntity.getUser() == null) {
+                                throw new ForgotPasswordTokenException(
+                                                "Có lỗi xảy ra! Nhấn Quên mật khẩu để thử lại!");
+                        } else if (!TokenTypeEnum.FORGOT_PASSWORD.name()
+                                        .equals(tokenEntity.getType().name())) {
+                                throw new ForgotPasswordTokenException(
+                                                "Có lỗi xảy ra! Nhấn Quên mật khẩu để thử lại!");
+                        } else if (Instant.now().isAfter(tokenEntity.getExpiresAt())) {
+                                throw new ForgotPasswordTokenException(
+                                                "Có lỗi xảy ra! Nhấn Quên mật khẩu để thử lại!");
+                        }
+                        return tokenEntity.getTokenValue();
+                } else {
+                        throw new ForgotPasswordTokenException(
+                                        "Có lỗi xảy ra! Nhấn Quên mật khẩu để thử lại!");
+                }
+        }
+
+        @Override
+        public void resetPassword(ResetPasswordRequestDTO resetPasswordRequestDTO) {
+                User user = this.verificationTokenService
+                                .findByTokenValue(resetPasswordRequestDTO.getToken())
+                                .get()
+                                .getUser();
+                String hashedPassword = this.passwordEncoder.encode(resetPasswordRequestDTO.getPassword());
+                user.setPassword(hashedPassword);
+                this.userService.save(user);
         }
 
 }

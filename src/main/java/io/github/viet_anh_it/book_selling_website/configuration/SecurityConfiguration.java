@@ -15,6 +15,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -52,33 +53,46 @@ import io.github.viet_anh_it.book_selling_website.service.RefreshTokenService;
 import io.github.viet_anh_it.book_selling_website.service.UserService;
 import jakarta.servlet.DispatcherType;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSecurity(debug = false)
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfiguration {
 
-        String[] whitelist = { "/sign-up", "/confirm-registration", "/log-in", "/refresh-token",
-                        "/revoke-refresh-token", "/home", "/assets/**" };
+        @NonFinal
+        String[] whitelist = { "/signUp", "/activateAccount", "/sendActivateAccountEmail", "/logIn",
+                        "/sendForgotPasswordEmail", "/forgotPassword", "/resetPassword", "/refreshToken",
+                        "/revokeRefreshToken", "/books/**", "/assets/**", "/book-covers/**",
+                        "/error/403Forbidden", "/error/401Unauthorized", "/api/books" };
 
+        @NonFinal
         @Value("${jwt.secret-key}")
         String jwtSecretKey;
 
-        private final UserService userService;
-        private final PermissionService permissionService;
-        private final RefreshTokenService refreshTokenService;
-        private final BlackListedAccessTokenService blackListedAccessTokenService;
+        UserService userService;
+        PermissionService permissionService;
+        RefreshTokenService refreshTokenService;
+        BlackListedAccessTokenService blackListedAccessTokenService;
 
-        public SecurityConfiguration(UserService userService,
-                        BlackListedAccessTokenService blackListedAccessTokenService,
-                        PermissionService permissionService, RefreshTokenService refreshTokenService) {
-                this.userService = userService;
-                this.blackListedAccessTokenService = blackListedAccessTokenService;
-                this.permissionService = permissionService;
-                this.refreshTokenService = refreshTokenService;
-        }
+        // private final UserService userService;
+        // private final PermissionService permissionService;
+        // private final RefreshTokenService refreshTokenService;
+        // private final BlackListedAccessTokenService blackListedAccessTokenService;
+
+        // public SecurityConfiguration(UserService userService,
+        // BlackListedAccessTokenService blackListedAccessTokenService,
+        // PermissionService permissionService, RefreshTokenService refreshTokenService)
+        // {
+        // this.userService = userService;
+        // this.blackListedAccessTokenService = blackListedAccessTokenService;
+        // this.permissionService = permissionService;
+        // this.refreshTokenService = refreshTokenService;
+        // }
 
         @Bean
         public PasswordEncoder passwordEncoder() {
@@ -116,7 +130,7 @@ public class SecurityConfiguration {
                                 .macAlgorithm(MacAlgorithm.HS256)
                                 .build();
                 JwtClaimValidator<String> usageClaimValidator = new JwtClaimValidator<>("usage",
-                                usageClaimValue -> usageClaimValue.equals(TokenTypeEnum.ACCESS.getName()));
+                                usageClaimValue -> usageClaimValue.equalsIgnoreCase(TokenTypeEnum.ACCESS.name()));
                 JwtClaimValidator<String> jtiClaimValidator = new JwtClaimValidator<>("jti",
                                 jtiClaimValue -> !this.blackListedAccessTokenService.existsByJti(jtiClaimValue));
                 JwtClaimValidator<String> subClaimValidator = new JwtClaimValidator<>("sub",
@@ -135,7 +149,7 @@ public class SecurityConfiguration {
                                 .macAlgorithm(MacAlgorithm.HS256)
                                 .build();
                 JwtClaimValidator<String> usageClaimValidator = new JwtClaimValidator<>("usage",
-                                usageClaimValue -> usageClaimValue.equals(TokenTypeEnum.REFRESH.getName()));
+                                usageClaimValue -> usageClaimValue.equalsIgnoreCase(TokenTypeEnum.REFRESH.name()));
                 JwtClaimValidator<String> jtiClaimValidator = new JwtClaimValidator<>("jti",
                                 jtiClaimValue -> this.refreshTokenService.existsByJti(jtiClaimValue));
                 JwtClaimValidator<String> subClaimValidator = new JwtClaimValidator<>("sub",
@@ -176,9 +190,17 @@ public class SecurityConfiguration {
         }
 
         @Bean
+        public WebSecurityCustomizer webSecurityCustomizer() {
+                return (web) -> web.ignoring()
+                                .requestMatchers("/book-covers/**");
+        }
+
+        @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.authorizeHttpRequests(httpRequest -> httpRequest
-                                .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE).permitAll()
+                                .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE,
+                                                DispatcherType.ERROR)
+                                .permitAll()
                                 .requestMatchers(this.whitelist).permitAll()
                                 .anyRequest().authenticated())
                                 .formLogin(formLogin -> formLogin.disable())

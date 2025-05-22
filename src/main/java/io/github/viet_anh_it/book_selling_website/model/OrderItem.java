@@ -28,11 +28,11 @@ public class OrderItem extends AbstractEntity {
     int quantity;
     int totalPrice;
 
-    @ManyToOne
     @JoinColumn(name = "order_id")
+    @ManyToOne
     Order order;
 
-    @ManyToOne
     @JoinColumn(name = "product_id")
-    Product product;
+    @ManyToOne
+    Book product;
 }
