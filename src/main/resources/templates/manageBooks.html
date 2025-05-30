@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>BookStore</title>
+    <link th:href="@{/assets/css/sbAdminStyle.css}" rel="stylesheet" />
+    <script th:src="@{/assets/js/fontawesome.all.js}" crossorigin="anonymous"></script>
+  </head>
+  <body class="sb-sidenav-toggled">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+      <!-- Navbar Brand-->
+      <a class="navbar-brand ps-3" th:href="@{/dashboard}">BookStore</a>
+      <!-- Sidebar Toggle-->
+      <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
+        <i class="fas fa-bars"></i>
+      </button>
+      <!-- Navbar Search-->
+      <!-- <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+        <div class="input-group">
+          <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+          <button class="btn btn-primary" id="btnNavbarSearch" type="button">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </form> -->
+      <!-- Navbar-->
+      <ul class="navbar-nav ms-auto me-3 me-lg-4">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a id="logOutLink" class="dropdown-item" href="#">Đăng xuất</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+    <div id="layoutSidenav">
+      <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+          <div class="sb-sidenav-menu">
+            <div class="nav">
+              <div class="sb-sidenav-menu-heading">Core</div>
+              <a class="nav-link" th:href="@{/dashboard}">
+                <div class="sb-nav-link-icon">
+                  <i class="fas fa-tachometer-alt"></i>
+                </div>
+                Dashboard
+              </a>
+              <div class="sb-sidenav-menu-heading">Interface</div>
+              <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                <div class="sb-nav-link-icon">
+                  <i class="fas fa-book-open"></i>
+                </div>
+                Pages
+                <div class="sb-sidenav-collapse-arrow">
+                  <i class="fas fa-angle-down"></i>
+                </div>
+              </a>
+              <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                  <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                    Authentication
+                    <div class="sb-sidenav-collapse-arrow">
+                      <i class="fas fa-angle-down"></i>
+                    </div>
+                  </a>
+                  <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                    <nav class="sb-sidenav-menu-nested nav">
+                      <a class="nav-link" href="login.html">Login</a>
+                      <a class="nav-link" href="register.html">Register</a>
+                      <a class="nav-link" href="password.html">Forgot Password</a>
+                    </nav>
+                  </div>
+                  <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                    Error
+                    <div class="sb-sidenav-collapse-arrow">
+                      <i class="fas fa-angle-down"></i>
+                    </div>
+                  </a>
+                  <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                    <nav class="sb-sidenav-menu-nested nav">
+                      <a class="nav-link" href="401.html">401 Page</a>
+                      <a class="nav-link" href="404.html">404 Page</a>
+                      <a class="nav-link" href="500.html">500 Page</a>
+                    </nav>
+                  </div>
+                </nav>
+              </div>
+            </div>
+          </div>
+          <div class="sb-sidenav-footer">
+            <div class="small">Đã đăng nhập với vai trò:</div>
+            Hiển thị vai trò của người đang đăng nhập ở đây.
+          </div>
+        </nav>
+      </div>
+      <div id="layoutSidenav_content">
+        <main>
+          <div class="container-fluid px-4">
+            <h1 class="mt-4">Quản lý sách</h1>
+            <ol class="breadcrumb mb-4">
+              <li class="breadcrumb-item">
+                <a th:href="@{/dashboard}">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Quản lý sách</li>
+            </ol>
+            <div class="row g-4 justify-content-center align-items-center">
+              <!-- button for pop modal for creating new book -->
+              <div class="col-xl-1">
+                <button id="showCreateBookModalBtn" type="button" class="btn btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#createBookModalContainer">
+                  <i class="fa-solid fa-square-plus"></i>
+                </button>
+              </div>
+              <div class="col-5"></div>
+              <div class="col-xl-3">
+                <div class="input-group w-100 mx-auto d-flex mb-4">
+                  <input id="categorySearchBox" type="search" name="name" class="form-control p-3" placeholder="Nhập tên danh mục..." aria-describedby="search-icon-1" />
+                  <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
+                </div>
+              </div>
+              <div class="col-xl-3">
+                <div class="bg-dark ps-3 py-3 rounded d-flex justify-content-between mb-4 align-items-center">
+                  <label for="bookSorter" class="text-white">Xếp theo:</label>
+                  <select id="bookSorter" name="sort" class="border-0 form-select-sm bg-dark me-3 text-white" style="outline: none" form="bookSorter" th:attr="data-current-page=${paginationMetadata.currentPosition}">
+                    <option value="price,asc">Giá (Thấp - Cao)</option>
+                    <option value="price,desc">Giá (Cao - Thấp)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <table class="table table-light table-striped table-hover table-bordered table-responsive align-middle" style="text-align: justify">
+              <colgroup>
+                <col style="width: 1%" />
+                <col style="width: 5%" />
+                <col style="width: 5%" />
+                <col />
+                <col />
+                <col />
+                <col style="width: 8%" />
+                <col style="width: 1%" />
+              </colgroup>
+              <thead class="table-dark align-middle text-center">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Ảnh</th>
+                  <th scope="col">ISBN</th>
+                  <th scope="col">Tên</th>
+                  <th scope="col">Tác giả</th>
+                  <th scope="col">Nhà xuất bản</th>
+                  <th scope="col">Giá bán</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody id="bookTableBody" class="table-group-divider">
+                <tr th:if="${books != null and not #lists.isEmpty(books)}" th:each="book, stat : ${books}">
+                  <th scope="row" th:text="${stat.count}" class="text-center">1</th>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <img th:src="@{${book.image}}" th:id="'bookImageCell-' + ${book.id}" class="img-thumbnail w-100 h-100 rounded object-fit-cover" style="aspect-ratio: 3/4; overflow: hidden" th:alt="${book.name}" />
+                    </div>
+                  </td>
+                  <td class="text-center text-nowrap" th:id="'bookISBNCell-' + ${book.id}" th:text="${book.isbn}"></td>
+                  <td class="text-wrap" th:id="'bookNameCell-' + ${book.id}" th:text="${book.name}" style="text-align: left"></td>
+                  <td class="text-nowrap" th:id="'bookAuthorCell-' + ${book.id}" style="text-align: left" th:text="${book.author}"></td>
+                  <td class="text-nowrap" th:id="'bookPublisherCell-' + ${book.id}" style="text-align: left" th:text="${book.publisher}"></td>
+                  <td class="text-center text-nowrap" th:id="'bookPriceCell-' + ${book.id}" th:text="${#numbers.formatDecimal(book.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
+                  <td class="text-nowrap">
+                    <button type="button" class="openBookDetailModalBtn btn btn-info text-nowrap text-white" th:attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#bookDetailModalContainer">
+                      <!-- <i class="fa-solid fa-circle-info"></i> -->
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button type="button" class="openUpdateBookModalBtn btn btn-success text-nowrap border-0" th:attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#updateBookModalContainer">
+                      <i class="fa-regular fa-pen-to-square"></i>
+                    </button>
+                    <button type="button" class="openDeleteBookModalBtn btn btn-danger text-nowrap" th:attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#deleteBookModalContainer">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr th:if="${books == null or #lists.isEmpty(books)}">
+                  <td colspan="8" class="text-center">Chưa có cuốn sách nào.</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-center">
+              <nav aria-label="Page navigation">
+                <ul id="paginationBar" class="pagination">
+                  <!-- Prev -->
+                  <li id="prev" class="page-item" th:classappend="${!paginationMetadata.hasPreviousPage} ? ' disabled'" th:attr="data-prev-page=${paginationMetadata.previousPosition}" th:if="${paginationMetadata.totalNumberOfPages >= 1}">
+                    <a class="page-link" href="#" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+
+                  <!-- Page numbers -->
+                  <li th:each="pageIndex : ${#numbers.sequence(0, paginationMetadata.totalNumberOfPages - 1)}" class="page-item page-number" th:classappend="${pageIndex == paginationMetadata.currentPosition} ? ' active'" th:if="${paginationMetadata.totalNumberOfPages >= 1}" th:attr="data-page=${pageIndex}">
+                    <a class="page-link" href="#" th:text="${pageIndex + 1}" th:attr="data-page=${pageIndex}">Hiển thị số trang ở đây.</a>
+                  </li>
+
+                  <!-- Next -->
+                  <li id="next" class="page-item" th:classappend="${!paginationMetadata.hasNextPage} ? ' disabled'" th:attr="data-next-page=${paginationMetadata.currentPosition + 1}" th:if="${paginationMetadata.totalNumberOfPages >= 1}">
+                    <a class="page-link" href="#" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+          <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-between small">
+              <div class="text-muted">Copyright &copy; Your Website 2023</div>
+              <div>
+                <a href="#">Privacy Policy</a>
+                &middot;
+                <a href="#">Terms &amp; Conditions</a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- modals -->
+    <!-- modal for viewing book detail -->
+    <div class="modal fade" id="bookDetailModalContainer" tabindex="-1" aria-labelledby="bookDetailModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="bookDetailModal">Thông tin chi tiết</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+          </div>
+          <div class="modal-body">
+            <div class="card mb-3">
+              <div class="row g-0 mb-3">
+                <div class="col-4">
+                  <img id="bookDetailImagePreview" src="" class="w-100 h-100 object-fit-cover rounded" alt="" style="aspect-ratio: 3/4; overflow: hidden" />
+                </div>
+                <div class="col-8">
+                  <div class="card-body">
+                    <h5 class="card-title fs-1 fw-semibold">Đêm trước bình minh</h5>
+                    <div class="px-2 mt-5">
+                      <div class="row g-4">
+                        <div class="col-12">
+                          <!-- ISBN -->
+                          <div class="row text-bg-primary align-items-center justify-content-center py-2">
+                            <div class="col-6">
+                              <p class="mb-0">ISBN</p>
+                            </div>
+                            <div class="col-6">
+                              <p id="bookDetailISBN" class="mb-0"></p>
+                            </div>
+                          </div>
+                          <!-- Thể loại -->
+                          <div class="row align-items-center justify-content-center py-2">
+                            <div class="col-6">
+                              <p class="mb-0">Thể loại</p>
+                            </div>
+                            <div class="col-6">
+                              <p id="bookDetailCategory" class="mb-0"></p>
+                            </div>
+                          </div>
+                          <!-- Tác giả -->
+                          <div class="row text-bg-primary align-items-center justify-content-center py-2">
+                            <div class="col-6">
+                              <p class="mb-0">Tác giả</p>
+                            </div>
+                            <div class="col-6">
+                              <p id="bookDetailAuthor" class="mb-0"></p>
+                            </div>
+                          </div>
+                          <!-- Nhà xuất bản -->
+                          <div class="row align-items-center justify-content-center py-2">
+                            <div class="col-6">
+                              <p class="mb-0">Nhà xuất bản</p>
+                            </div>
+                            <div class="col-6">
+                              <p id="bookDetailPublisher" class="mb-0"></p>
+                            </div>
+                          </div>
+                          <!-- Giá bán -->
+                          <div class="row text-bg-primary align-items-center justify-content-center py-2">
+                            <div class="col-6">
+                              <p class="mb-0">Giá bán</p>
+                            </div>
+                            <div class="col-6">
+                              <p id="bookDetailPrice" class="mb-0"></p>
+                            </div>
+                          </div>
+                          <!-- Số lượng tồn -->
+                          <div class="row align-items-center justify-content-center py-2">
+                            <div class="col-6">
+                              <p class="mb-0">Số lượng tồn kho</p>
+                            </div>
+                            <div class="col-6">
+                              <p id="bookDetailStock" class="mb-0"></p>
+                            </div>
+                          </div>
+                          <!-- Số lượng đã bán -->
+                          <div class="row text-bg-primary align-items-center justify-content-center py-2">
+                            <div class="col-6">
+                              <p class="mb-0">Số lượng đã bán</p>
+                            </div>
+                            <div class="col-6">
+                              <p id="bookDetailSoldQuantity" class="mb-0"></p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Mô tả -->
+              <div class="row">
+                <div class="col-12">
+                  <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Thông tin mô tả về cuốn sách</button>
+                      </h2>
+                      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <p id="bookDetailDescription" class="mb-0" style="white-space: pre-line; text-align: justify"></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- modal for creating new book -->
+    <div class="modal fade" id="createBookModalContainer" tabindex="-1" aria-labelledby="createBookModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="createCategoryModal">Thêm sách mới</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <form>
+                <div class="row">
+                  <div class="col-4">
+                    <div class="mb-3">
+                      <img id="createBookImagePreview" src="" alt="" class="img-fluid img-thumbnail w-100 h-100 object-fit-cover rounded" style="aspect-ratio: 3/4; overflow: hidden" />
+                    </div>
+                  </div>
+                  <div class="col-8">
+                    <div class="mb-3">
+                      <label for="createBookNameInput" class="form-label">Tên sách</label>
+                      <input type="text" class="form-control" id="createBookNameInput" placeholder="Tên sách..." />
+                      <div id="createBookNameError" class="invalid-feedback"></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="createBookAuthorInput" class="form-label">Tên tác giả</label>
+                      <input type="text" class="form-control" id="createBookAuthorInput" placeholder="Tên tác giả..." />
+                      <div id="createBookAuthorError" class="invalid-feedback"></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="createBookPublisherInput" class="form-label">Tên nhà xuất bản</label>
+                      <input type="text" class="form-control" id="createBookPublisherInput" placeholder="Tên nhà xuất bản..." />
+                      <div id="createBookPublisherError" class="invalid-feedback"></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="createBookCategorySelect" class="form-label">Thể loại</label>
+                      <select id="createBookCategorySelect" class="form-select" aria-label="Default select example">
+                        <option selected>Open this select menu</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                      </select>
+                      <div id="createBookCategoryError" class="invalid-feedback"></div>
+                    </div>
+                    <div class="row">
+                      <div class="col-4">
+                        <div class="mb-3">
+                          <label for="createBookISBNInput" class="form-label">ISBN</label>
+                          <input type="text" class="form-control" id="createBookISBNInput" placeholder="ISBN..." />
+                          <div id="createBookISBNError" class="invalid-feedback"></div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="mb-3">
+                          <label for="createBookStockInput" class="form-label">Số lượng tồn kho</label>
+                          <input type="number" class="form-control" id="createBookStockInput" value="1" placeholder="Số lượng tồn kho..." />
+                          <div id="createBookStockError" class="invalid-feedback"></div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="mb-3">
+                          <label for="createBookPriceInput" class="form-label">Giá bán</label>
+                          <input type="number" class="form-control" id="createBookPriceInput" value="15000" placeholder="Giá bán..." />
+                          <div id="createBookPriceError" class="invalid-feedback"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="createBookImageInput" class="form-label">Ảnh bìa</label>
+                      <input class="form-control" type="file" id="createBookImageInput" />
+                      <div id="createBookImageError" class="invalid-feedback"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="accordion mb-3" id="accordionExample">
+                      <div class="accordion-item">
+                        <h2 class="accordion-header">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#createBookDescriptionAccordion" aria-expanded="false" aria-controls="collapseOne">Mở rộng</button>
+                        </h2>
+                        <div id="createBookDescriptionAccordion" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                          <div class="accordion-body">
+                            <label for="createBookDescriptionTextarea" class="form-label">Thông tin mô tả về cuốn sách</label>
+                            <textarea class="form-control overflow-hidden w-100" id="createBookDescriptionTextarea" style="white-space: pre-line; text-align: justify; resize: none"></textarea>
+                            <div id="createBookDescriptionError" class="invalid-feedback"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="mb-3">
+                      <button id="createBookBtn" type="button" class="btn btn-primary">Tạo</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- modal for updating book category -->
+    <div class="modal fade" id="updateBookModalContainer" tabindex="-1" aria-labelledby="updateBookModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="updateCategoryModal">Cập nhật sách</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <form>
+                <div class="row">
+                  <div class="col-4">
+                    <div class="mb-3">
+                      <img id="updateBookImagePreview" src="" alt="" class="img-fluid w-100 h-100 object-fit-cover rounded" style="aspect-ratio: 3/4; overflow: hidden" />
+                    </div>
+                  </div>
+                  <div class="col-8">
+                    <div class="mb-3">
+                      <label for="updateBookNameInput" class="form-label">Tên sách</label>
+                      <input type="text" class="form-control" id="updateBookNameInput" placeholder="Tên sách..." />
+                      <div id="updateBookNameError" class="invalid-feedback"></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="updateBookAuthorInput" class="form-label">Tên tác giả</label>
+                      <input type="text" class="form-control" id="updateBookAuthorInput" placeholder="Tên tác giả..." />
+                      <div id="updateBookAuthorError" class="invalid-feedback"></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="updateBookPublisherInput" class="form-label">Tên nhà xuất bản</label>
+                      <input type="text" class="form-control" id="updateBookPublisherInput" placeholder="Tên nhà xuất bản..." />
+                      <div id="updateBookPublisherError" class="invalid-feedback"></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="updateBookCategorySelect" class="form-label">Thể loại</label>
+                      <select id="updateBookCategorySelect" class="form-select" aria-label="Default select example">
+                        <option selected>Open this select menu</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                      </select>
+                      <div id="updateBookCategoryError" class="invalid-feedback"></div>
+                    </div>
+                    <div class="row">
+                      <div class="col-4">
+                        <div class="mb-3">
+                          <label for="updateBookISBNInput" class="form-label">ISBN</label>
+                          <input type="text" class="form-control" id="updateBookISBNInput" placeholder="ISBN..." />
+                          <div id="updateBookISBNError" class="invalid-feedback"></div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="mb-3">
+                          <label for="updateBookStockInput" class="form-label">Số lượng tồn kho</label>
+                          <input type="number" class="form-control" id="updateBookStockInput" value="1" placeholder="Số lượng tồn kho..." />
+                          <div id="updateBookStockError" class="invalid-feedback"></div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="mb-3">
+                          <label for="updateBookPriceInput" class="form-label">Giá bán</label>
+                          <input type="number" class="form-control" id="updateBookPriceInput" value="15000" placeholder="Giá bán..." />
+                          <div id="updateBookPriceError" class="invalid-feedback"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="updateBookImageInput" class="form-label">Ảnh bìa</label>
+                      <input class="form-control" type="file" id="updateBookImageInput" />
+                      <div id="updateBookImageError" class="invalid-feedback"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="accordion mb-3" id="accordionExample">
+                      <div class="accordion-item">
+                        <h2 class="accordion-header">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#updateBookDescriptionAccordion" aria-expanded="false" aria-controls="collapseOne">Mở rộng</button>
+                        </h2>
+                        <div id="updateBookDescriptionAccordion" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                          <div class="accordion-body">
+                            <label for="updateBookDescriptionTextarea" class="form-label">Thông tin mô tả về cuốn sách</label>
+                            <textarea class="form-control overflow-hidden w-100" id="updateBookDescriptionTextarea" style="white-space: pre-line; text-align: justify; resize: none"></textarea>
+                            <div id="updateBookDescriptionError" class="invalid-feedback"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="mb-3">
+                      <button id="updateBookBtn" type="button" class="btn btn-primary">Cập nhật</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- modal for confirming book removal -->
+    <div class="modal fade" id="deleteBookModalContainer" tabindex="-1" aria-labelledby="deleteBookModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="deleteBookModal">Xóa danh mục</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+          </div>
+          <div class="modal-body">
+            Bạn chắc chắn muốn xóa cuốn sách này chứ? Cuốn sách này cũng sẽ bị xóa khỏi giỏ hàng của khách hàng.
+            <form>
+              <button id="deleteBookBtn" type="button" class="btn btn-primary" data-category-id="" th:attr="data-current-page=${paginationMetadata.currentPosition}">Xóa</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end modals -->
+
+    <!-- toasts -->
+    <!-- success toast -->
+    <div id="successToast" class="toast align-items-center bg-success text-white border-0 mt-3 rounded-0 d-none position-fixed top-0 end-0 me-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 1090">
+      <div class="toast-header bg-success text-white rounded-0">
+        <i class="fa-solid fa-circle-check me-1"></i>
+        <span>Thành công!</span>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <span id="successToastMessage">Thông báo</span>
+      </div>
+      <div class="progress" role="progressbar" aria-label="Example 1px high" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 3px">
+        <div class="progress-bar" style="width: 100%"></div>
+      </div>
+    </div>
+    <!-- error toast -->
+    <div id="errorToast" class="toast align-items-center bg-danger text-white border-0 mt-3 rounded-0 d-none position-fixed top-0 end-0 me-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 1090">
+      <div class="toast-header bg-danger text-white rounded-0">
+        <i class="fa-solid fa-circle-exclamation me-1"></i>
+        <span>Lỗi!</span>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <span id="errorToastMessage">Thông báo</span>
+      </div>
+      <div class="progress" role="progressbar" aria-label="Example 1px high" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 3px">
+        <div class="progress-bar" style="width: 100%"></div>
+      </div>
+    </div>
+    <!-- end toasts -->
+
+    <!-- scripts -->
+    <script th:src="@{/assets/js/bootstrap.bundle.min.js}" crossorigin="anonymous"></script>
+    <script th:src="@{/assets/js/sbAdminScript.js}"></script>
+    <script th:src="@{/assets/js/manageBooksPageScript.js}"></script>
+  </body>
+</html>

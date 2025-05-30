@@ -1,11 +1,5 @@
 package io.github.viet_anh_it.book_selling_website.model;
 
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.EntityListeners;
@@ -26,15 +20,15 @@ public abstract class AbstractEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @CreatedDate
-    LocalDateTime created_at;
+    // @CreatedDate
+    // LocalDateTime created_at;
 
-    @CreatedBy
-    String created_by;
+    // @CreatedBy
+    // String created_by;
 
-    @LastModifiedDate
-    LocalDateTime updated_at;
+    // @LastModifiedDate
+    // LocalDateTime updated_at;
 
-    @LastModifiedBy
-    String updated_by;
+    // @LastModifiedBy
+    // String updated_by;
 }

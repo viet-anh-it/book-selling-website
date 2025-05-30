@@ -30,7 +30,9 @@ import io.github.viet_anh_it.book_selling_website.exception.EmailAlreadyExistedE
 import io.github.viet_anh_it.book_selling_website.exception.ForgotPasswordTokenException;
 import io.github.viet_anh_it.book_selling_website.exception.RefreshTokenException;
 import io.github.viet_anh_it.book_selling_website.exception.RoleNotFoundException;
+import io.github.viet_anh_it.book_selling_website.model.Address;
 import io.github.viet_anh_it.book_selling_website.model.BlackListedAccessToken;
+import io.github.viet_anh_it.book_selling_website.model.Cart;
 import io.github.viet_anh_it.book_selling_website.model.RefreshToken;
 import io.github.viet_anh_it.book_selling_website.model.Role;
 import io.github.viet_anh_it.book_selling_website.model.User;
@@ -100,6 +102,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                 .role(roleEntity)
                                 .active(false)
                                 .build();
+                user.setCart(new Cart());
+                user.setAddress(new Address());
                 user = this.userService.save(user);
 
                 this.emailService.sendAccountActivationEmailTemplate(user);

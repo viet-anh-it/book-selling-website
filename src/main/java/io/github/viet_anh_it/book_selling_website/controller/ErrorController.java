@@ -17,4 +17,9 @@ public class ErrorController {
     public String get401UnauthorizedPage() {
         return "401Unauthorized";
     }
+
+    @GetMapping("/500InternalServerError")
+    public String get500InternalServerError() {
+        return "500InternalServerError";
+    }
 }

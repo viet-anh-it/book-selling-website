@@ -55,8 +55,9 @@ public class BookController {
             @CookieValue(name = "access_token", defaultValue = "") String accessToken,
             @RequestParam(name = "price") Optional<BookPriceRangeDTO> optPriceParam) {
         SuccessResponse<List<BookDTO>> successResponse = this.bookService.getAllBooks(PAGEABLE, optPriceParam);
+        List<BookDTO> books = successResponse.getData();
         PaginationMetadataDTO paginationMetadata = successResponse.getPaginationMetadata();
-        model.addAttribute("books", successResponse.getData());
+        model.addAttribute("books", books);
         model.addAttribute("paginationMetadata", paginationMetadata);
 
         try {
@@ -103,8 +104,13 @@ public class BookController {
     }
 
     @Secured({ "ROLE_MANAGER" })
-    @GetMapping("/addBook")
-    public String getAddBookPage() {
-        return "addBook";
+    @GetMapping("/manager/books")
+    public String getManageBooksPage(Model model) {
+        SuccessResponse<List<BookDTO>> successResponse = this.bookService.getAllBooks(PAGEABLE, Optional.empty());
+        List<BookDTO> books = successResponse.getData();
+        PaginationMetadataDTO paginationMetadata = successResponse.getPaginationMetadata();
+        model.addAttribute("books", books);
+        model.addAttribute("paginationMetadata", paginationMetadata);
+        return "manageBooks";
     }
 }

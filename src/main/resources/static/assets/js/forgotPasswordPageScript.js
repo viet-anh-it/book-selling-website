@@ -34,10 +34,7 @@ updatePasswordButton.addEventListener(`click`, async (event) => {
   } else if (response.status === 400) {
     successMessage.innerText = ``;
     if (`token` in responseBody.detail) {
-      sessionStorage.setItem(
-        `resetPasswordTokenError`,
-        responseBody.detail.token
-      );
+      sessionStorage.setItem(`resetPasswordTokenError`, responseBody.detail.token);
       window.location.assign(`http://localhost:8080/logIn`);
       return;
     }

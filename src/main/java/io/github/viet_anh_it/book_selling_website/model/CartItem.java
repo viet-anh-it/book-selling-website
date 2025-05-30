@@ -32,7 +32,7 @@ public class CartItem extends AbstractEntity {
     @ManyToOne
     Cart cart;
 
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "book_id")
     @ManyToOne
-    Book product;
+    Book book;
 }

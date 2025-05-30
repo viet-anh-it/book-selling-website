@@ -18,9 +18,7 @@
 
 function buildBookNameTooltips() {
   // Chọn tất cả phần tử có data-bs-toggle="tooltip"
-  var tooltipTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"]')
-  );
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   // Khởi tạo tooltip cho mỗi phần tử
   tooltipTriggerList.map(function (el) {
     return new bootstrap.Tooltip(el);
@@ -53,31 +51,21 @@ function handlePriceSliderEvent() {
       resultsContainer.innerHTML = "";
       const books = bookFilteringResponseBody.data;
       if (books.length > 0) {
-        const bookFilteringResultMessage = document.getElementById(
-          `bookFilteringResultMessage`
-        );
+        const bookFilteringResultMessage = document.getElementById(`bookFilteringResultMessage`);
         bookFilteringResultMessage.classList.add(`d-none`);
         books.forEach((book) => {
           const bookHTML = `
             <div class="col-md-6 col-lg-6 col-xl-4 bookItem">
               <div class="rounded position-relative fruite-item">
                 <div class="fruite-img">
-                  <img src="${
-                    book.image
-                  }" class="img-fluid w-100 h-100 object-fit-cover rounded-top image" alt="${
-            book.name
-          }" />
+                  <img src="${book.image}" class="img-fluid w-100 h-100 object-fit-cover rounded-top image" alt="${book.name}" />
                 </div>
                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                   <p class="bookId d-none">${book.id}</p>
-                  <h4 class="text-truncate name" style="max-width: 100%" data-bs-toggle="tooltip" title="${
-                    book.name
-                  }">${book.name}</h4>
+                  <h4 class="text-truncate name" style="max-width: 100%" data-bs-toggle="tooltip" title="${book.name}">${book.name}</h4>
                   <p class="author">${book.author}</p>
                   <div class="d-flex justify-content-between flex-lg-wrap">
-                    <p class="text-dark fs-5 fw-bold mb-0 price">${book.price.toLocaleString(
-                      "vi-VN"
-                    )}₫</p>
+                    <p class="text-dark fs-5 fw-bold mb-0 price">${book.price.toLocaleString("vi-VN")}₫</p>
                   </div>
                 </div>
               </div>
@@ -86,9 +74,7 @@ function handlePriceSliderEvent() {
           resultsContainer.insertAdjacentHTML("beforeend", bookHTML);
         });
       } else {
-        const bookFilteringResultMessage = document.getElementById(
-          `bookFilteringResultMessage`
-        );
+        const bookFilteringResultMessage = document.getElementById(`bookFilteringResultMessage`);
         bookFilteringResultMessage.classList.remove(`d-none`);
       }
 
@@ -105,9 +91,7 @@ function handlePriceSliderEvent() {
         // Page numbers
         for (let i = 0; i < pagination.totalNumberOfPages; i++) {
           const activeClass = i === pagination.currentPosition ? " active" : "";
-          const page = `<a href="#!" onclick="event.preventDefault();" class="rounded mx-1${activeClass} pagNumBtn"><span>${
-            i + 1
-          }</span></a>`;
+          const page = `<a href="#!" onclick="event.preventDefault();" class="rounded mx-1${activeClass} pagNumBtn"><span>${i + 1}</span></a>`;
           paginationContainer.insertAdjacentHTML("beforeend", page);
         }
 
@@ -147,9 +131,7 @@ function handlePageNumberButtonEvent() {
       });
       const pageNavigationResponseBody = await pageNavigationResponse.json();
       const resultsContainer = document.getElementById("resultsContainer");
-      const paginationContainer = document.getElementById(
-        "paginationContainer"
-      );
+      const paginationContainer = document.getElementById("paginationContainer");
       const prevBtn = document.getElementById("pagBarPrevBtn");
       const nextBtn = document.getElementById("pagBarNextBtn");
 
@@ -158,12 +140,7 @@ function handlePageNumberButtonEvent() {
         renderBookList(pageNavigationResponseBody.data, resultsContainer);
 
         // NHIỆM VỤ 2: Cập nhật trạng thái thanh phân trang
-        updatePagination(
-          pageNavigationResponseBody.paginationMetadata,
-          prevBtn,
-          nextBtn,
-          paginationContainer
-        );
+        updatePagination(pageNavigationResponseBody.paginationMetadata, prevBtn, nextBtn, paginationContainer);
 
         handleBookItemEvent();
       }
@@ -185,22 +162,14 @@ function handlePageNumberButtonEvent() {
       <div class="col-md-6 col-lg-6 col-xl-4 bookItem">
         <div class="rounded position-relative fruite-item">
           <div class="fruite-img">
-            <img src="${
-              book.image
-            }" class="img-fluid w-100 h-100 object-fit-cover rounded-top image" alt="${
-      book.name
-    }" />
+            <img src="${book.image}" class="img-fluid w-100 h-100 object-fit-cover rounded-top image" alt="${book.name}" />
           </div>
           <div class="p-4 border border-secondary border-top-0 rounded-bottom">
             <p class="bookId d-none">${book.id}</p>
-            <h4 class="text-truncate name" style="max-width: 100%" data-bs-toggle="tooltip" title="${
-              book.name
-            }">${book.name}</h4>
+            <h4 class="text-truncate name" style="max-width: 100%" data-bs-toggle="tooltip" title="${book.name}">${book.name}</h4>
             <p class="author">${book.author}</p>
             <div class="d-flex justify-content-between flex-lg-wrap">
-              <p class="text-dark fs-5 fw-bold mb-0 price">${formatPrice(
-                book.price
-              )}</p>
+              <p class="text-dark fs-5 fw-bold mb-0 price">${formatPrice(book.price)}</p>
             </div>
           </div>
         </div>
@@ -260,8 +229,7 @@ function handlePrevAndNextButtonEvent() {
   buttons.forEach((button) =>
     button.addEventListener(`click`, async (event) => {
       event.preventDefault();
-      const activePageNumberButton =
-        document.querySelector(`.pagNumBtn.active`);
+      const activePageNumberButton = document.querySelector(`.pagNumBtn.active`);
       const currentPage = parseInt(activePageNumberButton.innerText, 10);
       const queryString = new URLSearchParams();
 
@@ -310,22 +278,14 @@ function handlePrevAndNextButtonEvent() {
       <div class="col-md-6 col-lg-6 col-xl-4 bookItem">
         <div class="rounded position-relative fruite-item">
           <div class="fruite-img">
-            <img src="${
-              book.image
-            }" class="img-fluid w-100 h-100 object-fit-cover rounded-top image" alt="${
-      book.name
-    }" />
+            <img src="${book.image}" class="img-fluid w-100 h-100 object-fit-cover rounded-top image" alt="${book.name}" />
           </div>
           <div class="p-4 border border-secondary border-top-0 rounded-bottom">
             <p class="bookId d-none">${book.id}</p>
-            <h4 class="text-truncate name" style="max-width: 100%" data-bs-toggle="tooltip" title="${
-              book.name
-            }">${book.name}</h4>
+            <h4 class="text-truncate name" style="max-width: 100%" data-bs-toggle="tooltip" title="${book.name}">${book.name}</h4>
             <p class="author">${book.author}</p>
             <div class="d-flex justify-content-between flex-lg-wrap">
-              <p class="text-dark fs-5 fw-bold mb-0 price">${formatPrice(
-                book.price
-              )}</p>
+              <p class="text-dark fs-5 fw-bold mb-0 price">${formatPrice(book.price)}</p>
             </div>
           </div>
         </div>
@@ -428,11 +388,7 @@ function handleSortByFieldEvent() {
       col.innerHTML = `
       <div class="rounded position-relative fruite-item bookItem">
         <div class="fruite-img">
-          <img src="${
-            book.image
-          }" class="img-fluid w-100 h-100 object-fit-cover rounded-top image" alt="${
-        book.name
-      }" />
+          <img src="${book.image}" class="img-fluid w-100 h-100 object-fit-cover rounded-top image" alt="${book.name}" />
         </div>
         <div class="p-4 border border-secondary border-top-0 rounded-bottom">
         <p class="bookId d-none">${book.id}</p>
@@ -455,9 +411,7 @@ function handleSortByFieldEvent() {
     });
 
     // Khởi tạo lại tooltip cho các tên sách bị truncate
-    const tooltipTriggerList = Array.from(
-      document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    );
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach((el) => new bootstrap.Tooltip(el));
   }
 

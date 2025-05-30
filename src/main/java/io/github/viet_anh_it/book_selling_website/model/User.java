@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import io.github.viet_anh_it.book_selling_website.enums.GenderEnum;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -46,14 +47,16 @@ public class User extends AbstractEntity {
     @ManyToOne
     Role role;
 
-    @OneToMany(mappedBy = Address_.USER)
-    Set<Address> addresses;
+    @Builder.Default
+    @OneToOne(mappedBy = Address_.USER, cascade = CascadeType.PERSIST)
+    Address address = new Address();
 
     @OneToMany(mappedBy = Review_.USER)
     Set<Review> reviews;
 
-    @OneToOne(mappedBy = Cart_.USER)
-    Cart cart;
+    @Builder.Default
+    @OneToOne(mappedBy = Cart_.USER, cascade = CascadeType.PERSIST)
+    Cart cart = new Cart();
 
     @OneToMany(mappedBy = Order_.USER)
     Set<Order> orders;
@@ -66,4 +69,14 @@ public class User extends AbstractEntity {
 
     @OneToOne(mappedBy = VerificationToken_.USER)
     VerificationToken verificationToken;
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+        this.cart.setUser(this);
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+        this.address.setUser(this);
+    }
 }

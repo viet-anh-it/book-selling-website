@@ -1,5 +1,6 @@
 package io.github.viet_anh_it.book_selling_website.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.Entity;
@@ -32,6 +33,7 @@ public class Cart extends AbstractEntity {
     @JoinColumn(name = "user_id")
     User user;
 
+    @Builder.Default
     @OneToMany(mappedBy = CartItem_.CART)
-    Set<CartItem> cartItems;
+    Set<CartItem> cartItems = new HashSet<>();
 }

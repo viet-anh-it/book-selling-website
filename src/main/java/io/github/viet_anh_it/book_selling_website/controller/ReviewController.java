@@ -45,6 +45,6 @@ public class ReviewController {
         PaginationMetadataDTO paginationMetadataDTO = successResponse.getPaginationMetadata();
         model.addAttribute("reviewDtoList", reviewDtoList);
         model.addAttribute("paginationMetadata", paginationMetadataDTO);
-        return "bookReviews";
+        return "manageReviews";
     }
 }

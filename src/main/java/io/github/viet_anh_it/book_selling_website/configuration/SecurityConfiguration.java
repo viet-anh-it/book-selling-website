@@ -1,5 +1,6 @@
 package io.github.viet_anh_it.book_selling_website.configuration;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +36,10 @@ import org.springframework.security.oauth2.server.resource.web.DefaultBearerToke
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -180,8 +185,22 @@ public class SecurityConfiguration {
         }
 
         @Bean
-        public AuthenticationEntryPoint authenticationEntryPoint() {
+        public AuthenticationEntryPoint bearerTokenAuthenticationEntryPoint() {
                 return new BearerTokenAuthenticationEntryPointImpl();
+        }
+
+        @Bean
+        public AuthenticationEntryPoint loginUrlAuthenticationEntryPoint() {
+                return new LoginUrlAuthenticationEntryPoint("/error/401Unauthorized");
+        }
+
+        @Bean
+        public AuthenticationEntryPoint delegatingAuthenticationEntryPoint() {
+                LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> entryPoints = new LinkedHashMap<>();
+                entryPoints.put(new AntPathRequestMatcher("/api/**"), bearerTokenAuthenticationEntryPoint());
+                DelegatingAuthenticationEntryPoint delegate = new DelegatingAuthenticationEntryPoint(entryPoints);
+                delegate.setDefaultEntryPoint(loginUrlAuthenticationEntryPoint());
+                return delegate;
         }
 
         @Bean
@@ -213,7 +232,7 @@ public class SecurityConfiguration {
                                                                 .jwt(jwt -> jwt.decoder(accessTokenJwtDecoder())
                                                                                 .jwtAuthenticationConverter(
                                                                                                 jwtAuthenticationConverter()))
-                                                                .authenticationEntryPoint(authenticationEntryPoint())
+                                                                .authenticationEntryPoint(delegatingAuthenticationEntryPoint())
                                                                 .accessDeniedHandler(accessDeniedHandler())
                                                                 .bearerTokenResolver(bearerTokenResolver()));
                 return http.build();

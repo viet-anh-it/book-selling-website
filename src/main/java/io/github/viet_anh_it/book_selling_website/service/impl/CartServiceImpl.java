@@ -1,15 +1,19 @@
 package io.github.viet_anh_it.book_selling_website.service.impl;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.viet_anh_it.book_selling_website.dto.CartDTO;
 import io.github.viet_anh_it.book_selling_website.dto.CartItemDTO;
+import io.github.viet_anh_it.book_selling_website.dto.response.SuccessResponse;
 import io.github.viet_anh_it.book_selling_website.model.Book;
 import io.github.viet_anh_it.book_selling_website.model.Cart;
 import io.github.viet_anh_it.book_selling_website.model.CartItem;
@@ -42,16 +46,21 @@ public class CartServiceImpl implements CartService {
         if (cart == null) {
             cart = new Cart(); // transient
             cart.setUser(currentLoggedInUser);
+            this.cartRepository.save(cart);
         }
         Book book = this.bookRepository.findById(cartItemDTO.getBookId()).get();
+        Optional<CartItem> optCartItem = this.cartItemService.findIfBookAlreadyInCart(currentLoggedInUser.getId(), book.getId());
         CartItem cartItem = new CartItem(); // transient
+        if (optCartItem.isPresent()) {
+            cartItem = optCartItem.get();
+        }
         cartItem.setImage(book.getImage().substring(book.getImage().indexOf("\\book-covers")));
         cartItem.setName(book.getName());
-        cartItem.setQuantity(cartItemDTO.getAddToCartQuantity());
+        cartItem.setQuantity(cartItem.getQuantity() + cartItemDTO.getAddToCartQuantity());
         cartItem.setPrice(book.getPrice());
-        cartItem.setTotalPrice(book.getPrice() * cartItemDTO.getAddToCartQuantity());
+        cartItem.setTotalPrice(cartItem.getTotalPrice() + book.getPrice() * cartItemDTO.getAddToCartQuantity());
         cartItem.setCart(cart);
-        cartItem.setProduct(book);
+        cartItem.setBook(book);
 
         Set<CartItem> cartItemSet = cart.getCartItems();
         if (cartItemSet == null) {
@@ -67,9 +76,31 @@ public class CartServiceImpl implements CartService {
         this.cartRepository.save(cart);
         this.cartItemService.save(cartItem);
 
+        book.setStockQuantity(book.getStockQuantity() - cartItemDTO.getAddToCartQuantity());
+        this.bookRepository.save(book);
+
         CartDTO cartDTO = new CartDTO();
         cartDTO.setTotalUniqueProduct(cart.getUniqueProductCount());
         return cartDTO;
+    }
+
+    @Override
+    public CartDTO save(Cart cart) {
+        this.cartRepository.save(cart);
+        return new CartDTO(cart.getTotalPrice(), cart.getUniqueProductCount());
+    }
+
+    @Override
+    public SuccessResponse<CartDTO> getCart() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentLoggedInUser = this.userService.findByEmail(username).get();
+        Cart cart = currentLoggedInUser.getCart();
+        CartDTO cartDto = new CartDTO(cart.getTotalPrice(), cart.getUniqueProductCount());
+        return SuccessResponse.<CartDTO>builder()
+                .status(HttpStatus.OK.value())
+                .message("Lấy giỏ hàng thành công!")
+                .data(cartDto)
+                .build();
     }
 
 }

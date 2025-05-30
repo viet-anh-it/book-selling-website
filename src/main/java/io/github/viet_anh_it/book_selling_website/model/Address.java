@@ -2,7 +2,7 @@ package io.github.viet_anh_it.book_selling_website.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,14 +22,22 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Address extends AbstractEntity {
 
-    String province;
-    String district;
-    String avatar;
-    String ward;
-    String street;
-    boolean isDefault;
+    @Builder.Default
+    String province = "";
+
+    @Builder.Default
+    String district = "";
+
+    @Builder.Default
+    String ward = "";
+
+    @Builder.Default
+    String street = "";
+
+    @Builder.Default
+    boolean isDefault = false;
 
     @JoinColumn(name = "user_id")
-    @ManyToOne
+    @OneToOne
     User user;
 }

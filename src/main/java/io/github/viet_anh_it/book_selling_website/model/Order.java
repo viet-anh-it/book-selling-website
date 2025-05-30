@@ -3,6 +3,8 @@ package io.github.viet_anh_it.book_selling_website.model;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import io.github.viet_anh_it.book_selling_website.enums.OrderStatusEnum;
+import io.github.viet_anh_it.book_selling_website.enums.PaymentMethodEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -27,16 +29,16 @@ import lombok.experimental.FieldDefaults;
 public class Order extends AbstractEntity {
 
     String code;
-    String status;
-    LocalDateTime orderedAt;
-    String receiverName;
-    String receiverPhone;
+    OrderStatusEnum status;
+    LocalDateTime at;
+    String name;
+    String phone;
     String province;
     String district;
     String ward;
-    String street;
-    String paymentMethod;
-    int totalPrice;
+    String home;
+    PaymentMethodEnum paymentMethod;
+    int total;
     String note;
 
     @JoinColumn(name = "user_id")

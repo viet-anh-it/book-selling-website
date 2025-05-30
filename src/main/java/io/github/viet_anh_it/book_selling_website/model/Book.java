@@ -1,6 +1,5 @@
 package io.github.viet_anh_it.book_selling_website.model;
 
-import java.time.LocalDate;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -34,19 +33,20 @@ public class Book extends AbstractEntity {
     String authorName;
     String publisherName;
     int price;
-    String image;
-    String translatorName;
-    int discountedPrice;
-    int discountedPercentage;
     int soldQuantity;
     int stockQuantity;
-    LocalDate publicationDate;
-    String language;
-    String dimension;
-    float weight;
-    int pageCount;
-    String coverType;
-    String recommendedAgeLabel;
+    String image;
+    boolean deleted;
+    // String translatorName;
+    // int discountedPrice;
+    // int discountedPercentage;
+    // LocalDate publicationDate;
+    // String language;
+    // String dimension;
+    // float weight;
+    // int pageCount;
+    // String coverType;
+    // String recommendedAgeLabel;
 
     @Column(columnDefinition = "MEDIUMTEXT")
     String description;
@@ -66,7 +66,7 @@ public class Book extends AbstractEntity {
     @OneToMany(mappedBy = Review_.BOOK)
     Set<Review> reviews;
 
-    @OneToMany(mappedBy = CartItem_.PRODUCT)
+    @OneToMany(mappedBy = CartItem_.BOOK)
     Set<CartItem> cartItems;
 
     @OneToMany(mappedBy = OrderItem_.PRODUCT)

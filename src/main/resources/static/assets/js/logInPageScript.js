@@ -9,9 +9,7 @@ window.addEventListener(`load`, async (event) => {
     commonError.innerText = sessionStorage.getItem(`resetPasswordTokenError`);
     sessionStorage.removeItem(`resetPasswordTokenError`);
   } else if (sessionStorage.getItem(`resetPasswordSuccessMessage`)) {
-    successMessage.innerText = sessionStorage.getItem(
-      `resetPasswordSuccessMessage`
-    );
+    successMessage.innerText = sessionStorage.getItem(`resetPasswordSuccessMessage`);
     sessionStorage.removeItem(`resetPasswordSuccessMessage`);
   } else if (sessionStorage.getItem(`logOutSuccess`)) {
     successMessage.innerText = sessionStorage.getItem(`logOutSuccess`);

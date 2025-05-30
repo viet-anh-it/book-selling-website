@@ -18,4 +18,10 @@ public interface BookService {
     SuccessResponse<List<BookDTO>> getAllBooks(Pageable pageable, Optional<BookPriceRangeDTO> optPriceParam);
 
     Optional<BookDTO> fetchSingleBookById(Long bookId);
+
+    SuccessResponse<BookDTO> updateBookById(long bookId, BookDTO bookDto, MultipartFile bookCoverImage) throws IOException;
+
+    void deleteBookById(long bookId);
+
+    int getStockQuantityByBookId(long bookId);
 }

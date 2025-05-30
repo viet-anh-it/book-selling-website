@@ -35,81 +35,54 @@ function handleAddToCartButtonClickEvent() {
   const addToCartButton = document.getElementById(`addToCartButton`);
   addToCartButton.addEventListener(`click`, async (event) => {
     event.preventDefault();
-    const addToCartSuccessToast = document.getElementById(
-      `addToCartSuccessToast`
-    );
+    const addToCartSuccessToast = document.getElementById(`addToCartSuccessToast`);
     const addToCartErrorToast = document.getElementById(`errorToast`);
     const bookId = document.getElementById(`bookId`).innerText;
-    const addToCartQuantity = document.getElementById(
-      `addToCartQuantityInput`
-    ).value;
+    const addToCartQuantity = document.getElementById(`addToCartQuantityInput`).value;
     const addToCartDTO = {
       bookId: bookId,
       addToCartQuantity: addToCartQuantity,
     };
     const addToCartRequestJsonData = JSON.stringify(addToCartDTO);
-    const addToCartResponse = await fetch(
-      `http://localhost:8080/api/cart/item`,
-      {
-        method: `POST`,
-        headers: { "Content-Type": `application/json;charset=utf-8` },
-        body: addToCartRequestJsonData,
-      }
-    );
+    const addToCartResponse = await fetch(`http://localhost:8080/api/carts/cartitem`, {
+      method: `POST`,
+      headers: { "Content-Type": `application/json;charset=utf-8` },
+      body: addToCartRequestJsonData,
+    });
     const addToCartResponseData = await addToCartResponse.json();
     if (addToCartResponse.status === 201) {
       // Cập nhật số lượng sản phẩm trên icon giỏ hàng
-      document.getElementById(`addToCartSuccessMessage`).innerText =
-        addToCartResponseData.message;
+      document.getElementById(`addToCartSuccessMessage`).innerText = addToCartResponseData.message;
       showToast(addToCartSuccessToast);
     } else if (addToCartResponse.status === 400) {
       if (addToCartResponseData.type === `DESERIALIZATION`) {
-        document.getElementById(
-          `errorToastMessage`
-        ).innerText = `Tải lại trang và thử lại!`;
+        document.getElementById(`errorToastMessage`).innerText = `Tải lại trang và thử lại!`;
       } else if (addToCartResponseData.type === `VALIDATION`) {
         if (`bookId` in addToCartResponseData.detail) {
-          document.getElementById(
-            `errorToastMessage`
-          ).innerText = `Tải lại trang và thử lại!`;
+          document.getElementById(`errorToastMessage`).innerText = `Tải lại trang và thử lại!`;
         } else if (`addToCartQuantity` in addToCartResponseData.detail) {
-          document.getElementById(`errorToastMessage`).innerText =
-            addToCartResponseData.detail.addToCartQuantity;
+          document.getElementById(`errorToastMessage`).innerText = addToCartResponseData.detail.addToCartQuantity;
         }
       }
       showToast(addToCartErrorToast);
     } else if (addToCartResponse.status === 401) {
       if (addToCartResponseData.type === `TOKEN_EXPIRED`) {
-        const refreshTokenResponse = await fetch(
-          `http://localhost:8080/refreshToken`,
-          { method: `PUT` }
-        );
+        const refreshTokenResponse = await fetch(`http://localhost:8080/refreshToken`, { method: `PUT` });
         if (refreshTokenResponse.status === 200) {
-          const retryAddToCartResponse = await fetch(
-            `http://localhost:8080/cart/item`,
-            { method: `PUT` }
-          );
+          const retryAddToCartResponse = await fetch(`http://localhost:8080/cart/item`, { method: `PUT` });
           const retryAddToCartResponseData = retryAddToCartResponse.json();
           if (retryAddToCartResponse.status === 201) {
             // update cart number
-            document.getElementById(`addToCartSuccessMessage`).innerText =
-              retryAddToCartResponseData.message;
+            document.getElementById(`addToCartSuccessMessage`).innerText = retryAddToCartResponseData.message;
             showToast(addToCartSuccessToast);
           } else if (retryAddToCartResponse.status === 400) {
             if (retryAddToCartResponseData.type === `DESERIALIZATION`) {
-              document.getElementById(
-                `errorToastMessage`
-              ).innerText = `Tải lại trang và thử lại!`;
+              document.getElementById(`errorToastMessage`).innerText = `Tải lại trang và thử lại!`;
             } else if (retryAddToCartResponseData.type === `VALIDATION`) {
               if (`bookId` in retryAddToCartResponseData.detail) {
-                document.getElementById(
-                  `errorToastMessage`
-                ).innerText = `Tải lại trang và thử lại!`;
-              } else if (
-                `addToCartQuantity` in retryAddToCartResponseData.detail
-              ) {
-                document.getElementById(`errorToastMessage`).innerText =
-                  retryAddToCartResponseData.detail.addToCartQuantity;
+                document.getElementById(`errorToastMessage`).innerText = `Tải lại trang và thử lại!`;
+              } else if (`addToCartQuantity` in retryAddToCartResponseData.detail) {
+                document.getElementById(`errorToastMessage`).innerText = retryAddToCartResponseData.detail.addToCartQuantity;
               }
             }
             showToast(addToCartErrorToast);
@@ -118,9 +91,7 @@ function handleAddToCartButtonClickEvent() {
           const logOutResponse = await fetch(`http://localhost:8080/logOut`, {
             method: `DELETE`,
           });
-          document.getElementById(
-            `errorToastMessage`
-          ).innerText = `Phiên đăng nhập của bạn đã hết hạn! Vui lòng đăng nhập lại!`;
+          document.getElementById(`errorToastMessage`).innerText = `Phiên đăng nhập của bạn đã hết hạn! Vui lòng đăng nhập lại!`;
           showToast(addToCartErrorToast);
         }
       } else if (addToCartResponseData.type === `AUTHENTICATION`) {
@@ -258,12 +229,10 @@ function postReviewBtnClickEvent() {
 
 async function requestPostReviewApi() {
   const bookId = Number(document.getElementById(`bookId`).innerText);
-  const reviewerDisplayName =
-    document.getElementById(`reviewerDisplayName`).value;
+  const reviewerDisplayName = document.getElementById(`reviewerDisplayName`).value;
   const reviewerEmail = document.getElementById(`reviewerEmail`).value;
   const reviewerComment = document.getElementById(`reviewerComment`).value;
-  let givenRatingPoint =
-    5 - document.querySelectorAll(`.ratingStar:not(.text-secondary)`).length;
+  let givenRatingPoint = 5 - document.querySelectorAll(`.ratingStar:not(.text-secondary)`).length;
   givenRatingPoint = givenRatingPoint === 0 ? null : givenRatingPoint;
   const reviewDto = {
     bookId: bookId,
@@ -282,25 +251,17 @@ async function requestPostReviewApi() {
   const responseData = await postReviewResponse.json();
   const errorToast = document.getElementById(`errorToast`);
   if (postReviewResponse.status === 201) {
-    document
-      .querySelectorAll(`.is-invalid`)
-      .forEach((element) => element.classList.remove(`is-invalid`));
+    document.querySelectorAll(`.is-invalid`).forEach((element) => element.classList.remove(`is-invalid`));
     showPostReviewSuccessModal();
   } else if (postReviewResponse.status === 400) {
     switch (responseData.type) {
       case `VALIDATION`:
         if (`bookId` in responseData.detail) {
-          document
-            .querySelectorAll(`.is-invalid`)
-            .forEach((element) => element.classList.remove(`is-invalid`));
-          document.getElementById(
-            `errorToastMessage`
-          ).innerText = `Tải lại trang và thử lại!`;
+          document.querySelectorAll(`.is-invalid`).forEach((element) => element.classList.remove(`is-invalid`));
+          document.getElementById(`errorToastMessage`).innerText = `Tải lại trang và thử lại!`;
           showToast(errorToast);
         } else {
-          document
-            .querySelectorAll(`.is-invalid`)
-            .forEach((element) => element.classList.remove(`is-invalid`));
+          document.querySelectorAll(`.is-invalid`).forEach((element) => element.classList.remove(`is-invalid`));
           Object.entries(responseData.detail).forEach(([key, value]) => {
             const element = document.getElementById(key);
             const invalidFeedback = element.nextElementSibling;
@@ -311,12 +272,8 @@ async function requestPostReviewApi() {
         break;
       case `DESERIALIZATION`:
         if (`bookId` in responseData.detail) {
-          document
-            .querySelectorAll(`.is-invalid`)
-            .forEach((element) => element.classList.remove(`is-invalid`));
-          document.getElementById(
-            `errorToastMessage`
-          ).innerText = `Tải lại trang và thử lại!`;
+          document.querySelectorAll(`.is-invalid`).forEach((element) => element.classList.remove(`is-invalid`));
+          document.getElementById(`errorToastMessage`).innerText = `Tải lại trang và thử lại!`;
           showToast(errorToast);
         }
         break;
