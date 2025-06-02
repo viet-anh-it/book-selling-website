@@ -37,6 +37,7 @@ const createBookStockInput = document.getElementById(`createBookStockInput`);
 const createBookPriceInput = document.getElementById(`createBookPriceInput`);
 const createBookImageInput = document.getElementById(`createBookImageInput`);
 const createBookDescriptionTextarea = document.getElementById(`createBookDescriptionTextarea`);
+const createBookCategorySelect = document.getElementById(`createBookCategorySelect`);
 // create book error
 const createBookNameError = document.getElementById(`createBookNameError`);
 const createBookAuthorError = document.getElementById(`createBookAuthorError`);
@@ -60,6 +61,7 @@ const updateBookStockInput = document.getElementById(`updateBookStockInput`);
 const updateBookPriceInput = document.getElementById(`updateBookPriceInput`);
 const updateBookImageInput = document.getElementById(`updateBookImageInput`);
 const updateBookDescriptionTextarea = document.getElementById(`updateBookDescriptionTextarea`);
+const updateBookCategorySelect = document.getElementById(`updateBookCategorySelect`);
 // update book error
 const updateBookNameError = document.getElementById(`updateBookNameError`);
 const updateBookAuthorError = document.getElementById(`updateBookAuthorError`);
@@ -225,6 +227,9 @@ function handleCreateBookBtnEvent() {
       stockQuantity: createBookStockInput.value,
       price: createBookPriceInput.value,
       description: createBookDescriptionTextarea.value,
+      category: {
+        id: createBookCategorySelect.value,
+      },
     };
     const json = JSON.stringify(bookDto);
     const bookCoverImageFile = createBookImageInput.files[0];
@@ -375,6 +380,7 @@ async function renderDataIntoUpdateBookModal(book) {
   if (updateBookDescriptionAccordion.classList.contains("show")) {
     autoResizeTextarea(updateBookDescriptionTextarea);
   }
+  updateBookCategorySelect.value = book.category.id;
 }
 
 function handleUpdateBookBtnEvent() {
@@ -390,6 +396,9 @@ function handleUpdateBookBtnEvent() {
       stockQuantity: updateBookStockInput.value,
       price: updateBookPriceInput.value,
       description: updateBookDescriptionTextarea.value,
+      category: {
+        id: updateBookCategorySelect.value,
+      },
     };
     const json = JSON.stringify(bookDto);
     const bookCoverImageFile = updateBookImageInput.files[0];
@@ -779,6 +788,32 @@ function handleBookSorterEvent() {
     const books = responseObj.data;
     const paginationMetadata = responseObj.paginationMetadata;
     renderBookTableRows(books);
+    renderPaginationBar(paginationMetadata);
+  });
+}
+
+function handleBookSearchBoxEvent() {
+  bookSearchBox.addEventListener(`keydown`, async (event) => {
+    if (event.key !== `Enter`) return;
+
+    event.preventDefault(); // đang làm ở đây
+
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append(`page`, `${PAGE}`);
+    urlSearchParams.append(`size`, `${SIZE}`);
+    const sortByField = document.getElementById(`sortByField`);
+    urlSearchParams.append(`sort`, `${sortByField.value}`);
+    const beingSelectedCategory = document.querySelector(`.category.beingSelected`);
+    if (beingSelectedCategory && !beingSelectedCategory.classList.contains(`all-categories`)) urlSearchParams.append(`category`, `${beingSelectedCategory.dataset.id}`);
+    const beingCheckedRate = document.querySelector(`input[name="rate"]:checked`);
+    if (beingCheckedRate) urlSearchParams.append(`rate`, `${beingCheckedRate.value}`);
+    urlSearchParams.append(`keyword`, `${bookSearchBox.value}`);
+    const queryString = urlSearchParams.toString();
+    const getAllBooksApiUrl = `${serverBaseUrl}${bookApiBasePath}?${queryString}`;
+    const responseObj = await callGetAllBooksApi(getAllBooksApiUrl);
+    const books = responseObj.data;
+    renderBookGrid(books);
+    const paginationMetadata = responseObj.paginationMetadata;
     renderPaginationBar(paginationMetadata);
   });
 }

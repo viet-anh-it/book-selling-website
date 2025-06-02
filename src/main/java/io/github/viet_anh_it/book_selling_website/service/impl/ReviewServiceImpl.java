@@ -45,6 +45,7 @@ public class ReviewServiceImpl implements ReviewService {
     ReviewStatService reviewStatService;
 
     @Override
+    @Transactional
     @PreAuthorize("hasAuthority('POST_REVIEW')")
     public void postReview(Authentication authentication, ReviewDTO reviewDTO) {
         User currentLoggedInUser = this.userService.findByEmail(authentication.getName()).get();
@@ -77,6 +78,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('GET_REVIEW')")
     public SuccessResponse<List<ReviewDTO>> fetchAllReviews(Pageable pageable, Optional<Boolean> optApprovedParam) {
         Specification<Review> reviewSpec = REVIEW_SPEC;
         if (optApprovedParam.isPresent()) {
@@ -115,6 +117,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
     @PreAuthorize("hasAuthority('APPROVE_REVIEW')")
     public void approveReview(Long reviewId) {
         Optional<Review> optReviewEntity = this.reviewRepository.findById(reviewId);

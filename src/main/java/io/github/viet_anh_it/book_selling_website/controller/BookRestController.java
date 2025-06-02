@@ -66,13 +66,17 @@ public class BookRestController {
         @GetMapping("/books")
         public ResponseEntity<SuccessResponse<List<BookDTO>>> getAllBooks(
                         @PageableDefault(page = 0, size = 6, sort = Book_.NAME, direction = Sort.Direction.ASC) Pageable pageable,
-                        @RequestParam(name = "price") Optional<BookPriceRangeDTO> optPriceParam) {
+                        @RequestParam(name = "price") Optional<BookPriceRangeDTO> optPriceParam,
+                        @RequestParam(name = "category") Optional<Long> optCategoryParam,
+                        @RequestParam(name = "rate") Optional<Integer> optRateParam,
+                        @RequestParam(name = "keyword") Optional<String> optKeywordParam,
+                        @RequestParam(name = "stock") Optional<Boolean> optStockParam) {
                 return ResponseEntity
                                 .status(HttpStatus.OK.value())
-                                .body(this.bookService.getAllBooks(pageable, optPriceParam));
+                                .body(this.bookService.getAllBooks(pageable, optPriceParam, optCategoryParam, optRateParam, optKeywordParam, optStockParam));
         }
 
-        @Secured({ "ROLE_MANAGER" })
+        @Secured({ "ROLE_MANAGER", "ROLE_STAFF" })
         @GetMapping("/books/{bookId}")
         public ResponseEntity<SuccessResponse<BookDTO>> getBookById(@PathVariable(name = "bookId") long bookId) {
                 Optional<BookDTO> optBookDto = this.bookService.fetchSingleBookById(bookId);
@@ -110,6 +114,7 @@ public class BookRestController {
                                 .body(successResponse);
         }
 
+        // @Secured({ "ROLE_CUSTOMER" })
         @GetMapping("/books/{bookId}/stockquantity")
         public ResponseEntity<SuccessResponse<Integer>> getStockQuantityByBookId(@PathVariable long bookId) {
                 SuccessResponse<Integer> successResponse = SuccessResponse.<Integer>builder()

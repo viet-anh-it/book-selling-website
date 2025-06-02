@@ -1,6 +1,7 @@
 package io.github.viet_anh_it.book_selling_website.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,14 +32,13 @@ public class CategoryController {
     static Direction DIRECTION = Sort.Direction.ASC;
     static Sort SORT = Sort.by(DIRECTION, PROPERTY);
     static Pageable PAGEABLE = PageRequest.of(PAGE, SIZE, SORT);
-    static String NAME = "";
 
     CategoryService categoryService;
 
     @Secured({ "ROLE_MANAGER" })
-    @GetMapping("/categories")
+    @GetMapping("/manager/categories")
     public String getManageCategoryPage(Model model) {
-        SuccessResponse<List<CategoryDTO>> successResponse = this.categoryService.getAllCategories(NAME, PAGEABLE);
+        SuccessResponse<List<CategoryDTO>> successResponse = this.categoryService.getAllCategories(Optional.empty(), PAGEABLE);
         List<CategoryDTO> categoryDtoList = successResponse.getData();
         PaginationMetadataDTO paginationMetadata = successResponse.getPaginationMetadata();
         model.addAttribute("categories", categoryDtoList);

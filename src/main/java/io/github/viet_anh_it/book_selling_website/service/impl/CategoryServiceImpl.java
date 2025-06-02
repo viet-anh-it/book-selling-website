@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.viet_anh_it.book_selling_website.dto.CategoryDTO;
 import io.github.viet_anh_it.book_selling_website.dto.PaginationMetadataDTO;
@@ -30,6 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;
 
     @Override
+    @Transactional
     @PreAuthorize("hasAuthority('CREATE_CATEGORY')")
     public void createCategory(CategoryDTO categoryDTO) {
         Category category = Category.builder()
@@ -41,9 +43,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @PreAuthorize("hasAuthority('GET_CATEGORY')")
-    public SuccessResponse<List<CategoryDTO>> getAllCategories(String name, Pageable pageable) {
-        Specification<Category> categoryNameSpec = CategorySpecification.hasNameLike(name);
-        Page<Category> page = this.categoryRepository.findAll(categoryNameSpec, pageable);
+    public SuccessResponse<List<CategoryDTO>> getAllCategories(Optional<String> optName, Pageable pageable) {
+        Specification<Category> combinedSpec = Specification.where(null);
+        if (optName.isPresent()) {
+            String name = optName.get();
+            Specification<Category> hasNameLike = CategorySpecification.hasNameLike(name);
+            combinedSpec = combinedSpec.and(hasNameLike);
+        }
+        Page<Category> page = this.categoryRepository.findAll(combinedSpec, pageable);
         List<Category> categories = page.getContent();
         Stream<Category> stream = categories.stream();
         List<CategoryDTO> categoryDtoList = stream
@@ -80,6 +87,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     @PreAuthorize("hasAuthority('UPDATE_CATEGORY')")
     public void updateCategory(CategoryDTO categoryDTO) {
         Optional<Category> optCategory = this.categoryRepository.findById(categoryDTO.getId());
@@ -92,6 +100,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     @PreAuthorize("hasAuthority('DELETE_CATEGORY')")
     public SuccessResponse<Void> deleteCategoryById(Long categoryId) {
         this.categoryRepository.deleteById(categoryId);

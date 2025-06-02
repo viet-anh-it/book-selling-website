@@ -33,6 +33,7 @@ function handleDomContentLoadedEvent() {
 
 function handleAddToCartButtonClickEvent() {
   const addToCartButton = document.getElementById(`addToCartButton`);
+  if (!addToCartButton) return;
   addToCartButton.addEventListener(`click`, async (event) => {
     event.preventDefault();
     const addToCartSuccessToast = document.getElementById(`addToCartSuccessToast`);
@@ -221,6 +222,7 @@ function handleRatingStarClickEvent() {
 
 function postReviewBtnClickEvent() {
   const postReviewBtn = document.getElementById(`postReviewBtn`);
+  if (!postReviewBtn) return;
   postReviewBtn.addEventListener(`click`, async (event) => {
     event.preventDefault();
     await requestPostReviewApi();
@@ -389,6 +391,7 @@ async function fetchRevokeRefreshTokenApi() {
 
 function handleCartIconEvent() {
   const cartIcon = document.getElementById(`cartIcon`);
+  if (!cartIcon) return;
   cartIcon.addEventListener(`click`, async (event) => {
     event.preventDefault();
     const response = await fetch(`http://localhost:8080/cart`, {

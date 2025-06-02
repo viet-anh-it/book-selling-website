@@ -12,7 +12,7 @@ public interface CategoryService {
 
     void createCategory(CategoryDTO categoryDTO);
 
-    SuccessResponse<List<CategoryDTO>> getAllCategories(String name, Pageable pageable);
+    SuccessResponse<List<CategoryDTO>> getAllCategories(Optional<String> optName, Pageable pageable);
 
     Optional<CategoryDTO> getCategoryById(Long categoryId);
 

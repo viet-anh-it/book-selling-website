@@ -26,13 +26,18 @@ public class OrderItem extends AbstractEntity {
     String name;
     int price;
     int quantity;
-    int totalPrice;
+    int total;
 
     @JoinColumn(name = "order_id")
     @ManyToOne
     Order order;
 
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "book_id")
     @ManyToOne
-    Book product;
+    Book book;
+
+    public void setOrder(Order order) {
+        this.order = order;
+        this.order.getOrderItems().add(this);
+    }
 }

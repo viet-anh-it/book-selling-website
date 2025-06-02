@@ -67,6 +67,7 @@ public class BookDTO implements Serializable {
     @Builder
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Category {
+        Long id;
         String name;
     }
 

@@ -75,7 +75,7 @@ public class AuthenticationRestController {
                                 .body(successResponse);
         }
 
-        @PostMapping("/logIn")
+        @PostMapping("/api/auth/logIn")
         public ResponseEntity<SuccessResponse<LogInResponseDTO>> logIn(
                         @Valid @RequestBody LogInRequestDTO logInRequestDTO,
                         @CookieValue(name = "refresh_token", required = false) Optional<String> optionalRefreshToken) {

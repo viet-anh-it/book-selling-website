@@ -1,11 +1,15 @@
 package io.github.viet_anh_it.book_selling_website.model;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import io.github.viet_anh_it.book_selling_website.enums.OrderStatusEnum;
 import io.github.viet_anh_it.book_selling_website.enums.PaymentMethodEnum;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -29,22 +33,29 @@ import lombok.experimental.FieldDefaults;
 public class Order extends AbstractEntity {
 
     String code;
+
+    @Enumerated(value = EnumType.STRING)
     OrderStatusEnum status;
-    LocalDateTime at;
+
+    LocalDateTime orderedAt;
     String name;
     String phone;
     String province;
     String district;
     String ward;
     String home;
+
+    @Enumerated(value = EnumType.STRING)
     PaymentMethodEnum paymentMethod;
-    int total;
+
+    Integer total;
     String note;
 
     @JoinColumn(name = "user_id")
     @ManyToOne
     User user;
 
-    @OneToMany(mappedBy = OrderItem_.ORDER)
-    Set<OrderItem> orderItems;
+    @Builder.Default
+    @OneToMany(mappedBy = OrderItem_.ORDER, cascade = { CascadeType.PERSIST })
+    Set<OrderItem> orderItems = new HashSet<>();
 }

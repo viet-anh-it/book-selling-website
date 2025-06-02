@@ -55,99 +55,84 @@
       <div id="layoutSidenav_content">
         <main>
           <div class="container-fluid px-4">
-            <h1 class="mt-4">Quản lý sách</h1>
+            <h1 class="mt-4">Quản lý đơn hàng</h1>
             <ol class="breadcrumb mb-4">
               <li class="breadcrumb-item">
                 <a th:href="@{/dashboard}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Quản lý sách</li>
+              <li class="breadcrumb-item active">Quản lý đơn hàng</li>
             </ol>
             <div class="row g-4 justify-content-center align-items-center">
-              <!-- button for pop modal for creating new book -->
-              <div class="col-xl-1">
-                <button id="showCreateBookModalBtn" type="button" class="btn btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#createBookModalContainer">
-                  <i class="fa-solid fa-square-plus"></i>
-                </button>
-              </div>
-              <div class="col-1"></div>
-              <div class="col-xl-4">
+              <div class="col-3"></div>
+              <div class="col-xl-3">
                 <div class="input-group w-100 mx-auto d-flex mb-4">
-                  <input id="bookSearchBox" type="search" name="keyword" class="form-control p-3" placeholder="Nhập ISBN, tên sách, tác giả, nhà xuất bản,..." aria-describedby="search-icon-1" />
+                  <input id="orderSearchBox" type="search" name="keyword" class="form-control p-3" placeholder="Nhập mã đơn, số điện thoại,..." aria-describedby="search-icon-1" />
                   <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
                 </div>
               </div>
               <div class="col-xl-3">
                 <div class="bg-dark ps-3 py-3 rounded d-flex justify-content-between mb-4 align-items-center">
-                  <label for="stockStatusFilter" class="text-white">Trạng thái:</label>
-                  <select id="stockStatusFilter" name="stock" class="border-0 form-select-sm bg-dark me-3 text-white" style="outline: none" form="stockStatusFilter" th:attr="data-current-page=${paginationMetadata.currentPosition}">
-                    <option value="true">Còn hàng</option>
-                    <option value="false">Hết hàng</option>
+                  <label for="orderStatusFilter" class="text-white">Trạng thái:</label>
+                  <select id="orderStatusFilter" name="status" class="border-0 form-select-sm bg-dark me-3 text-white" style="outline: none" form="orderStatusFilter" attr="data-current-page=${paginationMetadata.currentPosition}">
+                    <option value="PENDING" selected>PENDING</option>
+                    <option value="REJECTED">REJECTED</option>
+                    <option value="APPROVED">APPROVED</option>
+                    <option value="PROCESSING">PROCESSING</option>
+                    <option value="SHIPPING">SHIPPING</option>
+                    <option value="DELIVERED">DELIVERED</option>
+                    <option value="CANCELED">CANCELED</option>
                   </select>
                 </div>
               </div>
               <div class="col-xl-3">
                 <div class="bg-dark ps-3 py-3 rounded d-flex justify-content-between mb-4 align-items-center">
-                  <label for="bookSorter" class="text-white">Xếp theo:</label>
-                  <select id="bookSorter" name="sort" class="border-0 form-select-sm bg-dark me-3 text-white" style="outline: none" form="bookSorter" th:attr="data-current-page=${paginationMetadata.currentPosition}">
-                    <option value="price,asc">Giá (Thấp - Cao)</option>
-                    <option value="price,desc">Giá (Cao - Thấp)</option>
-                    <option value="soldQuantity,asc">Đã bán (Thấp - Cao)</option>
-                    <option value="soldQuantity,desc">Đã bán (Cao - Thấp)</option>
+                  <label for="orderSorter" class="text-white">Xếp theo:</label>
+                  <select id="orderSorter" name="sort" class="border-0 form-select-sm bg-dark me-3 text-white" style="outline: none" form="orderSorter" attr="data-current-page=${paginationMetadata.currentPosition}">
+                    <option value="orderedAt,asc" selected>Ngày tạo (Cũ nhất)</option>
+                    <option value="orderedAt,desc">Ngày tạo (Mới nhất)</option>
+                    <option value="total,asc">Tổng tiền (Thấp - Cao)</option>
+                    <option value="total,desc">Tổng tiền (Cao - Thấp)</option>
                   </select>
                 </div>
               </div>
             </div>
             <table class="table table-light table-striped table-hover table-bordered table-responsive align-middle" style="text-align: justify">
-              <colgroup>
-                <col style="width: 1%" />
-                <col style="width: 5%" />
-                <col style="width: 5%" />
-                <col />
-                <col />
-                <col />
-                <col style="width: 8%" />
-                <col style="width: 1%" />
-              </colgroup>
               <thead class="table-dark align-middle text-center">
                 <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Ảnh</th>
-                  <th scope="col">ISBN</th>
-                  <th scope="col">Tên</th>
-                  <th scope="col">Tác giả</th>
-                  <th scope="col">Nhà xuất bản</th>
-                  <th scope="col">Giá bán</th>
-                  <th scope="col"></th>
+                  <th class="text-nowrap" scope="col">#</th>
+                  <th class="text-nowrap" scope="col">Mã đơn</th>
+                  <th class="text-nowrap" scope="col">Khách hàng</th>
+                  <th class="text-nowrap" scope="col">Điện thoại</th>
+                  <th class="text-nowrap" scope="col">Địa chỉ</th>
+                  <th class="text-nowrap" scope="col">Ngày tạo</th>
+                  <th class="text-nowrap" scope="col">Tổng tiền</th>
+                  <th class="text-nowrap" scope="col">Phương thức</th>
+                  <th class="text-nowrap" scope="col">Trạng thái</th>
+                  <th class="text-nowrap" scope="col"></th>
                 </tr>
               </thead>
-              <tbody id="bookTableBody" class="table-group-divider">
-                <tr th:if="${books != null and not #lists.isEmpty(books)}" th:each="book, stat : ${books}">
-                  <th scope="row" th:text="${stat.count}" class="text-center">1</th>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <img th:src="@{${book.image}}" th:id="'bookImageCell-' + ${book.id}" class="img-thumbnail w-100 h-100 rounded object-fit-cover" style="aspect-ratio: 3/4; overflow: hidden" th:alt="${book.name}" />
-                    </div>
-                  </td>
-                  <td class="text-center text-nowrap" th:id="'bookISBNCell-' + ${book.id}" th:text="${book.isbn}"></td>
-                  <td class="text-wrap" th:id="'bookNameCell-' + ${book.id}" th:text="${book.name}" style="text-align: left"></td>
-                  <td class="text-nowrap" th:id="'bookAuthorCell-' + ${book.id}" style="text-align: left" th:text="${book.author}"></td>
-                  <td class="text-nowrap" th:id="'bookPublisherCell-' + ${book.id}" style="text-align: left" th:text="${book.publisher}"></td>
-                  <td class="text-center text-nowrap" th:id="'bookPriceCell-' + ${book.id}" th:text="${#numbers.formatDecimal(book.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
-                  <td class="text-nowrap">
-                    <button type="button" class="openBookDetailModalBtn btn btn-info text-nowrap text-white" th:attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#bookDetailModalContainer">
-                      <!-- <i class="fa-solid fa-circle-info"></i> -->
+              <tbody id="orderTableBody" class="table-group-divider">
+                <tr th:if="${orders != null and not #lists.isEmpty(orders)}" th:each="order, stat : ${orders}">
+                  <th scope="row" th:text="${stat.count}" class="text-center"></th>
+                  <td class="text-center text-nowrap" th:text="${order.code}"></td>
+                  <td class="text-center text-nowrap" id="'bookISBNCell-' + ${book.id}" th:text="${order.name}"></td>
+                  <td class="text-center text-nowrap" id="'bookNameCell-' + ${book.id}" th:text="${order.phone}"></td>
+                  <td class="text-wrap" id="'bookAuthorCell-' + ${book.id}" style="text-align: left" th:text="${order.province} + ', ' + ${order.district} + ', ' + ${order.ward} + ', ' + ${order.home}"></td>
+                  <td class="text-center text-nowrap" id="'bookPublisherCell-' + ${book.id}" style="text-align: left" th:text="${#temporals.format(order.orderedAt, 'dd/MM/yyyy HH:mm')}"></td>
+                  <td class="text-center text-nowrap" id="'bookPriceCell-' + ${book.id}" th:text="${#numbers.formatDecimal(order.total, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
+                  <td class="text-center text-nowrap" id="'bookPriceCell-' + ${book.id}" th:text="${order.paymentMethod}"></td>
+                  <td class="text-center text-nowrap" id="'bookPriceCell-' + ${book.id}" th:text="${order.status}"></td>
+                  <td class="text-center text-nowrap">
+                    <button type="button" class="openOrderDetailModalBtn btn btn-info text-nowrap text-white" th:attr="data-order-id=${order.id}" data-bs-toggle="modal" data-bs-target="#orderDetailModalContainer">
                       <i class="fa-solid fa-eye"></i>
                     </button>
-                    <button type="button" class="openUpdateBookModalBtn btn btn-success text-nowrap border-0" th:attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#updateBookModalContainer">
+                    <button type="button" class="openUpdateBookModalBtn btn btn-success text-nowrap border-0" attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#updateBookModalContainer">
                       <i class="fa-regular fa-pen-to-square"></i>
-                    </button>
-                    <button type="button" class="openDeleteBookModalBtn btn btn-danger text-nowrap" th:attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#deleteBookModalContainer">
-                      <i class="fa-solid fa-trash"></i>
                     </button>
                   </td>
                 </tr>
-                <tr th:if="${books == null or #lists.isEmpty(books)}">
-                  <td colspan="8" class="text-center">Chưa có cuốn sách nào.</td>
+                <tr th:if="${orders == null or #lists.isEmpty(orders)}">
+                  <td colspan="10" class="text-center">Chưa có đơn hàng nào.</td>
                 </tr>
               </tbody>
             </table>
@@ -163,7 +148,7 @@
 
                   <!-- Page numbers -->
                   <li th:each="pageIndex : ${#numbers.sequence(0, paginationMetadata.totalNumberOfPages - 1)}" class="page-item page-number" th:classappend="${pageIndex == paginationMetadata.currentPosition} ? ' active'" th:if="${paginationMetadata.totalNumberOfPages >= 1}" th:attr="data-page=${pageIndex}">
-                    <a class="page-link" href="#" th:text="${pageIndex + 1}" th:attr="data-page=${pageIndex}">Hiển thị số trang ở đây.</a>
+                    <a class="page-link" href="#" th:text="${pageIndex + 1}" th:attr="data-page=${pageIndex}"></a>
                   </li>
 
                   <!-- Next -->
@@ -193,87 +178,84 @@
     </div>
 
     <!-- modals -->
-    <!-- modal for viewing book detail -->
-    <div class="modal fade" id="bookDetailModalContainer" tabindex="-1" aria-labelledby="bookDetailModal" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <!-- modal for viewing order detail -->
+    <div class="modal fade" id="orderDetailModalContainer" tabindex="-1" aria-labelledby="orderDetailModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="bookDetailModal">Thông tin chi tiết</h1>
+            <h1 class="modal-title fs-5" id="orderDetailModal">Thông tin chi tiết</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
           </div>
           <div class="modal-body">
             <div class="card mb-3">
               <div class="row g-0 mb-3">
-                <div class="col-4">
-                  <img id="bookDetailImagePreview" src="" class="w-100 h-100 object-fit-cover rounded" alt="" style="aspect-ratio: 3/4; overflow: hidden" />
-                </div>
                 <div class="col-8">
                   <div class="card-body">
-                    <h5 class="card-title fs-1 fw-semibold">Đêm trước bình minh</h5>
+                    <h5 class="card-title fs-1 fw-semibold">ORD2505311928211508</h5>
                     <div class="px-2 mt-5">
                       <div class="row g-4">
                         <div class="col-12">
-                          <!-- ISBN -->
+                          <!-- Ngày tạo -->
                           <div class="row text-bg-primary align-items-center justify-content-center py-2">
                             <div class="col-6">
-                              <p class="mb-0">ISBN</p>
+                              <p class="mb-0">Ngày tạo</p>
                             </div>
                             <div class="col-6">
-                              <p id="bookDetailISBN" class="mb-0"></p>
+                              <p id="orderedAt" class="mb-0">31/05/2025 12:28</p>
                             </div>
                           </div>
-                          <!-- Thể loại -->
+                          <!-- Tên người nhận -->
                           <div class="row align-items-center justify-content-center py-2">
                             <div class="col-6">
-                              <p class="mb-0">Thể loại</p>
+                              <p class="mb-0">Người nhận</p>
                             </div>
                             <div class="col-6">
-                              <p id="bookDetailCategory" class="mb-0"></p>
+                              <p id="name" class="mb-0">Nguyễn Việt Anh</p>
                             </div>
                           </div>
-                          <!-- Tác giả -->
+                          <!-- Điện thoại -->
                           <div class="row text-bg-primary align-items-center justify-content-center py-2">
                             <div class="col-6">
-                              <p class="mb-0">Tác giả</p>
+                              <p class="mb-0">Điện thoại</p>
                             </div>
                             <div class="col-6">
-                              <p id="bookDetailAuthor" class="mb-0"></p>
+                              <p id="phone" class="mb-0">0838668131</p>
                             </div>
                           </div>
-                          <!-- Nhà xuất bản -->
+                          <!-- Địa chỉ -->
                           <div class="row align-items-center justify-content-center py-2">
                             <div class="col-6">
-                              <p class="mb-0">Nhà xuất bản</p>
+                              <p class="mb-0">Địa chỉ</p>
                             </div>
                             <div class="col-6">
-                              <p id="bookDetailPublisher" class="mb-0"></p>
+                              <p id="address" class="mb-0">Tỉnh Nam Định, Thành phố Nam Định, Phường Trường Thi, Số nhà 11, ngõ 491, đường Giải Phóng</p>
                             </div>
                           </div>
-                          <!-- Giá bán -->
+                          <!-- Tổng giá trị đơn hàng -->
                           <div class="row text-bg-primary align-items-center justify-content-center py-2">
                             <div class="col-6">
-                              <p class="mb-0">Giá bán</p>
+                              <p class="mb-0">Tổng giá trị đơn hàng</p>
                             </div>
                             <div class="col-6">
-                              <p id="bookDetailPrice" class="mb-0"></p>
+                              <p id="grandtotal" class="mb-0">95.000 ₫</p>
                             </div>
                           </div>
-                          <!-- Số lượng tồn -->
+                          <!-- Phương thức thanh toán -->
                           <div class="row align-items-center justify-content-center py-2">
                             <div class="col-6">
-                              <p class="mb-0">Số lượng tồn kho</p>
+                              <p class="mb-0">Phương thức thanh toán</p>
                             </div>
                             <div class="col-6">
-                              <p id="bookDetailStock" class="mb-0"></p>
+                              <p id="paymentMethod" class="mb-0">COD</p>
                             </div>
                           </div>
-                          <!-- Số lượng đã bán -->
+                          <!-- Trạng thái -->
                           <div class="row text-bg-primary align-items-center justify-content-center py-2">
                             <div class="col-6">
-                              <p class="mb-0">Số lượng đã bán</p>
+                              <p class="mb-0">Trạng thái</p>
                             </div>
                             <div class="col-6">
-                              <p id="bookDetailSoldQuantity" class="mb-0"></p>
+                              <p id="status" class="mb-0">PENDING</p>
                             </div>
                           </div>
                         </div>
@@ -281,127 +263,40 @@
                     </div>
                   </div>
                 </div>
+                <div class="col-4"></div>
               </div>
               <!-- Mô tả -->
               <div class="row">
-                <div class="col-12">
-                  <div class="accordion" id="accordionExample">
-                    <div class="accordion-item">
-                      <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Thông tin mô tả về cuốn sách</button>
-                      </h2>
-                      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                          <p id="bookDetailDescription" class="mb-0" style="white-space: pre-line; text-align: justify"></p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div class="col-12 px-4">
+                  <table class="table table-light table-striped table-hover table-bordered table-responsive align-middle caption-top" style="text-align: justify">
+                    <caption>
+                      <h3 class="text-dark">Danh sách sản phẩm</h3>
+                    </caption>
+                    <thead class="table-dark align-middle text-center">
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Ảnh</th>
+                        <th scope="col">Tên</th>
+                        <th scope="col">Giá</th>
+                        <th scope="col">Số lượng</th>
+                        <th scope="col">Thành tiền</th>
+                      </tr>
+                    </thead>
+                    <tbody id="orderItemTableBody" class="table-group-divider">
+                      <tr>
+                        <th scope="row" class="text-center"></th>
+                        <td class="text-nowrap text-center">
+                          <img src="" class="img-thumbnail rounded overflow-hidden object-fit-cover" style="height: 80px; aspect-ratio: 3/4" alt="" />
+                        </td>
+                        <td class="text-left text-wrap"></td>
+                        <td class="text-center text-nowrap" style="text-align: left"></td>
+                        <td class="text-center text-nowrap" style="text-align: left"></td>
+                        <td class="text-center text-nowrap" style="text-align: left"></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- modal for creating new book -->
-    <div class="modal fade" id="createBookModalContainer" tabindex="-1" aria-labelledby="createBookModal" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="createCategoryModal">Thêm sách mới</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-          </div>
-          <div class="modal-body">
-            <div class="container-fluid">
-              <form>
-                <div class="row">
-                  <div class="col-4">
-                    <div class="mb-3">
-                      <img id="createBookImagePreview" src="" alt="" class="img-fluid img-thumbnail w-100 h-100 object-fit-cover rounded" style="aspect-ratio: 3/4; overflow: hidden" />
-                    </div>
-                  </div>
-                  <div class="col-8">
-                    <div class="mb-3">
-                      <label for="createBookNameInput" class="form-label">Tên sách</label>
-                      <input type="text" class="form-control" id="createBookNameInput" placeholder="Tên sách..." />
-                      <div id="createBookNameError" class="invalid-feedback"></div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="createBookAuthorInput" class="form-label">Tên tác giả</label>
-                      <input type="text" class="form-control" id="createBookAuthorInput" placeholder="Tên tác giả..." />
-                      <div id="createBookAuthorError" class="invalid-feedback"></div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="createBookPublisherInput" class="form-label">Tên nhà xuất bản</label>
-                      <input type="text" class="form-control" id="createBookPublisherInput" placeholder="Tên nhà xuất bản..." />
-                      <div id="createBookPublisherError" class="invalid-feedback"></div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="createBookCategorySelect" class="form-label">Thể loại</label>
-                      <select id="createBookCategorySelect" class="form-select" aria-label="Default select example">
-                        <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
-                      </select>
-                      <div id="createBookCategoryError" class="invalid-feedback"></div>
-                    </div>
-                    <div class="row">
-                      <div class="col-4">
-                        <div class="mb-3">
-                          <label for="createBookISBNInput" class="form-label">ISBN</label>
-                          <input type="text" class="form-control" id="createBookISBNInput" placeholder="ISBN..." />
-                          <div id="createBookISBNError" class="invalid-feedback"></div>
-                        </div>
-                      </div>
-                      <div class="col-4">
-                        <div class="mb-3">
-                          <label for="createBookStockInput" class="form-label">Số lượng tồn kho</label>
-                          <input type="number" class="form-control" id="createBookStockInput" value="1" placeholder="Số lượng tồn kho..." />
-                          <div id="createBookStockError" class="invalid-feedback"></div>
-                        </div>
-                      </div>
-                      <div class="col-4">
-                        <div class="mb-3">
-                          <label for="createBookPriceInput" class="form-label">Giá bán</label>
-                          <input type="number" class="form-control" id="createBookPriceInput" value="15000" placeholder="Giá bán..." />
-                          <div id="createBookPriceError" class="invalid-feedback"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="createBookImageInput" class="form-label">Ảnh bìa</label>
-                      <input class="form-control" type="file" id="createBookImageInput" />
-                      <div id="createBookImageError" class="invalid-feedback"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-12">
-                    <div class="accordion mb-3" id="accordionExample">
-                      <div class="accordion-item">
-                        <h2 class="accordion-header">
-                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#createBookDescriptionAccordion" aria-expanded="false" aria-controls="collapseOne">Mở rộng</button>
-                        </h2>
-                        <div id="createBookDescriptionAccordion" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                          <div class="accordion-body">
-                            <label for="createBookDescriptionTextarea" class="form-label">Thông tin mô tả về cuốn sách</label>
-                            <textarea class="form-control overflow-hidden w-100" id="createBookDescriptionTextarea" style="white-space: pre-line; text-align: justify; resize: none"></textarea>
-                            <div id="createBookDescriptionError" class="invalid-feedback"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12">
-                    <div class="mb-3">
-                      <button id="createBookBtn" type="button" class="btn btn-primary">Tạo</button>
-                    </div>
-                  </div>
-                </div>
-              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -447,7 +342,7 @@
                     <div class="mb-3">
                       <label for="updateBookCategorySelect" class="form-label">Thể loại</label>
                       <select id="updateBookCategorySelect" class="form-select" aria-label="Default select example">
-                        <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+                        <option each="category : ${categories}" value="${category.id}" text="${category.name}"></option>
                       </select>
                       <div id="updateBookCategoryError" class="invalid-feedback"></div>
                     </div>
@@ -525,7 +420,7 @@
           <div class="modal-body">
             Bạn chắc chắn muốn xóa cuốn sách này chứ? Cuốn sách này cũng sẽ bị xóa khỏi giỏ hàng của khách hàng.
             <form>
-              <button id="deleteBookBtn" type="button" class="btn btn-primary" data-category-id="" th:attr="data-current-page=${paginationMetadata.currentPosition}">Xóa</button>
+              <button id="deleteBookBtn" type="button" class="btn btn-primary" data-category-id="" attr="data-current-page=${paginationMetadata.currentPosition}">Xóa</button>
             </form>
           </div>
           <div class="modal-footer">
@@ -570,6 +465,6 @@
     <!-- scripts -->
     <script th:src="@{/assets/js/bootstrap.bundle.min.js}" crossorigin="anonymous"></script>
     <script th:src="@{/assets/js/sbAdminScript.js}"></script>
-    <script th:src="@{/assets/js/manageBooksPageScript.js}"></script>
+    <script th:src="@{/assets/js/manageOrdersPageScript.js}"></script>
   </body>
 </html>

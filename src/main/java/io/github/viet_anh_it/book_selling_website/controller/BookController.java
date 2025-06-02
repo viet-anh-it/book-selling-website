@@ -20,13 +20,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import io.github.viet_anh_it.book_selling_website.dto.BookDTO;
-import io.github.viet_anh_it.book_selling_website.dto.BookPriceRangeDTO;
 import io.github.viet_anh_it.book_selling_website.dto.PaginationMetadataDTO;
 import io.github.viet_anh_it.book_selling_website.dto.response.SuccessResponse;
 import io.github.viet_anh_it.book_selling_website.model.Book_;
+import io.github.viet_anh_it.book_selling_website.repository.CategoryRepository;
 import io.github.viet_anh_it.book_selling_website.service.BookService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -48,17 +47,17 @@ public class BookController {
     JwtDecoder accessTokenJwtDecoder;
 
     BookService bookService;
+    CategoryRepository categoryRepository;
     JwtAuthenticationConverter jwtAuthenticationConverter;
 
     @GetMapping("/books")
-    public String getBooksPage(Model model,
-            @CookieValue(name = "access_token", defaultValue = "") String accessToken,
-            @RequestParam(name = "price") Optional<BookPriceRangeDTO> optPriceParam) {
-        SuccessResponse<List<BookDTO>> successResponse = this.bookService.getAllBooks(PAGEABLE, optPriceParam);
+    public String getBooksPage(Model model, @CookieValue(name = "access_token", defaultValue = "") String accessToken) {
+        SuccessResponse<List<BookDTO>> successResponse = this.bookService.getAllBooks(PAGEABLE, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         List<BookDTO> books = successResponse.getData();
         PaginationMetadataDTO paginationMetadata = successResponse.getPaginationMetadata();
         model.addAttribute("books", books);
         model.addAttribute("paginationMetadata", paginationMetadata);
+        model.addAttribute("categories", this.categoryRepository.findAll());
 
         try {
             Jwt jwt = this.accessTokenJwtDecoder.decode(accessToken);
@@ -67,7 +66,7 @@ public class BookController {
             context.setAuthentication(authentication);
             SecurityContextHolder.setContext(context);
         } catch (Exception e) {
-            // return "500InternalServerError";
+            // return "redirect:/error/500InternalServerError";
         }
 
         return "books";
@@ -103,14 +102,15 @@ public class BookController {
         }
     }
 
-    @Secured({ "ROLE_MANAGER" })
+    @Secured({ "ROLE_MANAGER", "ROLE_STAFF" })
     @GetMapping("/manager/books")
     public String getManageBooksPage(Model model) {
-        SuccessResponse<List<BookDTO>> successResponse = this.bookService.getAllBooks(PAGEABLE, Optional.empty());
+        SuccessResponse<List<BookDTO>> successResponse = this.bookService.getAllBooks(PAGEABLE, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         List<BookDTO> books = successResponse.getData();
         PaginationMetadataDTO paginationMetadata = successResponse.getPaginationMetadata();
         model.addAttribute("books", books);
         model.addAttribute("paginationMetadata", paginationMetadata);
+        model.addAttribute("categories", this.categoryRepository.findAll());
         return "manageBooks";
     }
 }

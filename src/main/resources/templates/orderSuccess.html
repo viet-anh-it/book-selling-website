@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookStore</title>
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" th:href="@{/assets/css/all.css}" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link th:href="@{/assets/fruitables/css/bootstrap.min.css}" rel="stylesheet" />
+
+    <!-- Template Stylesheet -->
+    <link th:href="@{/assets/fruitables/css/style.css}" rel="stylesheet" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/assets/css/orderSuccessPageStyle.css}" />
+
+    <!-- Remove favicon error -->
+    <link rel="shortcut icon" href="#!" type="image/x-icon" />
+  </head>
+  <body>
+    <!-- start of main -->
+    <div style="background-color: #fdf6e3">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="message-box">
+              <div class="success-container">
+                <br />
+                <br />
+                <div style="padding-left: 5%; padding-right: 5%"><hr</div>
+                <br />
+                <h1 class="monserrat-font" style="color: Grey">TẠO ĐƠN HÀNG THÀNH CÔNG</h1>
+                <br />
+
+                <div class="confirm-green-box">
+                  <br />
+                  <h5>Thông tin đơn hàng</h5>
+                  <p>Mã đơn: <span id="orderCode"></span>. Ngày tạo: <span id="createdAt"></span>.</p>
+                  <p>Cảm ơn bạn đã lựa chọn BookStore. Bạn sẽ nhận được email khi đơn hàng được duyệt.</p>
+                </div>
+
+                <br />
+                <a th:href="@{/books}" id="create-btn" class="btn btn-success text-white margin-left-5px">Mua sắm tiếp</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end of main -->
+
+    <!-- Template Javascript -->
+    <script th:src="@{/assets/js/orderSuccessPageScript.js}"></script>
+  </body>
+</html>

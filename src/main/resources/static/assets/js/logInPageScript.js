@@ -32,7 +32,7 @@ logInBtn.addEventListener(`click`, async (event) => {
 
   let requestBody = JSON.stringify(logInRequestDTO);
 
-  let response = await fetch(`http://localhost:8080/logIn`, {
+  let response = await fetch(`http://localhost:8080/api/auth/logIn`, {
     method: `POST`,
     headers: {
       "Content-Type": `application/json;charset=utf-8`,

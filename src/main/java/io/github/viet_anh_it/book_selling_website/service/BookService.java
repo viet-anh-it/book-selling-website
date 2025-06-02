@@ -15,7 +15,9 @@ public interface BookService {
 
     void createBook(BookDTO bookDTO, MultipartFile bookCoverImage) throws IOException;
 
-    SuccessResponse<List<BookDTO>> getAllBooks(Pageable pageable, Optional<BookPriceRangeDTO> optPriceParam);
+    SuccessResponse<List<BookDTO>> getAllBooks(Pageable pageable, Optional<BookPriceRangeDTO> optPriceParam,
+            Optional<Long> optCategoryParam, Optional<Integer> optRateParam, Optional<String> optKeywordParam,
+            Optional<Boolean> optStockParam);
 
     Optional<BookDTO> fetchSingleBookById(Long bookId);
 

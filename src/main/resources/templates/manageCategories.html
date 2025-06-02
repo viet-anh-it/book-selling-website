@@ -18,24 +18,12 @@
       <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
         <i class="fas fa-bars"></i>
       </button>
-      <!-- Navbar Search-->
-      <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-        <div class="input-group">
-          <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-          <button class="btn btn-primary" id="btnNavbarSearch" type="button">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </form>
       <!-- Navbar-->
-      <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+      <ul class="navbar-nav ms-auto me-3 me-lg-4">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#!">Settings</a></li>
-            <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-            <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="#!">Logout</a></li>
+            <li><a id="logOutLink" class="dropdown-item" href="#">Đăng xuất</a></li>
           </ul>
         </li>
       </ul>
@@ -45,70 +33,34 @@
         <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
           <div class="sb-sidenav-menu">
             <div class="nav">
-              <div class="sb-sidenav-menu-heading">Core</div>
-              <a class="nav-link" th:href="@{/dashboard}">
-                <div class="sb-nav-link-icon">
-                  <i class="fas fa-tachometer-alt"></i>
-                </div>
-                Dashboard
-              </a>
-              <div class="sb-sidenav-menu-heading">Interface</div>
-              <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                <div class="sb-nav-link-icon">
-                  <i class="fas fa-book-open"></i>
-                </div>
-                Pages
-                <div class="sb-sidenav-collapse-arrow">
-                  <i class="fas fa-angle-down"></i>
-                </div>
-              </a>
-              <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                  <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
-                    Authentication
-                    <div class="sb-sidenav-collapse-arrow">
-                      <i class="fas fa-angle-down"></i>
-                    </div>
-                  </a>
-                  <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                    <nav class="sb-sidenav-menu-nested nav">
-                      <a class="nav-link" href="login.html">Login</a>
-                      <a class="nav-link" href="register.html">Register</a>
-                      <a class="nav-link" href="password.html">Forgot Password</a>
-                    </nav>
-                  </div>
-                  <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
-                    Error
-                    <div class="sb-sidenav-collapse-arrow">
-                      <i class="fas fa-angle-down"></i>
-                    </div>
-                  </a>
-                  <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                    <nav class="sb-sidenav-menu-nested nav">
-                      <a class="nav-link" href="401.html">401 Page</a>
-                      <a class="nav-link" href="404.html">404 Page</a>
-                      <a class="nav-link" href="500.html">500 Page</a>
-                    </nav>
-                  </div>
-                </nav>
-              </div>
+              <div class="sb-sidenav-menu-heading">Trang chủ</div>
+              <a class="nav-link" th:href="@{/dashboard}"><i class="fa-solid fa-table-columns me-2"></i>Dashboard</a>
+              <div class="sb-sidenav-menu-heading">Quản lý</div>
+              <a class="nav-link" th:href="@{/manager/categories}"><i class="fa-solid fa-list me-2"></i>Thể loại</a>
+              <a class="nav-link" th:href="@{/manager/books}"><i class="fas fa-book-open me-2"></i>Sách</a>
+              <a class="nav-link" th:href="@{/manager/reviews}"><i class="fa-solid fa-comment me-2"></i>Đánh giá</a>
+              <a class="nav-link" th:href="@{/manager/orders}"><i class="fa-solid fa-receipt me-2"></i>Đơn hàng</a>
+              <a class="nav-link" href="#"><i class="fa-solid fa-user me-2"></i>Tài khoản</a>
             </div>
           </div>
           <div class="sb-sidenav-footer">
             <div class="small">Đã đăng nhập với vai trò:</div>
-            Hiển thị vai trò của người đang đăng nhập ở đây.
+            <!-- Lặp qua từng GrantedAuthority (ví dụ: ROLE_USER, ROLE_ADMIN, ...) -->
+            <span th:each="auth : ${#authentication.authorities}" th:if="${#strings.startsWith(auth.authority, 'ROLE_')}" th:text="${auth.authority.substring(5)}">
+              <!-- Nếu auth.authority = "ROLE_ADMIN", auth.authority.substring(5) = "ADMIN" -->
+            </span>
           </div>
         </nav>
       </div>
       <div id="layoutSidenav_content">
         <main>
           <div class="container-fluid px-4">
-            <h1 class="mt-4">Quản lý danh mục</h1>
+            <h1 class="mt-4">Quản lý thể loại</h1>
             <ol class="breadcrumb mb-4">
               <li class="breadcrumb-item">
                 <a th:href="@{/dashboard}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Quản lý danh mục</li>
+              <li class="breadcrumb-item active">Quản lý thể loại</li>
             </ol>
             <div class="row g-4 justify-content-center align-items-center">
               <!-- button for pop modal for creating new category -->
@@ -120,7 +72,7 @@
               <div class="col-5"></div>
               <div class="col-xl-3">
                 <div class="input-group w-100 mx-auto d-flex mb-4">
-                  <input id="categorySearchBox" type="search" name="name" class="form-control p-3" placeholder="Nhập tên danh mục..." aria-describedby="search-icon-1" />
+                  <input id="categorySearchBox" type="search" name="name" class="form-control p-3" placeholder="Nhập tên thể loại..." aria-describedby="search-icon-1" />
                   <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
                 </div>
               </div>
@@ -151,8 +103,8 @@
               </thead>
               <tbody id="categoryTableBody" class="table-group-divider">
                 <tr th:if="${categories != null and not #lists.isEmpty(categories)}" th:each="category, stat : ${categories}">
-                  <th scope="row" th:text="${stat.count}" class="text-center">Hiển thị số thứ tự ở đây.</th>
-                  <td th:id="'categoryNameCell-' + ${category.id}" th:text="${category.name}" style="text-align: left">Hiển thị tên danh mục ở đây.</td>
+                  <th scope="row" th:text="${stat.count}" class="text-center"></th>
+                  <td class="text-nowrap align-top" th:id="'categoryNameCell-' + ${category.id}" th:text="${category.name}" style="text-align: left"></td>
                   <td>
                     <div class="accordion accordion-flush" th:id="'categoryDescriptionAccordion-' + ${stat.index}">
                       <div class="accordion-item">
@@ -161,13 +113,13 @@
                         </h2>
                         <div th:id="'collapse-' + ${stat.index}" class="accordion-collapse collapse" th:data-bs-parent="'#categoryDescriptionAccordion-' + ${stat.index}">
                           <div class="accordion-body">
-                            <p th:id="'categoryDescriptionCell-' + ${category.id}" th:text="${category.description}" style="white-space: pre-line; text-align: justify">Hiển thị mô tả danh mục ở đây.</p>
+                            <p th:id="'categoryDescriptionCell-' + ${category.id}" th:text="${category.description}" style="white-space: pre-line; text-align: justify"></p>
                           </div>
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td class="text-nowrap">
+                  <td class="text-nowrap align-top">
                     <button type="button" class="openUpdateCategoryModalBtn btn btn-success text-nowrap border-0" th:attr="data-category-id=${category.id}" data-bs-toggle="modal" data-bs-target="#updateCategoryModalContainer">
                       <i class="fa-regular fa-pen-to-square"></i>
                     </button>
@@ -177,7 +129,7 @@
                   </td>
                 </tr>
                 <tr th:if="${categories == null or #lists.isEmpty(categories)}">
-                  <td colspan="8" class="text-center">Chưa có danh mục nào.</td>
+                  <td colspan="8" class="text-center">Chưa có thể loại nào.</td>
                 </tr>
               </tbody>
             </table>
@@ -185,7 +137,7 @@
               <nav aria-label="Page navigation">
                 <ul id="paginationBar" class="pagination">
                   <!-- Prev -->
-                  <li id="prev" class="page-item" th:classappend="${!paginationMetadata.hasPreviousPage} ? ' disabled'" th:attr="data-prev-page=${paginationMetadata.currentPosition - 1}" th:if="${paginationMetadata.totalNumberOfPages >= 1}">
+                  <li id="prev" class="page-item" th:classappend="${!paginationMetadata.hasPreviousPage} ? ' disabled'" th:attr="data-prev-page=${paginationMetadata.previousPosition}" th:if="${paginationMetadata.totalNumberOfPages >= 1}">
                     <a class="page-link" href="#" aria-label="Previous">
                       <span aria-hidden="true">&laquo;</span>
                     </a>
@@ -197,7 +149,7 @@
                   </li>
 
                   <!-- Next -->
-                  <li id="next" class="page-item" th:classappend="${!paginationMetadata.hasNextPage} ? ' disabled'" th:attr="data-next-page=${paginationMetadata.currentPosition + 1}" th:if="${paginationMetadata.totalNumberOfPages >= 1}">
+                  <li id="next" class="page-item" th:classappend="${!paginationMetadata.hasNextPage} ? ' disabled'" th:attr="data-next-page=${paginationMetadata.nextPosition}" th:if="${paginationMetadata.totalNumberOfPages >= 1}">
                     <a class="page-link" href="#" aria-label="Next">
                       <span aria-hidden="true">&raquo;</span>
                     </a>
@@ -228,20 +180,20 @@
       <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="createCategoryModal">Thêm mới danh mục</h1>
+            <h1 class="modal-title fs-5" id="createCategoryModal">Thêm mới thể loại</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
           </div>
           <div class="modal-body">
             <form>
               <div class="mb-3">
-                <label for="categoryNameInput" class="form-label">Tên danh mục</label>
+                <label for="categoryNameInput" class="form-label">Tên thể loại</label>
                 <input type="text" class="form-control" id="categoryNameInput" />
-                <div id="categoryNameError" class="invalid-feedback">Hiển thị thông báo lỗi liên quan đến tên danh mục ở đây.</div>
+                <div id="categoryNameError" class="invalid-feedback">Hiển thị thông báo lỗi liên quan đến tên thể loại ở đây.</div>
               </div>
               <div class="mb-3">
                 <label for="categoryDescriptionTextarea" class="form-label">Mô tả</label>
                 <textarea id="categoryDescriptionTextarea" class="form-control" aria-label="Mô tả" rows="12"></textarea>
-                <div id="categoryDescriptionError" class="invalid-feedback">Hiển thị thông báo lỗi liên quan đến mô tả danh mục ở đây.</div>
+                <div id="categoryDescriptionError" class="invalid-feedback">Hiển thị thông báo lỗi liên quan đến mô tả thể loại ở đây.</div>
               </div>
               <button id="createCategoryBtn" type="button" class="btn btn-primary">Tạo</button>
             </form>
@@ -258,20 +210,20 @@
       <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="updateCategoryModal">Cập nhật danh mục</h1>
+            <h1 class="modal-title fs-5" id="updateCategoryModal">Cập nhật thể loại</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
           </div>
           <div class="modal-body">
             <form>
               <div class="mb-3">
-                <label for="updateCategoryNameInput" class="form-label">Tên danh mục</label>
+                <label for="updateCategoryNameInput" class="form-label">Tên thể loại</label>
                 <input type="text" class="form-control" id="updateCategoryNameInput" />
-                <div id="updateCategoryNameError" class="invalid-feedback">Hiển thị thông báo lỗi liên quan đến tên danh mục ở đây.</div>
+                <div id="updateCategoryNameError" class="invalid-feedback">Hiển thị thông báo lỗi liên quan đến tên thể loại ở đây.</div>
               </div>
               <div class="mb-3">
                 <label for="updateCategoryDescriptionTextarea" class="form-label">Mô tả</label>
                 <textarea id="updateCategoryDescriptionTextarea" class="form-control" aria-label="Mô tả" rows="12"></textarea>
-                <div id="updateCategoryDescriptionError" class="invalid-feedback">Hiển thị thông báo lỗi liên quan đến mô tả danh mục ở đây.</div>
+                <div id="updateCategoryDescriptionError" class="invalid-feedback">Hiển thị thông báo lỗi liên quan đến mô tả thể loại ở đây.</div>
               </div>
               <button id="updateCategoryBtn" type="button" class="btn btn-primary" data-category-id="">Cập nhật</button>
             </form>
@@ -288,11 +240,11 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="deleteCategoryModal">Xóa danh mục</h1>
+            <h1 class="modal-title fs-5" id="deleteCategoryModal">Xóa thể loại</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
           </div>
           <div class="modal-body">
-            Bạn chắc chắn muốn xóa danh mục này chứ? Những cuốn sách thuộc danh mục này sẽ trở thành không có danh mục.
+            Bạn chắc chắn muốn xóa thể loại này chứ? Những cuốn sách thuộc thể loại này sẽ trở thành không có thể loại.
             <form>
               <button id="deleteCategoryBtn" type="button" class="btn btn-primary" data-category-id="">Xóa</button>
             </form>

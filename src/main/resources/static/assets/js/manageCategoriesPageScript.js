@@ -34,6 +34,11 @@ const prev = document.getElementById(`prev`);
 const next = document.getElementById(`next`);
 const categorySearchBox = document.getElementById(`categorySearchBox`);
 
+// authentication
+const logOutLink = document.getElementById(`logOutLink`);
+const logOutApiUrl = `${serverBaseUrl}/logOut`;
+const loginPageUrl = `${serverBaseUrl}/logIn`;
+
 handleDOMContentLoadedEvent();
 
 function handleDOMContentLoadedEvent() {
@@ -51,6 +56,7 @@ function handleDOMContentLoadedEvent() {
     handlePrevBtnEvent(prev);
     handleNextBtnEvent(next);
     handleSearchBoxEvent(categorySearchBox);
+    handleLogOutLinkEvent();
   });
 }
 
@@ -540,14 +546,15 @@ function handleNextBtnEvent(next) {
 }
 
 function handleSearchBoxEvent(categorySearchBox) {
-  categorySearchBox.addEventListener(`input`, async (event) => {
+  categorySearchBox.addEventListener(`keydown`, async (event) => {
+    if (event.key !== `Enter`) return;
     event.preventDefault();
 
     const queryParams = {
       page: PAGE,
       size: SIZE,
       sort: categorySorter.value,
-      name: categorySearchBox.value.trim().replace(/\s+/g, ` `),
+      name: categorySearchBox.value,
     };
     const queryString = new URLSearchParams(queryParams).toString();
     const getAllCategoriesApiUrl = `${serverBaseUrl}${categoryApiBasePath}?${queryString}`;
@@ -557,4 +564,31 @@ function handleSearchBoxEvent(categorySearchBox) {
     renderCategoryTableRows(categories);
     renderPaginationBar(paginationMetadata);
   });
+}
+
+function handleLogOutLinkEvent() {
+  logOutLink.addEventListener(`click`, async (event) => {
+    event.preventDefault();
+    await callLogOutApi(logOutApiUrl);
+  });
+}
+
+async function callLogOutApi(logOutApiUrl) {
+  const response = await fetch(logOutApiUrl, { method: `DELETE` });
+  switch (response.status) {
+    case 200:
+      window.location.assign(loginPageUrl);
+      break;
+    case 401:
+      await handle401Unauthorized();
+      break;
+    case 403:
+      handle403Forbidden();
+      break;
+    case 500:
+      handle500InternalServerError();
+      break;
+    default:
+      break;
+  }
 }

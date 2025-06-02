@@ -69,6 +69,6 @@ public class Book extends AbstractEntity {
     @OneToMany(mappedBy = CartItem_.BOOK)
     Set<CartItem> cartItems;
 
-    @OneToMany(mappedBy = OrderItem_.PRODUCT)
+    @OneToMany(mappedBy = OrderItem_.BOOK)
     Set<OrderItem> orderItems;
 }

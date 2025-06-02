@@ -52,9 +52,9 @@ public class CategoryRestController {
 
         @Secured({ "ROLE_MANAGER" })
         @GetMapping("/categories")
-        public ResponseEntity<SuccessResponse<List<CategoryDTO>>> getAllCategories(@RequestParam(name = "name") String name,
+        public ResponseEntity<SuccessResponse<List<CategoryDTO>>> getAllCategories(@RequestParam(name = "name") Optional<String> optName,
                         @PageableDefault(page = 0, size = 6, sort = Category_.NAME, direction = Direction.ASC) Pageable pageable) {
-                SuccessResponse<List<CategoryDTO>> successResponse = this.categoryService.getAllCategories(name, pageable);
+                SuccessResponse<List<CategoryDTO>> successResponse = this.categoryService.getAllCategories(optName, pageable);
                 return ResponseEntity
                                 .status(HttpStatus.OK)
                                 .body(successResponse);

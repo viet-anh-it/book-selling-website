@@ -48,9 +48,11 @@ import com.nimbusds.jose.proc.SecurityContext;
 import io.github.viet_anh_it.book_selling_website.custom.BearerTokenAccessDeniedHandlerImpl;
 import io.github.viet_anh_it.book_selling_website.custom.BearerTokenAuthenticationEntryPointImpl;
 import io.github.viet_anh_it.book_selling_website.custom.CookieBearerTokenResolverImpl;
+import io.github.viet_anh_it.book_selling_website.custom.DelegatingAccessDeniedHandler;
 import io.github.viet_anh_it.book_selling_website.custom.DelegatingBearerTokenResolverImpl;
 import io.github.viet_anh_it.book_selling_website.custom.JwtGrantedAuthoritiesConverterImpl;
 import io.github.viet_anh_it.book_selling_website.custom.UserDetailsServiceImpl;
+import io.github.viet_anh_it.book_selling_website.custom.WebRedirectAccessDeniedHandler;
 import io.github.viet_anh_it.book_selling_website.enums.TokenTypeEnum;
 import io.github.viet_anh_it.book_selling_website.service.BlackListedAccessTokenService;
 import io.github.viet_anh_it.book_selling_website.service.PermissionService;
@@ -70,10 +72,10 @@ import lombok.experimental.NonFinal;
 public class SecurityConfiguration {
 
         @NonFinal
-        String[] whitelist = { "/signUp", "/activateAccount", "/sendActivateAccountEmail", "/logIn",
+        String[] whitelist = { "/signUp", "/activateAccount", "/sendActivateAccountEmail", "/logIn", "/api/auth/**",
                         "/sendForgotPasswordEmail", "/forgotPassword", "/resetPassword", "/refreshToken",
                         "/revokeRefreshToken", "/books/**", "/assets/**", "/book-covers/**",
-                        "/error/403Forbidden", "/error/401Unauthorized", "/api/books" };
+                        "/error/403Forbidden", "/error/401Unauthorized", "/error/500InternalServerError", "/api/books" };
 
         @NonFinal
         @Value("${jwt.secret-key}")
@@ -204,8 +206,22 @@ public class SecurityConfiguration {
         }
 
         @Bean
-        public AccessDeniedHandler accessDeniedHandler() {
+        public AccessDeniedHandler bearerTokenAccessDeniedHandler() {
                 return new BearerTokenAccessDeniedHandlerImpl();
+        }
+
+        @Bean
+        public AccessDeniedHandler webRedirectAccessDeniedHandler() {
+                return new WebRedirectAccessDeniedHandler();
+        }
+
+        @Bean
+        public AccessDeniedHandler delegatingAccessDeniedHandler() {
+                LinkedHashMap<RequestMatcher, AccessDeniedHandler> map = new LinkedHashMap<>();
+                map.put(new AntPathRequestMatcher("/api/**"), bearerTokenAccessDeniedHandler());
+                DelegatingAccessDeniedHandler delegator = new DelegatingAccessDeniedHandler(map);
+                delegator.setDefaultHandler(webRedirectAccessDeniedHandler());
+                return delegator;
         }
 
         @Bean
@@ -217,24 +233,18 @@ public class SecurityConfiguration {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.authorizeHttpRequests(httpRequest -> httpRequest
-                                .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE,
-                                                DispatcherType.ERROR)
-                                .permitAll()
+                                .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR).permitAll()
                                 .requestMatchers(this.whitelist).permitAll()
                                 .anyRequest().authenticated())
                                 .formLogin(formLogin -> formLogin.disable())
                                 .httpBasic(httpBasic -> httpBasic.disable())
                                 .csrf(csrf -> csrf.disable())
-                                .sessionManagement(sessionManagement -> sessionManagement
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                .oauth2ResourceServer(
-                                                oauth2ResourceServer -> oauth2ResourceServer
-                                                                .jwt(jwt -> jwt.decoder(accessTokenJwtDecoder())
-                                                                                .jwtAuthenticationConverter(
-                                                                                                jwtAuthenticationConverter()))
-                                                                .authenticationEntryPoint(delegatingAuthenticationEntryPoint())
-                                                                .accessDeniedHandler(accessDeniedHandler())
-                                                                .bearerTokenResolver(bearerTokenResolver()));
+                                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(jwt -> jwt.decoder(accessTokenJwtDecoder())
+                                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                                                .authenticationEntryPoint(delegatingAuthenticationEntryPoint())
+                                                .accessDeniedHandler(delegatingAccessDeniedHandler())
+                                                .bearerTokenResolver(bearerTokenResolver()));
                 return http.build();
         }
 }

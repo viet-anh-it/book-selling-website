@@ -62,7 +62,7 @@ public class ReviewRestController {
                 return ResponseEntity.status(HttpStatus.OK.value()).body(successResponse);
         }
 
-        @Secured({ "ROLE_CUSTOMER", "ROLE_STAFF", "ROLE_MANAGER" })
+        @Secured({ "ROLE_MANAGER" })
         @GetMapping("/reviews")
         public ResponseEntity<SuccessResponse<List<ReviewDTO>>> fetchAllReviews(
                         @RequestParam(name = "approved") Optional<Boolean> optApprovedParam,

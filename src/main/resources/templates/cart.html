@@ -29,7 +29,7 @@
     </style>
   </head>
 
-  <body style="background-color: #fdf6e3">
+  <body>
     <!-- Navbar start -->
     <div class="container-fluid">
       <div class="container px-0">
@@ -42,9 +42,9 @@
               </a>
               <a id="cartIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" th:href="@{/cart}" class="position-relative me-4 my-auto">
                 <i class="fa fa-shopping-bag fa-2x"></i>
-                <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span>
+                <!-- <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span> -->
               </a>
-              <a id="userProfileIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" href="#!" class="my-auto me-4">
+              <a id="userProfileIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" href="#" class="my-auto me-4">
                 <i class="fas fa-user fa-2x"></i>
               </a>
               <a id="logOutIcon" sec:authorize="isAuthenticated()" href="#" class="position-relative my-auto">
@@ -109,11 +109,9 @@
                   </button>
                 </td>
               </tr>
-              <tr th:if="${cartItems == null or #lists.isEmpty(cartItems)}">
-                <td colspan="8" class="text-center">Chưa có sản phẩm nào.</td>
-              </tr>
             </tbody>
           </table>
+          <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="alert alert-info d-flex align-items-center justify-content-center" role="alert">Chưa có sản phẩm nào.</div>
         </div>
         <div class="mt-5"></div>
         <div class="row g-4 justify-content-end">
@@ -137,7 +135,7 @@
                 <h5 class="mb-0 ps-4 me-4">Tổng trả:</h5>
                 <p id="cartGrandtotal" class="mb-0 pe-4" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
               </div>
-              <a th:href="@{/checkout}" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Tiến hành thanh toán</a>
+              <a th:href="@{/orders/checkout}" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Tiến hành đặt mua</a>
             </div>
           </div>
         </div>

@@ -33,7 +33,7 @@
               </a>
               <a id="cartIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" th:href="@{/cart}" class="position-relative me-4 my-auto">
                 <i class="fa fa-shopping-bag fa-2x"></i>
-                <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span>
+                <!-- <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span> -->
               </a>
               <a id="userProfileIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" href="#!" class="my-auto me-4">
                 <i class="fas fa-user fa-2x"></i>
@@ -52,47 +52,41 @@
     <div class="container-fluid py-5">
       <div class="container py-5">
         <h1 class="mb-4">Chi tiết đơn hàng</h1>
-        <form>
+        <form id="orderForm">
           <div class="row g-5">
             <div class="col-md-12 col-lg-6 col-xl-5">
               <div class="row">
                 <div class="col-md-12 col-lg-12">
                   <div class="form-item w-100">
                     <label class="form-label my-3">Họ tên người nhận<sup>*</sup></label>
-                    <input id="name" type="text" class="form-control is-invalid" th:value="${user.name}" />
+                    <input id="name" type="text" class="form-control" th:value="${user.name}" />
                     <div class="invalid-feedback">Lỗi</div>
                   </div>
                 </div>
-                <!-- <div class="col-md-12 col-lg-6">
-                  <div class="form-item w-100">
-                    <label class="form-label my-3">Họ<sup>*</sup></label>
-                    <input type="text" class="form-control" />
-                  </div>
-                </div> -->
               </div>
               <div class="form-item">
                 <label class="form-label my-3">Số điện thoại người nhận<sup>*</sup></label>
-                <input id="phone" type="tel" class="form-control is-invalid" th:value="${user.phone}" />
+                <input id="phone" type="tel" class="form-control" th:value="${user.phone}" />
                 <div class="invalid-feedback">Lỗi</div>
               </div>
               <div class="form-item">
                 <label class="form-label my-3">Tỉnh/Thành phố<sup>*</sup></label>
-                <input id="province" type="text" class="form-control is-invalid" th:value="${user.address.province}" />
+                <input id="province" type="text" class="form-control" th:value="${user.address.province}" />
                 <div class="invalid-feedback">Lỗi</div>
               </div>
               <div class="form-item">
                 <label class="form-label my-3">Quận/Huyện<sup>*</sup></label>
-                <input id="district" type="text" class="form-control is-invalid" th:value="${user.address.district}" />
+                <input id="district" type="text" class="form-control" th:value="${user.address.district}" />
                 <div class="invalid-feedback">Lỗi</div>
               </div>
               <div class="form-item">
                 <label class="form-label my-3">Xã/Phường<sup>*</sup></label>
-                <input id="ward" type="text" class="form-control is-invalid" th:value="${user.address.ward}" />
+                <input id="ward" type="text" class="form-control" th:value="${user.address.ward}" />
                 <div class="invalid-feedback">Lỗi</div>
               </div>
               <div class="form-item">
                 <label class="form-label my-3">Địa chỉ nhận hàng<sup>*</sup></label>
-                <input id="home" type="text" class="form-control is-invalid" placeholder="" th:value="${user.address.street}" />
+                <input id="home" type="text" class="form-control" placeholder="" th:value="${user.address.street}" />
                 <div class="invalid-feedback">Lỗi</div>
               </div>
               <div class="form-item mt-3">
@@ -113,19 +107,18 @@
                   </thead>
                   <tbody id="orderItemTableBody">
                     <tr th:if="${cartItems != null and not #lists.isEmpty(cartItems)}" th:each="cartItem, stat : ${cartItems}">
+                      <td class="ids text-nowrap text-center" th:attr="data-book-id=${cartItem.bookId}, data-cart-item-id=${cartItem.cartItemId}" hidden></td>
                       <th scope="row" class="text-center">
-                        <img th:src="@{${cartItem.image}}" class="img-thumbnail object-fit-cover overflow-hidden rounded" style="height: 80px; aspect-ratio: 3/4" th:alt="${cartItem.name}" />
+                        <img th:src="@{${cartItem.image}}" class="itemImage img-thumbnail object-fit-cover overflow-hidden rounded" style="height: 80px; aspect-ratio: 3/4" th:alt="${cartItem.name}" />
                       </th>
-                      <td class="text-wrap text-start" th:text="${cartItem.name}">Cánh Buồm Đỏ Thắm (Tái Bản 2020)</td>
-                      <td class="text-nowrap text-center" th:text="${#numbers.formatDecimal(cartItem.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'">25.200 ₫</td>
-                      <td class="text-nowrap text-center" th:text="${cartItem.addToCartQuantity}">2</td>
-                      <td class="text-nowrap text-center" th:text="${#numbers.formatDecimal(cartItem.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'">50.400 ₫</td>
-                    </tr>
-                    <tr th:if="${cartItems == null or #lists.isEmpty(cartItems)}">
-                      <td colspan="8" class="text-center">Chưa có sản phẩm nào.</td>
+                      <td class="itemName text-wrap text-start" th:text="${cartItem.name}">Cánh Buồm Đỏ Thắm (Tái Bản 2020)</td>
+                      <td class="itemPrice text-nowrap text-center" th:text="${#numbers.formatDecimal(cartItem.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'">25.200 ₫</td>
+                      <td class="itemQuantity text-nowrap text-center" th:text="${cartItem.addToCartQuantity}">2</td>
+                      <td class="itemSubtotal text-nowrap text-center" th:text="${#numbers.formatDecimal(cartItem.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'">50.400 ₫</td>
                     </tr>
                   </tbody>
                 </table>
+                <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="alert alert-info d-flex align-items-center justify-content-center" role="alert">Chưa có sản phẩm nào.</div>
               </div>
               <div class="row g-4 justify-content-end">
                 <div class="col-4"></div>
@@ -157,7 +150,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="row g-4 text-center align-items-center justify-content-center pt-4">
                 <button id="confirmOrderBtn" type="button" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">Xác nhận đặt hàng</button>
               </div>
@@ -171,12 +163,42 @@
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
 
+    <!-- success toast -->
+    <div id="successToast" class="toast align-items-center bg-success text-white border-0 mt-3 rounded-0 d-none position-fixed top-0 end-0 me-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 1090">
+      <div class="toast-header bg-success text-white rounded-0">
+        <i class="fa-solid fa-circle-check me-1"></i>
+        <span>Thành công!</span>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <span id="successToastMessage">Thông báo</span>
+      </div>
+      <div class="progress" role="progressbar" aria-label="Example 1px high" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 3px">
+        <div class="progress-bar" style="width: 100%"></div>
+      </div>
+    </div>
+    <!-- error toast -->
+    <div id="errorToast" class="toast align-items-center bg-danger text-white border-0 mt-3 rounded-0 d-none position-fixed top-0 end-0 me-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 1090">
+      <div class="toast-header bg-danger text-white rounded-0">
+        <i class="fa-solid fa-circle-exclamation me-1"></i>
+        <span>Lỗi!</span>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <span id="errorToastMessage">Thông báo</span>
+      </div>
+      <div class="progress" role="progressbar" aria-label="Example 1px high" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 3px">
+        <div class="progress-bar" style="width: 100%"></div>
+      </div>
+    </div>
+    <!-- end toasts -->
+
     <!-- JavaScript Libraries -->
     <script th:src="@{/assets/js/jquery.min.js}"></script>
     <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
     <script th:src="@{/assets/js/easing.min.js}"></script>
 
     <!-- Template Javascript -->
-    <script th:src="@{/assets/js/checkoutPageScript.js}"></script>
+    <script th:src="@{/assets/js/orderPageScript.js}"></script>
   </body>
 </html>

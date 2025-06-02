@@ -1,3 +1,10 @@
+const serverBaseUrl = `http://localhost:8080`;
+
+// authentication
+const logOutLink = document.getElementById(`logOutLink`);
+const logOutApiUrl = `${serverBaseUrl}/logOut`;
+const loginPageUrl = `${serverBaseUrl}/logIn`;
+
 // Định nghĩa formatter để tái sử dụng
 const vnDateTimeFormatter = new Intl.DateTimeFormat("vi-VN", {
   day: "2-digit",
@@ -16,11 +23,11 @@ document.addEventListener(`DOMContentLoaded`, (event) => {
   handleFilterByApprovedAndSortByPostedAtSelectEvent();
   handlePaginationBarPreviousAndNextButtonEvent();
   handlePaginationBarPageNumberButtonEvent();
+  handleLogOutLinkEvent();
 });
 
 function handleApproveBookReviewButtonEvent() {
-  const approveBookReviewButtons =
-    document.querySelectorAll(`.approveReviewButton`);
+  const approveBookReviewButtons = document.querySelectorAll(`.approveReviewButton`);
   approveBookReviewButtons.forEach((btn) =>
     btn.addEventListener(`click`, async (event) => {
       event.preventDefault();
@@ -106,11 +113,7 @@ async function fetchAllReviewsApi(page) {
   const apiUrl = `http://localhost:8080/api/reviews${queryString}`;
   const response = await fetch(apiUrl, { method: `GET` });
   const responseObj = await response.json();
-  if (
-    response.status === 200 &&
-    Object.hasOwn(responseObj, `data`) &&
-    Array.isArray(responseObj.data)
-  ) {
+  if (response.status === 200 && Object.hasOwn(responseObj, `data`) && Array.isArray(responseObj.data)) {
     renderReviewsTableRows(responseObj.data, responseObj.paginationMetadata);
     renderPaginationBar(responseObj.data, responseObj.paginationMetadata);
   }
@@ -147,9 +150,7 @@ function renderReviewsTableRows(data, paginationMetadata) {
 
       // Sinh sao vàng / xám
       const starsHtml = Array.from({ length: 5 }, (_, i) => {
-        return `<i class="fa fa-star ${
-          i < givenRatingPoint ? "text-warning" : "text-info"
-        }" aria-hidden="true"></i>`;
+        return `<i class="fa fa-star ${i < givenRatingPoint ? "text-warning" : "text-info"}" aria-hidden="true"></i>`;
       }).join("");
 
       // Định dạng thời gian
@@ -165,14 +166,8 @@ function renderReviewsTableRows(data, paginationMetadata) {
         <td class="text-center">${formattedDate}</td>
         <td class="text-center">${approved ? "DUYỆT" : "CHỜ"}</td>
         <td class="text-nowrap">
-          ${
-            !approved
-              ? `<button type="button" class="approveReviewButton btn btn-warning text-nowrap" data-review-id="${reviewId}" data-current-page="${paginationMetadata.currentPosition}"><i class="fa-solid fa-square-check"></i></button>`
-              : ""
-          }
-          <button type="button" class="deleteReviewButton btn btn-danger text-nowrap" data-review-id="${reviewId}" data-current-page="${
-        paginationMetadata.currentPosition
-      }"><i class="fa-solid fa-trash"></i></button>
+          ${!approved ? `<button type="button" class="approveReviewButton btn btn-warning text-nowrap" data-review-id="${reviewId}" data-current-page="${paginationMetadata.currentPosition}"><i class="fa-solid fa-square-check"></i></button>` : ""}
+          <button type="button" class="deleteReviewButton btn btn-danger text-nowrap" data-review-id="${reviewId}" data-current-page="${paginationMetadata.currentPosition}"><i class="fa-solid fa-trash"></i></button>
         </td>
       </tr>`;
     })
@@ -196,8 +191,7 @@ function renderPaginationBar(data, meta) {
     return;
   }
 
-  const { currentPosition, totalNumberOfPages, hasPreviousPage, hasNextPage } =
-    meta;
+  const { currentPosition, totalNumberOfPages, hasPreviousPage, hasNextPage } = meta;
   const ul = document.querySelector(".pagination");
 
   // Nếu không tìm thấy pagination container
@@ -207,32 +201,22 @@ function renderPaginationBar(data, meta) {
 
   // Nút Prev
   itemsHtml += `
-    <li data-prev-page="${
-      meta.currentPosition - 1
-    }" id="prev" class="page-item ${hasPreviousPage ? "" : "disabled"}">
-      <a class="page-link" href="#" data-page="${
-        hasPreviousPage ? meta.previousPosition : currentPosition
-      }">&laquo;</a>
+    <li data-prev-page="${meta.currentPosition - 1}" id="prev" class="page-item ${hasPreviousPage ? "" : "disabled"}">
+      <a class="page-link" href="#" data-page="${hasPreviousPage ? meta.previousPosition : currentPosition}">&laquo;</a>
     </li>`;
 
   // Các trang
   for (let i = 0; i < totalNumberOfPages; i++) {
     itemsHtml += `
-      <li data-page="${i}" class="page-item  page-number ${
-      i === currentPosition ? "active" : ""
-    }">
+      <li data-page="${i}" class="page-item  page-number ${i === currentPosition ? "active" : ""}">
         <a class="page-link" href="#" data-page="${i}">${i + 1}</a>
       </li>`;
   }
 
   // Nút Next
   itemsHtml += `
-    <li data-next-page="${
-      meta.currentPosition + 1
-    }" id="next" class="page-item ${hasNextPage ? "" : "disabled"}">
-      <a class="page-link" href="#" data-page="${
-        hasNextPage ? meta.nextPosition : currentPosition
-      }">&raquo;</a>
+    <li data-next-page="${meta.currentPosition + 1}" id="next" class="page-item ${hasNextPage ? "" : "disabled"}">
+      <a class="page-link" href="#" data-page="${hasNextPage ? meta.nextPosition : currentPosition}">&raquo;</a>
     </li>`;
 
   ul.innerHTML = itemsHtml;
@@ -244,4 +228,52 @@ function renderPaginationBar(data, meta) {
 async function fetchDeleteReviewApi(reviewId) {
   const apiUrl = `http://localhost:8080/api/reviews/${reviewId}`;
   await fetch(apiUrl, { method: `DELETE` });
+}
+
+function handleLogOutLinkEvent() {
+  logOutLink.addEventListener(`click`, async (event) => {
+    event.preventDefault();
+    await callLogOutApi(logOutApiUrl);
+  });
+}
+
+async function callLogOutApi(logOutApiUrl) {
+  const response = await fetch(logOutApiUrl, { method: `DELETE` });
+  switch (response.status) {
+    case 200:
+      window.location.assign(loginPageUrl);
+      break;
+    case 401:
+      await handle401Unauthorized();
+      break;
+    case 403:
+      handle403Forbidden();
+      break;
+    case 500:
+      handle500InternalServerError();
+      break;
+    default:
+      break;
+  }
+}
+
+async function handle401Unauthorized() {
+  await fetchRevokeRefreshTokenApi();
+  window.location.assign(`${serverBaseUrl}${unauthorizedPath}`);
+}
+
+function handle403Forbidden() {
+  window.location.assign(`${serverBaseUrl}${forbiddenPath}`);
+}
+
+function handle500InternalServerError() {
+  window.location.assign(`${serverBaseUrl}${internalServerErrorPath}`);
+}
+
+function handle404NotFound() {
+  window.location.assign(`${serverBaseUrl}${notFoundPath}`);
+}
+
+async function fetchRevokeRefreshTokenApi() {
+  await fetch(`${serverBaseUrl}/revokeRefreshToken`, { method: `DELETE` });
 }

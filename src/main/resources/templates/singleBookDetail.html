@@ -33,7 +33,7 @@
               </a>
               <a id="cartIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" th:href="@{/cart}" class="position-relative me-4 my-auto">
                 <i class="fa fa-shopping-bag fa-2x"></i>
-                <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span>
+                <!-- <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span> -->
               </a>
               <a id="userProfileIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" href="#!" class="my-auto me-4">
                 <i class="fas fa-user fa-2x"></i>
@@ -60,10 +60,10 @@
                 </div>
               </div>
               <div class="col-lg-6">
-                <p id="bookId" class="d-none" th:text="${singleBook.id}">Hiển thị id trong database của cuốn sách ở đây.</p>
-                <h4 class="fw-bold mb-3" th:text="${singleBook.name}">Hiển thị tên cuốn sách ở đây.</h4>
-                <p class="mb-3">Danh mục: Hiển thị tên danh mục mà cuốn sách thuộc về ở đây.</p>
-                <h5 class="fw-bold mb-3" th:text="${#numbers.formatDecimal(singleBook.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'">Hiển thị giá của cuốn sách ở đây.</h5>
+                <p id="bookId" class="d-none" th:text="${singleBook.id}"></p>
+                <h4 class="fw-bold mb-3" th:text="${singleBook.name}" style="text-align: justify"></h4>
+                <p class="mb-3">Thể loại: <span th:text="${singleBook.category.name}"></span></p>
+                <h5 class="fw-bold mb-3" th:text="${#numbers.formatDecimal(singleBook.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></h5>
                 <div class="d-flex mb-4">
                   <i class="fa fa-star" th:each="i : ${#numbers.sequence(1, 5)}" th:classappend="${i <= singleBook.averageRatingPoint} ? ' text-secondary' : ''" aria-hidden="true"> </i>
                 </div>
@@ -112,7 +112,7 @@
                   </div>
                 </div>
                 <!-- addToCartButton -->
-                <a id="addToCartButton" href="#" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary mt-3"><i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ</a>
+                <a id="addToCartButton" sec:authorize="hasRole('ROLE_CUSTOMER')" href="#" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary mt-3"><i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ</a>
               </div>
               <div class="col-lg-12">
                 <nav>
@@ -130,18 +130,26 @@
                         <div class="col-6">
                           <div class="row bg-light align-items-center text-center justify-content-center py-2">
                             <div class="col-6">
+                              <p class="mb-0">ISBN</p>
+                            </div>
+                            <div class="col-6">
+                              <p class="mb-0 text-nowrap" th:text="${singleBook.isbn}"></p>
+                            </div>
+                          </div>
+                          <div class="row align-items-center text-center justify-content-center py-2">
+                            <div class="col-6">
                               <p class="mb-0">Tác giả</p>
                             </div>
                             <div class="col-6">
-                              <p class="mb-0" th:text="${singleBook.author}">Hiển thị tên tác giả của cuốn sách ở đây</p>
+                              <p class="mb-0 text-nowrap" th:text="${singleBook.author}"></p>
                             </div>
                           </div>
-                          <div class="row text-center align-items-center justify-content-center py-2">
+                          <div class="row bg-light text-center align-items-center justify-content-center py-2">
                             <div class="col-6">
                               <p class="mb-0">Nhà xuất bản</p>
                             </div>
                             <div class="col-6">
-                              <p class="mb-0" th:text="${singleBook.publisher}">Hiển thị tên nhà xuất bản của cuốn sách ở đây</p>
+                              <p class="mb-0 text-nowrap" th:text="${singleBook.publisher}"></p>
                             </div>
                           </div>
                         </div>
@@ -215,7 +223,7 @@
                           <div class="invalid-feedback">Hiển thị thông báo lỗi ở đây.</div>
                         </div>
                       </div>
-                      <a id="postReviewBtn" href="#" class="btn border border-secondary text-primary rounded-pill px-4 py-3"> Gửi đánh giá</a>
+                      <a id="postReviewBtn" sec:authorize="hasRole('ROLE_CUSTOMER')" href="#" class="btn border border-secondary text-primary rounded-pill px-4 py-3"> Gửi đánh giá</a>
                     </div>
                     <div class="col-lg-12"></div>
                   </div>

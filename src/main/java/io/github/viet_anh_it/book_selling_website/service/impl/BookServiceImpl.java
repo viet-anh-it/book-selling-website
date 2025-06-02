@@ -15,9 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,25 +26,30 @@ import io.github.viet_anh_it.book_selling_website.dto.BookPriceRangeDTO;
 import io.github.viet_anh_it.book_selling_website.dto.PaginationMetadataDTO;
 import io.github.viet_anh_it.book_selling_website.dto.response.SuccessResponse;
 import io.github.viet_anh_it.book_selling_website.model.Book;
+import io.github.viet_anh_it.book_selling_website.model.Category;
 import io.github.viet_anh_it.book_selling_website.repository.BookRepository;
+import io.github.viet_anh_it.book_selling_website.repository.CategoryRepository;
 import io.github.viet_anh_it.book_selling_website.service.BookService;
 import io.github.viet_anh_it.book_selling_website.specification.BookSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookServiceImpl implements BookService {
 
+        @NonFinal
         @Value("${app.upload-dir.image.book-cover}")
         String bookCoverImageUploadDir;
 
-        @NonNull
         BookRepository bookRepository;
+        CategoryRepository categoryRepository;
 
         @Override
+        @Transactional
         @PreAuthorize("hasAuthority('CREATE_BOOK')")
         public void createBook(BookDTO bookDTO, MultipartFile bookCoverImage) throws IOException {
                 @SuppressWarnings("null")
@@ -68,19 +73,46 @@ public class BookServiceImpl implements BookService {
                                 .description(bookDTO.getDescription())
                                 .deleted(false)
                                 .build();
+                Category category = this.categoryRepository.findById(bookDTO.getCategory().getId()).get();
+                book.setCategory(category);
                 this.bookRepository.save(book);
         }
 
         @Override
-        public SuccessResponse<List<BookDTO>> getAllBooks(Pageable pageable, Optional<BookPriceRangeDTO> optPriceParam) {
+        public SuccessResponse<List<BookDTO>> getAllBooks(Pageable pageable, Optional<BookPriceRangeDTO> optPriceParam,
+                        Optional<Long> optCategoryParam, Optional<Integer> optRateParam, Optional<String> optKeywordParam,
+                        Optional<Boolean> optStockParam) {
                 // build specification
                 Specification<Book> isDeleted = BookSpecification.isDeleted(Boolean.FALSE);
                 Specification<Book> combinedBookSpec = Specification.where(isDeleted);
-                Specification<Book> priceSpec = null;
                 if (optPriceParam.isPresent()) {
                         BookPriceRangeDTO bookPriceRangeDTO = optPriceParam.get();
-                        priceSpec = BookSpecification.hasPriceInRange(bookPriceRangeDTO.getMinPrice(), bookPriceRangeDTO.getMaxPrice());
-                        combinedBookSpec.and(priceSpec);
+                        Specification<Book> hasPriceInRange = BookSpecification.hasPriceInRange(bookPriceRangeDTO.getMinPrice(), bookPriceRangeDTO.getMaxPrice());
+                        combinedBookSpec = combinedBookSpec.and(hasPriceInRange);
+                }
+
+                if (optCategoryParam.isPresent()) {
+                        Long categoryId = optCategoryParam.get();
+                        Specification<Book> hasCategoryId = BookSpecification.hasCategoryId(categoryId);
+                        combinedBookSpec = combinedBookSpec.and(hasCategoryId);
+                }
+
+                if (optRateParam.isPresent()) {
+                        Integer rate = optRateParam.get();
+                        Specification<Book> hasRate = BookSpecification.hasRate(rate);
+                        combinedBookSpec = combinedBookSpec.and(hasRate);
+                }
+
+                if (optKeywordParam.isPresent()) {
+                        String keyword = optKeywordParam.get();
+                        Specification<Book> hasKeyword = BookSpecification.hasKeyword(keyword);
+                        combinedBookSpec = combinedBookSpec.and(hasKeyword);
+                }
+
+                if (optStockParam.isPresent()) {
+                        Boolean stockStatus = optStockParam.get();
+                        Specification<Book> isInStock = BookSpecification.isInStock(stockStatus);
+                        combinedBookSpec = combinedBookSpec.and(isInStock);
                 }
                 // end build specification
 
@@ -147,7 +179,10 @@ public class BookServiceImpl implements BookService {
                                                         .rate(reviewEntity.getRate())
                                                         .build())
                                         .toList();
-                        BookDTO.Category category = BookDTO.Category.builder().name(book.getCategory() == null ? "" : book.getCategory().getName()).build();
+                        BookDTO.Category category = BookDTO.Category.builder()
+                                        .id(book.getCategory().getId())
+                                        .name(book.getCategory().getName())
+                                        .build();
                         bookDto.setReviewList(reviewList);
                         bookDto.setCategory(category);
                         Optional<BookDTO> optBookDto = Optional.of(bookDto);
@@ -158,6 +193,7 @@ public class BookServiceImpl implements BookService {
         }
 
         @Override
+        @Transactional
         @PreAuthorize("hasAuthority('UPDATE_BOOK')")
         public SuccessResponse<BookDTO> updateBookById(long bookId, BookDTO bookDto, MultipartFile bookCoverImage) throws IOException {
                 Optional<Book> optBook = this.bookRepository.findById(bookId);
@@ -196,6 +232,9 @@ public class BookServiceImpl implements BookService {
                 Files.copy(in, targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
                 book.setImage(targetLocation.toAbsolutePath().toString());
+
+                Category category = this.categoryRepository.findById(bookDto.getCategory().getId()).get();
+                book.setCategory(category);
                 this.bookRepository.save(book);
 
                 BookDTO responseBookDto = BookDTO.builder()
@@ -212,6 +251,7 @@ public class BookServiceImpl implements BookService {
         }
 
         @Override
+        @Transactional
         @PreAuthorize("hasAuthority('DELETE_BOOK')")
         public void deleteBookById(long bookId) {
                 Optional<Book> optBook = this.bookRepository.findById(bookId);
