@@ -55,100 +55,83 @@
       <div id="layoutSidenav_content">
         <main>
           <div class="container-fluid px-4">
-            <h1 class="mt-4">Quản lý sách</h1>
+            <h1 class="mt-4">Quản lý tài khoản</h1>
             <ol class="breadcrumb mb-4">
               <li class="breadcrumb-item">
                 <a th:href="@{/dashboard}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Quản lý sách</li>
+              <li class="breadcrumb-item active">Quản lý tài khoản</li>
             </ol>
             <div class="row g-4 justify-content-center align-items-center">
               <!-- button for pop modal for creating new book -->
               <div class="col-xl-1">
-                <button id="showCreateBookModalBtn" type="button" class="btn btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#createBookModalContainer">
+                <button id="showCreateBookModalBtn" type="button" class="btn btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#BookModalContainer">
                   <i class="fa-solid fa-square-plus"></i>
                 </button>
               </div>
-              <div class="col-1"></div>
-              <div class="col-xl-4">
+              <div class="col-xl-5"></div>
+              <div class="col-xl-2">
                 <div class="input-group w-100 mx-auto d-flex mb-4">
-                  <input id="bookSearchBox" type="search" name="keyword" class="form-control p-3" placeholder="Nhập ISBN, tên sách, tác giả, nhà xuất bản,..." aria-describedby="search-icon-1" />
+                  <input id="bookSearchBox" type="search" name="keyword" class="form-control p-3" placeholder="Nhập username..." aria-describedby="search-icon-1" />
                   <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
                 </div>
               </div>
-              <div class="col-xl-3">
+              <div class="col-xl-2">
                 <div class="bg-dark ps-3 py-3 rounded d-flex justify-content-between mb-4 align-items-center">
                   <label for="stockStatusFilter" class="text-white">Trạng thái:</label>
-                  <select id="stockStatusFilter" name="stock" class="border-0 form-select-sm bg-dark me-3 text-white" style="outline: none" form="stockStatusFilter" th:attr="data-current-page=${paginationMetadata.currentPosition}">
+                  <select id="stockStatusFilter" name="stock" class="border-0 form-select-sm bg-dark me-3 text-white" style="outline: none" form="stockStatusFilter" attr="data-current-page=${paginationMetadata.currentPosition}">
                     <option value="">Tất cả</option>
-                    <option value="true">Còn hàng</option>
-                    <option value="false">Hết hàng</option>
+                    <option value="true">Kích hoạt</option>
+                    <option value="false">Chưa kích hoạt</option>
+                    <option value="true">Khóa</option>
+                    <option value="false">Mở khóa</option>
                   </select>
                 </div>
               </div>
-              <div class="col-xl-3">
+              <div class="col-xl-2">
                 <div class="bg-dark ps-3 py-3 rounded d-flex justify-content-between mb-4 align-items-center">
                   <label for="bookSorter" class="text-white">Xếp theo:</label>
-                  <select id="bookSorter" name="sort" class="border-0 form-select-sm bg-dark me-3 text-white" style="outline: none" form="bookSorter" th:attr="data-current-page=${paginationMetadata.currentPosition}">
-                    <option value="price,asc">Giá (Thấp - Cao)</option>
-                    <option value="price,desc">Giá (Cao - Thấp)</option>
-                    <option value="soldQuantity,asc">Đã bán (Thấp - Cao)</option>
-                    <option value="soldQuantity,desc">Đã bán (Cao - Thấp)</option>
+                  <select id="bookSorter" name="sort" class="border-0 form-select-sm bg-dark me-3 text-white" style="outline: none" form="bookSorter" attr="data-current-page=${paginationMetadata.currentPosition}">
+                    <option value="email,asc">Username (A - Z)</option>
+                    <option value="email,desc">Username (Z - A)</option>
                   </select>
                 </div>
               </div>
             </div>
             <table class="table table-light table-striped table-hover table-bordered table-responsive align-middle" style="text-align: justify">
-              <colgroup>
-                <col style="width: 1%" />
-                <col style="width: 5%" />
-                <col style="width: 5%" />
-                <col />
-                <col />
-                <col />
-                <col style="width: 8%" />
-                <col style="width: 1%" />
-              </colgroup>
               <thead class="table-dark align-middle text-center">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">Ảnh</th>
-                  <th scope="col">ISBN</th>
-                  <th scope="col">Tên</th>
-                  <th scope="col">Tác giả</th>
-                  <th scope="col">Nhà xuất bản</th>
-                  <th scope="col">Giá bán</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Mật khẩu</th>
+                  <th scope="col">Vai trò</th>
+                  <th scope="col">Kích hoạt</th>
+                  <th scope="col">Khóa</th>
                   <th scope="col"></th>
                 </tr>
               </thead>
-              <tbody id="bookTableBody" class="table-group-divider">
-                <tr th:if="${books != null and not #lists.isEmpty(books)}" th:each="book, stat : ${books}">
-                  <th scope="row" th:text="${stat.count}" class="text-center">1</th>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <img th:src="@{${book.image}}" th:id="'bookImageCell-' + ${book.id}" class="img-thumbnail w-100 h-100 rounded object-fit-cover" style="aspect-ratio: 3/4; overflow: hidden" th:alt="${book.name}" />
-                    </div>
-                  </td>
-                  <td class="text-center text-nowrap" th:id="'bookISBNCell-' + ${book.id}" th:text="${book.isbn}"></td>
-                  <td class="text-wrap" th:id="'bookNameCell-' + ${book.id}" th:text="${book.name}" style="text-align: left"></td>
-                  <td class="text-nowrap" th:id="'bookAuthorCell-' + ${book.id}" style="text-align: left" th:text="${book.author}"></td>
-                  <td class="text-nowrap" th:id="'bookPublisherCell-' + ${book.id}" style="text-align: left" th:text="${book.publisher}"></td>
-                  <td class="text-center text-nowrap" th:id="'bookPriceCell-' + ${book.id}" th:text="${#numbers.formatDecimal(book.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
-                  <td class="text-nowrap">
-                    <button type="button" class="openBookDetailModalBtn btn btn-info text-nowrap text-white" th:attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#bookDetailModalContainer">
-                      <!-- <i class="fa-solid fa-circle-info"></i> -->
-                      <i class="fa-solid fa-eye"></i>
-                    </button>
-                    <button type="button" class="openUpdateBookModalBtn btn btn-success text-nowrap border-0" th:attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#updateBookModalContainer">
+              <tbody id="userTableBody" class="table-group-divider">
+                <tr th:if="${users != null and not #lists.isEmpty(users)}" th:each="user, stat : ${users}">
+                  <th scope="row" th:text="${stat.count}" class="text-center"></th>
+                  <td class="text-center text-nowrap" th:text="${user.username}"></td>
+                  <td class="text-center text-wrap" th:text="${user.password}"></td>
+                  <td class="text-center text-nowrap" th:text="${user.role.name}"></td>
+                  <td class="text-center text-nowrap" th:text="${user.active}"></td>
+                  <td class="text-center text-nowrap" th:text="${user.locked}"></td>
+                  <td class="text-center text-nowrap">
+                    <button type="button" class="openUpdateBookModalBtn btn btn-success text-nowrap border-0" attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#BookModalContainer">
                       <i class="fa-regular fa-pen-to-square"></i>
                     </button>
-                    <button type="button" class="openDeleteBookModalBtn btn btn-danger text-nowrap" th:attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#deleteBookModalContainer">
+                    <button type="button" class="openDeleteBookModalBtn btn btn-danger text-nowrap" attr="data-book-id=${book.id}" data-bs-toggle="modal" data-bs-target="#BookModalContainer">
                       <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <button type="button" class="openLockAccountModalBtn btn btn-info text-nowrap text-white" th:attr="data-user-id=${user.id}" data-bs-toggle="modal" data-bs-target="#lockUnlockAccountModalContainer">
+                      <i class="fa-solid fa-lock"></i>
                     </button>
                   </td>
                 </tr>
-                <tr th:if="${books == null or #lists.isEmpty(books)}">
-                  <td colspan="8" class="text-center">Chưa có cuốn sách nào.</td>
+                <tr th:if="${users == null or #lists.isEmpty(users)}">
+                  <td colspan="6" class="text-center">Chưa có tài khoản nào.</td>
                 </tr>
               </tbody>
             </table>
@@ -345,7 +328,7 @@
                     <div class="mb-3">
                       <label for="createBookCategorySelect" class="form-label">Thể loại</label>
                       <select id="createBookCategorySelect" class="form-select" aria-label="Default select example">
-                        <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+                        <option each="category : ${categories}" value="${category.id}" text="${category.name}"></option>
                       </select>
                       <div id="createBookCategoryError" class="invalid-feedback"></div>
                     </div>
@@ -412,12 +395,12 @@
       </div>
     </div>
 
-    <!-- modal for updating book category -->
-    <div class="modal fade" id="updateBookModalContainer" tabindex="-1" aria-labelledby="updateBookModal" aria-hidden="true">
+    <!-- modal for lock/unlock account -->
+    <div class="modal fade" id="lockAccountModalContainer" tabindex="-1" aria-labelledby="lockAccountModal" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="updateCategoryModal">Cập nhật sách</h1>
+            <h1 class="modal-title fs-5" id="lockAccountModal">Khóa tài khoản</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
           </div>
           <div class="modal-body">
@@ -448,7 +431,7 @@
                     <div class="mb-3">
                       <label for="updateBookCategorySelect" class="form-label">Thể loại</label>
                       <select id="updateBookCategorySelect" class="form-select" aria-label="Default select example">
-                        <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+                        <option each="category : ${categories}" value="${category.id}" text="${category.name}"></option>
                       </select>
                       <div id="updateBookCategoryError" class="invalid-feedback"></div>
                     </div>
@@ -516,17 +499,17 @@
     </div>
 
     <!-- modal for confirming book removal -->
-    <div class="modal fade" id="deleteBookModalContainer" tabindex="-1" aria-labelledby="deleteBookModal" aria-hidden="true">
+    <div class="modal fade" id="lockUnlockAccountModalContainer" tabindex="-1" aria-labelledby="lockUnlockAccountModal" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="deleteBookModal">Xóa danh mục</h1>
+            <h1 class="modal-title fs-5" id="lockUnlockAccountModal">Khóa tài khoản</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
           </div>
           <div class="modal-body">
-            Bạn chắc chắn muốn xóa cuốn sách này chứ? Cuốn sách này cũng sẽ bị xóa khỏi giỏ hàng của khách hàng.
+            <span id="lockUnlockAccountWarning">Bạn chắc chắn muốn khóa tài khoản này?</span>
             <form>
-              <button id="deleteBookBtn" type="button" class="btn btn-primary" data-category-id="" th:attr="data-current-page=${paginationMetadata.currentPosition}">Xóa</button>
+              <button id="lockUnlockAccountBtn" type="button" class="btn btn-primary" data-user-id="" attr="data-current-page=${paginationMetadata.currentPosition}">Khóa</button>
             </form>
           </div>
           <div class="modal-footer">
@@ -571,6 +554,6 @@
     <!-- scripts -->
     <script th:src="@{/assets/js/bootstrap.bundle.min.js}" crossorigin="anonymous"></script>
     <script th:src="@{/assets/js/sbAdminScript.js}"></script>
-    <script th:src="@{/assets/js/manageBooksPageScript.js}"></script>
+    <script th:src="@{/assets/js/manageAccountsPageScript.js}"></script>
   </body>
 </html>

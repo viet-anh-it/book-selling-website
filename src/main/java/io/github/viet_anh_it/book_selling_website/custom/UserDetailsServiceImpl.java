@@ -58,7 +58,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         boolean enabled = user.isActive();
         boolean accountNonExpired = true; // Spring default value
         boolean credentialsNonExpired = true; // Spring default value
-        boolean accountNonLocked = true; // Spring default value
+        boolean accountNonLocked = user.isLocked();
 
         return new User(user.getEmail(), user.getPassword(), enabled, accountNonExpired, credentialsNonExpired,
                 accountNonLocked, authorities);

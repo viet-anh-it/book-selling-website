@@ -41,7 +41,12 @@ public class User extends AbstractEntity {
     GenderEnum gender;
 
     String phone;
-    boolean active;
+
+    @Builder.Default
+    boolean active = false;
+
+    @Builder.Default
+    boolean locked = false;
 
     @JoinColumn(name = "role_id")
     @ManyToOne
