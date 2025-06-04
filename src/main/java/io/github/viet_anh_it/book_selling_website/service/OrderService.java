@@ -15,4 +15,12 @@ public interface OrderService {
     SuccessResponse<List<OrderDTO>> getAllOrders(Pageable pageable, Optional<String> optKeywordParam, Optional<String> optStatusParam);
 
     SuccessResponse<OrderDTO> getOrderById(long orderId);
+
+    SuccessResponse<Void> approveOrder(long orderId);
+
+    SuccessResponse<Void> rejectOrder(long orderId);
+
+    SuccessResponse<Void> updateOrderStatus(long orderId, Optional<String> optStatusParam);
+
+    SuccessResponse<List<OrderDTO>> getPersonalOrders(Pageable pageable, Optional<String> optKeywordParam, Optional<String> optStatusParam);
 }

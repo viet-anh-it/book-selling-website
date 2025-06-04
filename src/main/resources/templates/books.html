@@ -35,9 +35,20 @@
                 <i class="fa fa-shopping-bag fa-2x"></i>
                 <!-- <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span> -->
               </a>
-              <a id="userProfileIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" href="#" class="my-auto me-4">
-                <i class="fas fa-user fa-2x"></i>
-              </a>
+              <div class="dropdown">
+                <a id="userProfileIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" href="#" class="my-auto me-4 dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user fa-2x"></i>
+                </a>
+
+                <ul class="dropdown-menu">
+                  <li class="d-flex justify-content-center align-items-center"><img src="" class="dropdown-item rounded-circle" style="width: 80px; height: 80px" alt="avatar" /></li>
+                  <li><p class="dropdown-item" sec:authentication="name"></p></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item" th:href="@{/orders/personal}">Đơn hàng của tôi</a></li>
+                  <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
+                  <li><a class="dropdown-item" href="#">Đánh giá của tôi</a></li>
+                </ul>
+              </div>
               <a id="logOutIcon" sec:authorize="isAuthenticated()" href="#" class="position-relative my-auto">
                 <i class="fa-solid fa-right-from-bracket fa-2x"></i>
               </a>
@@ -69,7 +80,7 @@
                             <ul class="list-unstyled fruite-categorie" th:if="${categories != null and not #lists.isEmpty(categories)}">
                               <li class="category all-categories">
                                 <div class="d-flex justify-content-between fruite-name">
-                                  <a href="#"><i class="fa-solid fa-list me-2"></i>Tất cả thể loại</span></a>
+                                  <a href="#"><i class="fa-solid fa-list me-2"></i>Tất cả thể loại</a>
                                 </div>
                               </li>
                               <li class="category" th:each="category : ${categories}" th:attr="data-id=${category.id}">
@@ -94,6 +105,10 @@
                     <div class="mb-3">
                       <h4 class="mb-2">Xếp hạng</h4>
                       <div class="d-flex flex-column">
+                        <div>
+                          <input class="form-check-input me-1" type="radio" name="rate" value="0" id="checkDefault" checked />
+                          <label class="form-check-label" for="checkDefault">Tất cả<i class="fa fa-star text-secondary ms-1"></i> </label>
+                        </div>
                         <div>
                           <input class="form-check-input me-1" type="radio" name="rate" value="5" id="checkDefault" />
                           <label class="form-check-label" for="checkDefault">5<i class="fa fa-star text-secondary ms-1"></i> </label>

@@ -536,6 +536,8 @@ window.addEventListener(`pageshow`, (event) => {
   slider.value = slider.min;
   const beingCheckedRate = document.querySelector(`input[name="rate"]:checked`);
   if (beingCheckedRate) beingCheckedRate.checked = false;
+  const rateZero = document.querySelector(`input[value="0"]`);
+  if (rateZero) rateZero.checked = true;
 });
 
 function handleLogOutIconEvent() {

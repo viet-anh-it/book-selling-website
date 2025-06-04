@@ -21,5 +21,8 @@ public enum PermissionEnum {
     DELETE_CART_ITEM,
     CREATE_ORDER,
     GET_ORDER,
+    GET_PERSONAL_ORDER,
+    APPROVE_ORDER,
+    REJECT_ORDER,
     CANCEL_ORDER,
 }

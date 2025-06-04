@@ -99,14 +99,18 @@ public class BookServiceImpl implements BookService {
 
                 if (optRateParam.isPresent()) {
                         Integer rate = optRateParam.get();
-                        Specification<Book> hasRate = BookSpecification.hasRate(rate);
-                        combinedBookSpec = combinedBookSpec.and(hasRate);
+                        if (rate.intValue() > 0) {
+                                Specification<Book> hasRate = BookSpecification.hasRate(rate);
+                                combinedBookSpec = combinedBookSpec.and(hasRate);
+                        }
                 }
 
                 if (optKeywordParam.isPresent()) {
                         String keyword = optKeywordParam.get();
-                        Specification<Book> hasKeyword = BookSpecification.hasKeyword(keyword);
-                        combinedBookSpec = combinedBookSpec.and(hasKeyword);
+                        if (!keyword.trim().equals("")) {
+                                Specification<Book> hasKeyword = BookSpecification.hasKeyword(keyword);
+                                combinedBookSpec = combinedBookSpec.and(hasKeyword);
+                        }
                 }
 
                 if (optStockParam.isPresent()) {
@@ -180,8 +184,8 @@ public class BookServiceImpl implements BookService {
                                                         .build())
                                         .toList();
                         BookDTO.Category category = BookDTO.Category.builder()
-                                        .id(book.getCategory().getId())
-                                        .name(book.getCategory().getName())
+                                        .id(book.getCategory() != null ? book.getCategory().getId() : 0)
+                                        .name(book.getCategory() != null ? book.getCategory().getName() : "")
                                         .build();
                         bookDto.setReviewList(reviewList);
                         bookDto.setCategory(category);

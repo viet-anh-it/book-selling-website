@@ -14,6 +14,7 @@ const loginPageUrl = `${serverBaseUrl}/logIn`;
 const logOutLink = document.getElementById(`logOutLink`);
 
 // view book detail
+const bookDetailName = document.getElementById(`bookDetailName`);
 const bookDetailImagePreview = document.getElementById(`bookDetailImagePreview`);
 const bookDetailISBN = document.getElementById(`bookDetailISBN`);
 const bookDetailCategory = document.getElementById(`bookDetailCategory`);
@@ -88,6 +89,9 @@ const bookTableBody = document.getElementById(`bookTableBody`);
 // book sorter
 const bookSorter = document.getElementById(`bookSorter`);
 
+// book stock filter
+const bookStockStatusFilter = document.getElementById(`stockStatusFilter`);
+
 // toast
 // success toast
 const successToast = document.getElementById(`successToast`);
@@ -119,6 +123,8 @@ function handleDOMContentLoadedEvent() {
     handleNextBtnEvent(next);
     handlePrevBtnEvent(prev);
     handleBookSorterEvent();
+    handleBookSearchBoxEvent();
+    handleStockStatusFilterEvent();
   });
 }
 
@@ -205,6 +211,7 @@ async function fetchRevokeRefreshTokenApi() {
 }
 
 function renderBookDetailData(book) {
+  bookDetailName.innerText = book.name;
   bookDetailImagePreview.src = `${serverBaseUrl}${book.image.replace(/\\/g, `/`)}`;
   bookDetailISBN.innerText = book.isbn;
   bookDetailCategory.innerText = book.category.name;
@@ -782,7 +789,7 @@ async function callGetAllBooksApi(apiUrl) {
 function handleBookSorterEvent() {
   bookSorter.addEventListener(`change`, async (event) => {
     event.preventDefault();
-    const queryString = new URLSearchParams({ page: PAGE, size: SIZE, sort: bookSorter.value }).toString();
+    const queryString = new URLSearchParams({ page: PAGE, size: SIZE, sort: bookSorter.value, keyword: bookSearchBox.value, stock: bookStockStatusFilter.value }).toString();
     const getAllBooksApiUrl = `${serverBaseUrl}${bookApiBasePath}?${queryString}`;
     const responseObj = await callGetAllBooksApi(getAllBooksApiUrl);
     const books = responseObj.data;
@@ -796,23 +803,39 @@ function handleBookSearchBoxEvent() {
   bookSearchBox.addEventListener(`keydown`, async (event) => {
     if (event.key !== `Enter`) return;
 
-    event.preventDefault(); // đang làm ở đây
+    event.preventDefault();
 
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append(`page`, `${PAGE}`);
     urlSearchParams.append(`size`, `${SIZE}`);
-    const sortByField = document.getElementById(`sortByField`);
-    urlSearchParams.append(`sort`, `${sortByField.value}`);
-    const beingSelectedCategory = document.querySelector(`.category.beingSelected`);
-    if (beingSelectedCategory && !beingSelectedCategory.classList.contains(`all-categories`)) urlSearchParams.append(`category`, `${beingSelectedCategory.dataset.id}`);
-    const beingCheckedRate = document.querySelector(`input[name="rate"]:checked`);
-    if (beingCheckedRate) urlSearchParams.append(`rate`, `${beingCheckedRate.value}`);
+    urlSearchParams.append(`sort`, `${bookSorter.value}`);
     urlSearchParams.append(`keyword`, `${bookSearchBox.value}`);
+    urlSearchParams.append(`stock`, `${bookStockStatusFilter.value}`);
     const queryString = urlSearchParams.toString();
     const getAllBooksApiUrl = `${serverBaseUrl}${bookApiBasePath}?${queryString}`;
     const responseObj = await callGetAllBooksApi(getAllBooksApiUrl);
     const books = responseObj.data;
-    renderBookGrid(books);
+    renderBookTableRows(books);
+    const paginationMetadata = responseObj.paginationMetadata;
+    renderPaginationBar(paginationMetadata);
+  });
+}
+
+function handleStockStatusFilterEvent() {
+  bookStockStatusFilter.addEventListener(`change`, async (event) => {
+    event.preventDefault();
+
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append(`page`, `${PAGE}`);
+    urlSearchParams.append(`size`, `${SIZE}`);
+    urlSearchParams.append(`sort`, `${bookSorter.value}`);
+    urlSearchParams.append(`keyword`, `${bookSearchBox.value}`);
+    urlSearchParams.append(`stock`, `${bookStockStatusFilter.value}`);
+    const queryString = urlSearchParams.toString();
+    const getAllBooksApiUrl = `${serverBaseUrl}${bookApiBasePath}?${queryString}`;
+    const responseObj = await callGetAllBooksApi(getAllBooksApiUrl);
+    const books = responseObj.data;
+    renderBookTableRows(books);
     const paginationMetadata = responseObj.paginationMetadata;
     renderPaginationBar(paginationMetadata);
   });

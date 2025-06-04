@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,7 +42,7 @@ public class OrderRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.orderService.createOrder(orderDTO));
     }
 
-    @Secured({ "ROLE_MANAGER" })
+    @Secured({ "ROLE_MANAGER", "ROLE_STAFF" })
     @GetMapping("/orders")
     public ResponseEntity<SuccessResponse<List<OrderDTO>>> getAllOrders(
             @PageableDefault(page = 0, size = 6, sort = Order_.ORDERED_AT, direction = Sort.Direction.ASC) Pageable pageable,
@@ -54,5 +55,33 @@ public class OrderRestController {
     @GetMapping("/orders/{orderId}")
     public ResponseEntity<SuccessResponse<OrderDTO>> getOrderById(@PathVariable long orderId) {
         return ResponseEntity.status(HttpStatus.OK).body(this.orderService.getOrderById(orderId));
+    }
+
+    @Secured({ "ROLE_MANAGER" })
+    @PatchMapping("/orders/{orderId}/approve")
+    public ResponseEntity<SuccessResponse<Void>> approveOrder(@PathVariable long orderId) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.orderService.approveOrder(orderId));
+    }
+
+    @Secured({ "ROLE_MANAGER" })
+    @PatchMapping("/orders/{orderId}/reject")
+    public ResponseEntity<SuccessResponse<Void>> rejectOrder(@PathVariable long orderId) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.orderService.rejectOrder(orderId));
+    }
+
+    @Secured({ "ROLE_MANAGER", "ROLE_STAFF" })
+    @PatchMapping("/orders/{orderId}/status")
+    public ResponseEntity<SuccessResponse<Void>> updateOrderStatus(@PathVariable long orderId,
+            @RequestParam(name = "status") Optional<String> optStatusParam) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.orderService.updateOrderStatus(orderId, optStatusParam));
+    }
+
+    @Secured({ "ROLE_CUSTOMER" })
+    @GetMapping("/orders/personal")
+    public ResponseEntity<SuccessResponse<List<OrderDTO>>> getPersonalOrders(
+            @PageableDefault(page = 0, size = 6, sort = Order_.ORDERED_AT, direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(name = "keyword") Optional<String> optKeywordParam,
+            @RequestParam(name = "status") Optional<String> optStatusParam) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.orderService.getPersonalOrders(pageable, optKeywordParam, optStatusParam));
     }
 }

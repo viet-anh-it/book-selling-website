@@ -42,7 +42,7 @@
               </a>
               <a id="cartIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" th:href="@{/cart}" class="position-relative me-4 my-auto">
                 <i class="fa fa-shopping-bag fa-2x"></i>
-                <!-- <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span> -->
+                <!-- <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-wid 20px">3</span> -->
               </a>
               <div class="dropdown">
                 <a id="userProfileIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" href="#" class="my-auto me-4 dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -71,82 +71,75 @@
     <!-- Cart Page Start -->
     <div class="container-fluid py-5">
       <div class="container py-5">
+        <div class="row g-4 justify-content-center">
+          <div class="col-xl-5">
+            <div class="input-group w-100 mx-auto d-flex">
+              <input id="orderSearchBox" type="search" class="form-control p-3" placeholder="Nhập mã đơn..." aria-describedby="search-icon-1" />
+              <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
+            </div>
+          </div>
+          <div class="col-xl-3">
+            <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4 align-items-center">
+              <label for="orderStatusFilter" class="text-white">Trạng thái:</label>
+              <select id="orderStatusFilter" name="status" class="border-0 form-select-sm bg-light me-3" style="outline: none" form="orderStatusFilter" attr="data-current-page=${paginationMetadata.currentPosition}">
+                <option value="">ALL</option>
+                <option value="PENDING">PENDING</option>
+                <option value="REJECTED">REJECTED</option>
+                <option value="APPROVED">APPROVED</option>
+                <option value="PROCESSING">PROCESSING</option>
+                <option value="SHIPPING">SHIPPING</option>
+                <option value="DELIVERED">DELIVERED</option>
+                <option value="CANCELED">CANCELED</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-xl-4">
+            <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4 align-items-center">
+              <label for="orderSorter">Xếp theo:</label>
+              <select id="orderSorter" name="sort" class="border-0 form-select-sm bg-light me-3" form="orderSorterForm" style="outline: none">
+                <option value="orderedAt,asc" selected>Ngày tạo (Cũ nhất)</option>
+                <option value="orderedAt,desc">Ngày tạo (Mới nhất)</option>
+                <option value="total,asc">Giá trị (Thấp - Cao)</option>
+                <option value="total,desc">Giá trị (Cao - Thấp)</option>
+              </select>
+            </div>
+          </div>
+        </div>
         <div class="table-responsive">
           <table class="table align-middle">
             <thead>
               <tr>
-                <th class="text-center text-nowrap" scope="col">Sản phẩm</th>
-                <th class="text-start text-nowrap" scope="col">Tên</th>
-                <th class="text-center text-nowrap" scope="col">Giá</th>
-                <th class="text-center text-nowrap" scope="col">Số lượng</th>
-                <th class="text-center text-nowrap" scope="col">Thành tiền</th>
-                <th class="text-center text-nowrap" scope="col">Xóa</th>
+                <th class="text-start text-nowrap" scope="col">#</th>
+                <th class="text-start text-nowrap" scope="col">Mã đơn</th>
+                <th class="text-start text-nowrap" scope="col">Ngày đặt</th>
+                <th class="text-start text-nowrap" scope="col">Giá trị</th>
+                <th class="text-start text-nowrap" scope="col">Trạng thái</th>
+                <!-- <th class="text-start text-nowrap" scope="col">Hủy</th> -->
               </tr>
             </thead>
-            <tbody id="cartItemTableBody">
-              <tr th:if="${cartItems != null and not #lists.isEmpty(cartItems)}" th:each="cartItem, stat : ${cartItems}">
-                <th scope="row" class="text-nowrap">
-                  <div class="d-flex align-items-center justify-content-center">
-                    <img th:src="@{${cartItem.image}}" class="img-thumbnail object-fit-cover overflow-hidden rounded" style="height: 80px; aspect-ratio: 3/4" th:alt="${cartItem.name}" />
-                  </div>
-                </th>
-                <td class="text-wrap">
-                  <p th:text="${cartItem.name}"></p>
-                </td>
-                <td class="text-center text-nowrap">
-                  <p class="cartItemPrice" th:text="${#numbers.formatDecimal(cartItem.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
-                </td>
-                <td>
-                  <div class="input-group quantity mx-auto" style="width: 100px">
-                    <div class="input-group-btn">
-                      <button class="decreaseAddToCartQuantityByOneBtn btn btn-sm btn-minus rounded-circle bg-light border" th:attr="data-book-id=${cartItem.book.id}, data-cart-item-id=${cartItem.id}">
-                        <i class="fa fa-minus"></i>
-                      </button>
-                    </div>
-                    <input type="number" class="addToCartQuantityInput form-control form-control-sm text-center border-0" th:value="${cartItem.quantity}" readonly />
-                    <div class="input-group-btn">
-                      <button class="increaseAddToCartQuantityByOneBtn btn btn-sm btn-plus rounded-circle bg-light border" th:attr="data-book-id=${cartItem.book.id}, data-cart-item-id=${cartItem.id}">
-                        <i class="fa fa-plus"></i>
-                      </button>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-center text-nowrap">
-                  <p class="cartItemRowSubtotal" th:text="${#numbers.formatDecimal(cartItem.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
-                </td>
-                <td class="text-center">
-                  <button th:attr="data-cart-item-id=${cartItem.id}" class="deleteCartItemBtn btn btn-md rounded-circle bg-light border">
+            <tbody id="orderTableBody">
+              <tr th:if="${orders != null and not #lists.isEmpty(orders)}" th:each="order, stat : ${orders}">
+                <th scope="row" class="text-nowrap text-start" th:text="${stat.count}"></th>
+                <td class="text-nowrap text-start"><a th:href="@{/orders/{id}/detail(id=${order.id})}" th:text="${order.code}"></a></td>
+                <td class="text-start text-nowrap" th:text="${#temporals.format(order.orderedAt, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="text-start text-nowrap" th:text="${#numbers.formatDecimal(order.total, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
+                <td class="text-start text-nowrap" th:text="${order.status.name()}"></td>
+                <!-- <td class="text-start">
+                  <button th:attr="data-order-id=${order.id}" class="cancelOrderBtn btn btn-md rounded-circle bg-light border">
                     <i class="fa fa-times text-danger"></i>
                   </button>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>
-          <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="alert alert-info d-flex align-items-center justify-content-center" role="alert">Chưa có sản phẩm nào.</div>
+          <div th:if="${orders == null or #lists.isEmpty(orders)}" class="alert alert-info d-flex align-items-center justify-content-center" role="alert">Chưa có đơn hàng nào.</div>
         </div>
-        <div class="mt-5"></div>
-        <div class="row g-4 justify-content-end">
-          <div class="col-8"></div>
-          <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
-            <div id="cartValuePane" class="bg-light rounded">
-              <div class="p-4">
-                <h1 class="display-6 mb-4">Tạm <span class="fw-normal">tính</span></h1>
-                <div class="d-flex justify-content-between mb-4">
-                  <h5 class="mb-0 me-4">Thành tiền:</h5>
-                  <p id="cartSubtotal" class="mb-0" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <h5 class="mb-0 me-4">Phí vận chuyển:</h5>
-                  <div class="">
-                    <p class="mb-0">0 ₫</p>
-                  </div>
-                </div>
-              </div>
-              <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
-                <h5 class="mb-0 ps-4 me-4">Tổng trả:</h5>
-                <p id="cartGrandtotal" class="mb-0 pe-4" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
-              </div>
-              <a th:href="@{/orders/checkout}" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Tiến hành đặt mua</a>
+        <div class="row g-4 justify-content-center">
+          <div class="col-12">
+            <div id="paginationContainer" class="pagination d-flex justify-content-center mt-5">
+              <a id="pagBarPrevBtn" href="#" class="rounded" th:classappend="${!paginationMetadata.hasPreviousPage} ? ' disabled'" aria-label="Previous" th:attr="aria-disabled=${!paginationMetadata.hasPreviousPage}, data-prev-page=${paginationMetadata.previousPosition}"> &laquo; </a>
+              <a href="#" th:each="page : ${#numbers.sequence(1, paginationMetadata.totalNumberOfPages)}" th:text="${page}" class="rounded mx-1 pagNumBtn" th:classappend="${page - 1 == paginationMetadata.currentPosition} ? ' active'" th:attr="data-page=${page - 1}"></a>
+              <a id="pagBarNextBtn" href="#" class="rounded" th:classappend="${!paginationMetadata.hasNextPage} ? ' disabled'" aria-label="Next" th:attr="aria-disabled=${!paginationMetadata.hasNextPage}, data-next-page=${paginationMetadata.nextPosition}"> &raquo; </a>
             </div>
           </div>
         </div>
@@ -194,6 +187,6 @@
     <script th:src="@{/assets/js/easing.min.js}"></script>
 
     <!-- Template Javascript -->
-    <script th:src="@{/assets/js/cartPageScript.js}"></script>
+    <script th:src="@{/assets/js/personalOrdersPageScript.js}"></script>
   </body>
 </html>

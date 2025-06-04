@@ -3,6 +3,7 @@ package io.github.viet_anh_it.book_selling_website.service;
 import org.springframework.mail.MailException;
 import org.thymeleaf.context.Context;
 
+import io.github.viet_anh_it.book_selling_website.enums.OrderStatusEnum;
 import io.github.viet_anh_it.book_selling_website.model.User;
 
 public interface EmailService {
@@ -16,4 +17,10 @@ public interface EmailService {
     void sendAccountActivationEmailTemplate(User user);
 
     void sendForgotPasswordEmailTemplate(User user);
+
+    void sendOrderApprovalEmail(User user);
+
+    void sendOrderRejectionEmail(User user);
+
+    void sendUpdateOrderStatusEmail(User user, OrderStatusEnum orderStatusEnum);
 }

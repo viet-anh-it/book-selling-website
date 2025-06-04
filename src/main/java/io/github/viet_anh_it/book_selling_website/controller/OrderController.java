@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import io.github.viet_anh_it.book_selling_website.dto.CartDTO;
 import io.github.viet_anh_it.book_selling_website.dto.CartItemDTO;
@@ -64,7 +65,7 @@ public class OrderController {
         return "orderSuccess";
     }
 
-    @Secured({ "ROLE_MANAGER" })
+    @Secured({ "ROLE_MANAGER", "ROLE_STAFF" })
     @GetMapping("/manager/orders")
     public String getManageOrdersPage(Model model) {
         SuccessResponse<List<OrderDTO>> successResponse = this.orderService.getAllOrders(PAGEABLE, Optional.empty(), Optional.empty());
@@ -73,5 +74,25 @@ public class OrderController {
         model.addAttribute("orders", orderDtos);
         model.addAttribute("paginationMetadata", paginationMetadata);
         return "manageOrders";
+    }
+
+    @Secured({ "ROLE_CUSTOMER" })
+    @GetMapping("/orders/personal")
+    public String getPersonalOrdersPage(Model model) {
+        SuccessResponse<List<OrderDTO>> successResponse = this.orderService.getPersonalOrders(PAGEABLE, Optional.empty(), Optional.empty());
+        List<OrderDTO> orderDtos = successResponse.getData();
+        PaginationMetadataDTO paginationMetadata = successResponse.getPaginationMetadata();
+        model.addAttribute("orders", orderDtos);
+        model.addAttribute("paginationMetadata", paginationMetadata);
+        return "personalOrders";
+    }
+
+    @Secured({ "ROLE_CUSTOMER" })
+    @GetMapping("/orders/{orderId}/detail")
+    public String getOrderDetailPage(Model model, @PathVariable long orderId) {
+        SuccessResponse<OrderDTO> successResponse = this.orderService.getOrderById(orderId);
+        OrderDTO orderDto = successResponse.getData();
+        model.addAttribute("order", orderDto);
+        return "orderDetail";
     }
 }

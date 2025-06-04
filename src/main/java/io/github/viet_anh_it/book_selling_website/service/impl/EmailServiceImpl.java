@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import io.github.viet_anh_it.book_selling_website.enums.OrderStatusEnum;
 import io.github.viet_anh_it.book_selling_website.enums.TokenTypeEnum;
 import io.github.viet_anh_it.book_selling_website.model.User;
 import io.github.viet_anh_it.book_selling_website.model.VerificationToken;
@@ -101,6 +102,23 @@ public class EmailServiceImpl implements EmailService {
         thymeLeafContext.setVariable("forgotPasswordLink", forgotPasswordLink);
         this.sendEmailTemplate(user.getEmail(), "Quên mật khẩu",
                 "forgotPasswordEmail", thymeLeafContext);
+    }
+
+    @Async
+    @Override
+    public void sendOrderApprovalEmail(User user) {
+        this.sendSimpleEmail(user.getEmail(), "Duyệt đơn hàng", "Đơn hàng của bạn đã được duyệt!");
+    }
+
+    @Async
+    @Override
+    public void sendOrderRejectionEmail(User user) {
+        this.sendSimpleEmail(user.getEmail(), "Từ chối đơn hàng", "Đơn hàng của bạn bị từ chối!");
+    }
+
+    @Override
+    public void sendUpdateOrderStatusEmail(User user, OrderStatusEnum orderStatusEnum) {
+        this.sendSimpleEmail(user.getEmail(), "Trạng thái đơn hàng", "Đơn hàng của bạn đang ở trạng thái: " + orderStatusEnum.name());
     }
 
 }

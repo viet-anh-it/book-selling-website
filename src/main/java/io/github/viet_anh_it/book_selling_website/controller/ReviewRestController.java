@@ -57,7 +57,7 @@ public class ReviewRestController {
                 this.reviewService.approveReview(reviewId);
                 SuccessResponse<List<ReviewDTO>> successResponse = SuccessResponse.<List<ReviewDTO>>builder()
                                 .status(HttpStatus.OK.value())
-                                .message("Duyệt đánh giá thành công!")
+                                .message("Quản lý đánh giá thành công!")
                                 .build();
                 return ResponseEntity.status(HttpStatus.OK.value()).body(successResponse);
         }

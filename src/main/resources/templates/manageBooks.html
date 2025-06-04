@@ -33,7 +33,7 @@
         <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
           <div class="sb-sidenav-menu">
             <div class="nav">
-              <div class="sb-sidenav-menu-heading">Trang chủ</div>
+              <div class="sb-sidenav-menu-heading">Bảng điều khiển</div>
               <a class="nav-link" th:href="@{/dashboard}"><i class="fa-solid fa-table-columns me-2"></i>Dashboard</a>
               <div class="sb-sidenav-menu-heading">Quản lý</div>
               <a class="nav-link" th:href="@{/manager/categories}"><i class="fa-solid fa-list me-2"></i>Thể loại</a>
@@ -80,6 +80,7 @@
                 <div class="bg-dark ps-3 py-3 rounded d-flex justify-content-between mb-4 align-items-center">
                   <label for="stockStatusFilter" class="text-white">Trạng thái:</label>
                   <select id="stockStatusFilter" name="stock" class="border-0 form-select-sm bg-dark me-3 text-white" style="outline: none" form="stockStatusFilter" th:attr="data-current-page=${paginationMetadata.currentPosition}">
+                    <option value="">Tất cả</option>
                     <option value="true">Còn hàng</option>
                     <option value="false">Hết hàng</option>
                   </select>
@@ -209,7 +210,7 @@
                 </div>
                 <div class="col-8">
                   <div class="card-body">
-                    <h5 class="card-title fs-1 fw-semibold">Đêm trước bình minh</h5>
+                    <h5 id="bookDetailName" class="card-title fs-1 fw-semibold" style="text-align: justify"></h5>
                     <div class="px-2 mt-5">
                       <div class="row g-4">
                         <div class="col-12">

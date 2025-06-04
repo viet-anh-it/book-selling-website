@@ -33,7 +33,7 @@
               </a>
               <a id="cartIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" th:href="@{/cart}" class="position-relative me-4 my-auto">
                 <i class="fa fa-shopping-bag fa-2x"></i>
-                <!-- <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px">3</span> -->
+                <!-- <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-wid 20px">3</span> -->
               </a>
               <div class="dropdown">
                 <a id="userProfileIcon" sec:authorize="hasRole('ROLE_CUSTOMER')" href="#" class="my-auto me-4 dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -69,37 +69,52 @@
               <div class="row">
                 <div class="col-md-12 col-lg-12">
                   <div class="form-item w-100">
-                    <label class="form-label my-3">Họ tên người nhận<sup>*</sup></label>
-                    <input id="name" type="text" class="form-control" th:value="${user.name}" />
+                    <label class="form-label my-3">Mã đơn: <span th:text="${order.code}"></span></label>
+                    <!-- <input id="name" type="text" class="form-control" value="${user.name}" /> -->
+                    <div class="invalid-feedback">Lỗi</div>
+                  </div>
+                  <div class="form-item w-100">
+                    <label class="form-label my-3">Ngày đặt: <span th:text="${#temporals.format(order.orderedAt, 'dd/MM/yyyy HH:mm')}"></span></label>
+                    <!-- <input id="name" type="text" class="form-control" value="${user.name}" /> -->
+                    <div class="invalid-feedback">Lỗi</div>
+                  </div>
+                  <div class="form-item w-100">
+                    <label class="form-label my-3">Trạng thái: <span th:text="${order.status.name()}"></span></label>
+                    <!-- <input id="name" type="text" class="form-control" value="${user.name}" /> -->
+                    <div class="invalid-feedback">Lỗi</div>
+                  </div>
+                  <div class="form-item w-100">
+                    <label class="form-label my-3">Họ tên người nhận: <span th:text="${order.name}"></span></label>
+                    <!-- <input id="name" type="text" class="form-control" value="${user.name}" /> -->
                     <div class="invalid-feedback">Lỗi</div>
                   </div>
                 </div>
               </div>
               <div class="form-item">
-                <label class="form-label my-3">Số điện thoại người nhận<sup>*</sup></label>
-                <input id="phone" type="tel" class="form-control" th:value="${user.phone}" />
+                <label class="form-label my-3">Số điện thoại người nhận: <span th:text="${order.phone}"></span></label>
+                <!-- <input id="phone" type="tel" class="form-control" value="${user.phone}" /> -->
                 <div class="invalid-feedback">Lỗi</div>
               </div>
               <div class="form-item">
-                <label class="form-label my-3">Tỉnh/Thành phố<sup>*</sup></label>
-                <input id="province" type="text" class="form-control" th:value="${user.address.province}" />
+                <label class="form-label my-3">Địa chỉ giao hàng: <span th:text="${order.province} + ', ' + ${order.district} + ', ' + ${order.ward} + ', ' + ${order.home}"></span></label>
+                <!-- <input id="province" type="text" class="form-control" value="${user.address.province}" /> -->
                 <div class="invalid-feedback">Lỗi</div>
               </div>
-              <div class="form-item">
+              <!-- <div class="form-item">
                 <label class="form-label my-3">Quận/Huyện<sup>*</sup></label>
-                <input id="district" type="text" class="form-control" th:value="${user.address.district}" />
+                <input id="district" type="text" class="form-control" value="${user.address.district}" />
                 <div class="invalid-feedback">Lỗi</div>
               </div>
               <div class="form-item">
                 <label class="form-label my-3">Xã/Phường<sup>*</sup></label>
-                <input id="ward" type="text" class="form-control" th:value="${user.address.ward}" />
+                <input id="ward" type="text" class="form-control" value="${user.address.ward}" />
                 <div class="invalid-feedback">Lỗi</div>
               </div>
               <div class="form-item">
                 <label class="form-label my-3">Địa chỉ nhận hàng<sup>*</sup></label>
-                <input id="home" type="text" class="form-control" placeholder="" th:value="${user.address.street}" />
+                <input id="home" type="text" class="form-control" placeholder="" value="${user.address.street}" />
                 <div class="invalid-feedback">Lỗi</div>
-              </div>
+              </div> -->
               <div class="form-item mt-3">
                 <textarea id="note" name="text" class="form-control" spellcheck="false" cols="30" rows="11" placeholder="Ghi chú"></textarea>
               </div>
@@ -117,19 +132,18 @@
                     </tr>
                   </thead>
                   <tbody id="orderItemTableBody">
-                    <tr th:if="${cartItems != null and not #lists.isEmpty(cartItems)}" th:each="cartItem, stat : ${cartItems}">
-                      <td class="ids text-nowrap text-center" th:attr="data-book-id=${cartItem.bookId}, data-cart-item-id=${cartItem.cartItemId}" hidden></td>
+                    <tr th:if="${order.orderItems != null and not #lists.isEmpty(order.orderItems)}" th:each="orderItem, stat : ${order.orderItems}">
+                      <td class="ids text-nowrap text-center" attr="data-book-id=${cartItem.bookId}, data-cart-item-id=${cartItem.cartItemId}" hidden></td>
                       <th scope="row" class="text-center">
-                        <img th:src="@{${cartItem.image}}" class="itemImage img-thumbnail object-fit-cover overflow-hidden rounded" style="height: 80px; aspect-ratio: 3/4" th:alt="${cartItem.name}" />
+                        <img th:src="@{${orderItem.image}}" class="itemImage img-thumbnail object-fit-cover overflow-hidden rounded" style="height: 80px; aspect-ratio: 3/4" alt="${cartItem.name}" />
                       </th>
-                      <td class="itemName text-wrap text-start" th:text="${cartItem.name}">Cánh Buồm Đỏ Thắm (Tái Bản 2020)</td>
-                      <td class="itemPrice text-nowrap text-center" th:text="${#numbers.formatDecimal(cartItem.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'">25.200 ₫</td>
-                      <td class="itemQuantity text-nowrap text-center" th:text="${cartItem.addToCartQuantity}">2</td>
-                      <td class="itemSubtotal text-nowrap text-center" th:text="${#numbers.formatDecimal(cartItem.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'">50.400 ₫</td>
+                      <td class="itemName text-wrap text-start" th:text="${orderItem.name}"></td>
+                      <td class="itemPrice text-nowrap text-center" th:text="${#numbers.formatDecimal(orderItem.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
+                      <td class="itemQuantity text-nowrap text-center" th:text="${orderItem.quantity}"></td>
+                      <td class="itemSubtotal text-nowrap text-center" th:text="${#numbers.formatDecimal(orderItem.total, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
                     </tr>
                   </tbody>
                 </table>
-                <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="alert alert-info d-flex align-items-center justify-content-center" role="alert">Chưa có sản phẩm nào.</div>
               </div>
               <div class="row g-4 justify-content-end">
                 <div class="col-4"></div>
@@ -139,7 +153,7 @@
                       <h1 class="display-6 mb-4">Tạm <span class="fw-normal">tính</span></h1>
                       <div class="d-flex justify-content-between mb-4">
                         <h5 class="mb-0 me-4">Thành tiền:</h5>
-                        <p id="cartSubtotal" class="mb-0" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
+                        <p id="cartSubtotal" class="mb-0" th:text="${#numbers.formatDecimal(order.total, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
                       </div>
                       <div class="d-flex justify-content-between mb-4">
                         <h5 class="mb-0 me-4">Phí vận chuyển:</h5>
@@ -156,13 +170,10 @@
                     </div>
                     <div class="py-4 mb-4 border-top d-flex justify-content-between">
                       <h5 class="mb-0 ps-4 me-4">Tổng trả:</h5>
-                      <p id="cartGrandtotal" class="mb-0 pe-4" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
+                      <p id="cartGrandtotal" class="mb-0 pe-4" th:text="${#numbers.formatDecimal(order.total, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="row g-4 text-center align-items-center justify-content-center pt-4">
-                <button id="confirmOrderBtn" type="button" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">Xác nhận đặt hàng</button>
               </div>
             </div>
           </div>
@@ -210,6 +221,6 @@
     <script th:src="@{/assets/js/easing.min.js}"></script>
 
     <!-- Template Javascript -->
-    <script th:src="@{/assets/js/orderPageScript.js}"></script>
+    <script th:src="@{/assets/js/orderDetailPageScript.js}"></script>
   </body>
 </html>
